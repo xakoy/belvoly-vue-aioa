@@ -1,22 +1,20 @@
 <template>
     <div id="app">
-        <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
+        <router-view></router-view>
     </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import HelloWorld from './components/HelloWorld.vue'
-
-@Component({
-    components: {
-        HelloWorld
-    }
-})
+@Component
 export default class App extends Vue {}
 </script>
 
 <style>
+body,
+html {
+    height: 100%;
+}
 #app {
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -24,5 +22,6 @@ export default class App extends Vue {}
     text-align: center;
     color: #2c3e50;
     margin-top: 60px;
+    height: 100%;
 }
 </style>
