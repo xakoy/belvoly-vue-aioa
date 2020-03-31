@@ -25,6 +25,10 @@ export default class Index extends Vue {
         {
             name: 'tinymce',
             path: 'tinymce'
+        },
+        {
+            name: 'upload',
+            path: 'upload'
         }
     ]
 

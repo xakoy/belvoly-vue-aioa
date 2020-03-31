@@ -12,6 +12,11 @@ const routes: RouteConfig[] = [
                 path: 'tinymce',
                 name: 'tinymce',
                 component: () => import('./views/Tinymce.vue')
+            },
+            {
+                path: 'upload',
+                name: 'upload',
+                component: () => import('./views/Upload.vue')
             }
         ]
     }
