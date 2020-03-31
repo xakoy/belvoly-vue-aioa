@@ -1,10 +1,18 @@
 <template>
-    <editor />
+    <el-form :model="item" :rules="rules" ref="form">
+        <el-form-item label="文本：" prop="html">
+            <editor ref="textEditor" v-model="item.html" :text.sync="text" />
+        </el-form-item>
+        <el-button @click="saveHandler">
+            保存
+        </el-button>
+    </el-form>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import Editor from '../../packages/tinymce/Editor.vue'
+import { ElForm } from 'element-ui/types/form'
 
 @Component({
     components: {
@@ -13,5 +21,33 @@ import Editor from '../../packages/tinymce/Editor.vue'
 })
 export default class HelloWorld extends Vue {
     @Prop() private msg!: string
+
+    validateMaxText(rule: any, value: any, callback: any) {
+        if (this.text && this.text.length > 30) {
+            callback(new Error(rule.message))
+        } else {
+            callback()
+        }
+    }
+    rules = {
+        html: [
+            { required: true, message: '请填写' },
+            { validator: this.validateMaxText, message: '不能大于30字' }
+        ]
+    }
+    item = {
+        html: '<p>测试</p>'
+    }
+
+    text = ''
+
+    async saveHandler() {
+        const isValid = await (this.$refs.form as ElForm).validate()
+        if (!isValid) {
+            return
+        }
+
+        console.log(this.item, this.text)
+    }
 }
 </script>
