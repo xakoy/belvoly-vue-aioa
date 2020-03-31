@@ -404,21 +404,25 @@
     //
     var script = Vue.extend({
         props: {
-            tinymceHtml: {},
+            text: {},
+            value: {},
+            imageUploadUrl: {
+                type: String
+            },
             toolbar: {
                 type: Object,
                 default: null
             },
-            maxCount: {
-                type: Number,
-                default: 200000
+            validateEvent: {
+                type: Boolean,
+                default: true
             }
         },
         components: {
             Editor
         },
         watch: {
-            tinymceHtml: {
+            value: {
                 handler(val) {
                     this.setEditorHtml(val);
                 },
@@ -427,11 +431,6 @@
             },
             editorHtml: {
                 handler(val) {
-                    if (this.cleanWordString(val) > this.maxCount) {
-                        val = String(val).slice(0, this.maxCount);
-                        // this.$message.error(`当前编辑超过${this.maxCount}字数`)
-                    }
-
                     this.handleEditorHtml(val);
                 },
                 immediate: true,
@@ -441,17 +440,18 @@
         data() {
             return {
                 editorInit: {
-                    selector: "textarea",
+                    selector: 'textarea',
                     language_url: languageUrl,
-                    language: "zh_CN",
+                    language: 'zh_CN',
                     // skin_url: skin_url, //样式放入public在index.html里引用
                     height: 300,
-                    plugins: "link lists image code table wordcount fullscreen",
+                    plugins: 'link lists image code table wordcount fullscreen',
                     toolbar:
                         this.toolbar ||
-                        "fullscreen | newnote print preview | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent blockquote | undo redo | removeformat | link unlink image code",
+                        'fullscreen | newnote print preview | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent blockquote | undo redo | removeformat | link unlink image code',
                     branding: false,
                     convert_urls: false,
+                    images_upload_url: this.imageUploadUrl,
                     // images_upload_url:
                     //     this.$config.get("sharedservice.baseURI") +
                     //     "/tinymce/upload?" +
@@ -460,7 +460,7 @@
                     //         creatorID: this.$store.state.identity.uid
                     //     }),
                     automatic_uploads: true,
-                    file_picker_types: "image"
+                    file_picker_types: 'image'
                 },
                 editorHtml: this.tinymceHtml
             }
@@ -469,23 +469,56 @@
             tinymce$1.init({});
         },
         methods: {
-            cleanWordString(data) {
-                if (data) {
-                    data = data.replace(/(\n)/g, "");
-                    data = data.replace(/(\t)/g, "");
-                    data = data.replace(/(\r)/g, "");
-                    data = data.replace(/<\/?[^>]*>/g, "");
-                    data = data.replace(/\s*/g, "");
-                    return data.length
+            getCleanText() {
+                const $editor = this.$refs.editor;
+                let text = this.editorHtml;
+                if ($editor) {
+                    text = $editor.editor.getContent({ format: 'text' });
                 } else {
-                    return 0
+                    text = this.cleanHtml(text);
+                }
+                return text
+            },
+            cleanHtml(data) {
+                let text = data;
+                if (text) {
+                    text = text.replace(/(\n)/g, '');
+                    text = text.replace(/(\t)/g, '');
+                    text = text.replace(/(\r)/g, '');
+                    text = text.replace(/<\/?[^>]*>/g, '');
+                    text = text.replace(/\s*/g, '');
+                    return text
+                } else {
+                    return ''
                 }
             },
             setEditorHtml(val) {
                 this.editorHtml = val;
             },
             handleEditorHtml(val) {
-                this.$emit("handleEditorHtml", val);
+                const text = this.getCleanText();
+                this.$emit('update:text', text);
+                this.$emit('input', val);
+                this.$emit('change', val);
+                if (this.validateEvent) {
+                    this.dispatch('ElFormItem', 'el.form.change', [val]);
+                }
+            },
+            dispatch(componentName, eventName, params) {
+                let parent = this.$parent || this.$root;
+                let name = parent.$options.componentName;
+
+                while (parent && (!name || name !== componentName)) {
+                    parent = parent.$parent;
+
+                    if (parent) {
+                        name = parent.$options.componentName;
+                    }
+                }
+                if (parent) {
+                    // eslint-disable-next-line prefer-spread
+                    parent.$emit.apply(parent, [eventName].concat(params));
+                }
             }
         }
     });
@@ -574,7 +607,8 @@
       var _h = _vm.$createElement;
       var _c = _vm._self._c || _h;
       return _c("Editor", {
-        attrs: { id: "tinymce", init: _vm.editorInit },
+        ref: "editor",
+        attrs: { init: _vm.editorInit },
         model: {
           value: _vm.editorHtml,
           callback: function($$v) {
@@ -618,7 +652,7 @@
 
     var index = {};
 
-    exports.Editor = __vue_component__;
+    exports.TinymceEditor = __vue_component__;
     exports.default = index;
 
     Object.defineProperty(exports, '__esModule', { value: true });

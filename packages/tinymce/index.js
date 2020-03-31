@@ -1,5 +1,5 @@
-import Editor from './Editor.vue'
+import TinymceEditor from './Editor.vue'
 
 export default {}
 
-export { Editor }
+export { TinymceEditor }

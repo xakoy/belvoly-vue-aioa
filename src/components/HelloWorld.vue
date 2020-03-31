@@ -1,7 +1,7 @@
 <template>
     <el-form :model="item" :rules="rules" ref="form">
         <el-form-item label="文本：" prop="html">
-            <editor ref="textEditor" v-model="item.html" :text.sync="text" />
+            <tinymce-editor ref="textEditor" v-model="item.html" :text.sync="text" />
         </el-form-item>
         <el-button @click="saveHandler">
             保存
@@ -10,13 +10,15 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
-import Editor from '../../packages/tinymce/Editor.vue'
+import { Component, Prop, Vue } from 'vue-property-decorator'
+import { TinymceEditor } from '../../packages/tinymce'
 import { ElForm } from 'element-ui/types/form'
+import { Message } from 'element-ui'
+console.log(TinymceEditor)
 
 @Component({
     components: {
-        Editor
+        TinymceEditor
     }
 })
 export default class HelloWorld extends Vue {
@@ -47,7 +49,9 @@ export default class HelloWorld extends Vue {
             return
         }
 
-        console.log(this.item, this.text)
+        Message.success({
+            message: `值为：${this.item.html}, 纯文本为：${this.text}`
+        })
     }
 }
 </script>
