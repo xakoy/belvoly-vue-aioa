@@ -21,17 +21,18 @@
 
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
-import { MessageBox } from 'element-ui'
-// import attachmentService from '@/services/attachmentService'
+import { MessageBox, Message } from 'element-ui'
+import { services, globalConfig } from '@belvoly-vue-aioa/core'
+const { attachmentService } = services
 
 const config = {
     sharedservice: {
         assets: {
-            baseURI: 'http://192.168.101.135:2001/api/sharedservice/assets'
+            baseURI: `${globalConfig.apiHost}/sharedservice/assets`
         }
     },
     api: {
-        baseURI: ''
+        baseURI: globalConfig.apiHost
     },
     o365: {
         enabled: false,
@@ -113,18 +114,20 @@ export default class Index extends Vue {
 
         return supportFileTypes.includes(extension)
     }
-    handleRemove(file) {
+    async handleRemove(file) {
         const id = file.id || file.response.data.id
 
-        // attachmentService.deleteAttachment(id, data => {
-        //     this.$message({
-        //         message: '删除附件成功',
-        //         type: 'success',
-        //         onClose: () => {}
-        //     })
-        //     const fileIndex = this.uploadFiles.findIndex(file => file.id === id)
-        //     this.uploadFiles.splice(fileIndex, 1)
-        // })
+        const { success } = await attachmentService.remove(id)
+
+        if (success) {
+            Message({
+                message: '删除附件成功',
+                type: 'success'
+            })
+
+            const fileIndex = this.uploadFiles.findIndex(file => file.id === id)
+            this.uploadFiles.splice(fileIndex, 1)
+        }
     }
     beforeRemove(file) {
         return MessageBox.confirm(`确定移除 ${file.name}？`)
@@ -166,7 +169,6 @@ export default class Index extends Vue {
 
                 this.showFileIcon(el, files[i])
             })
-            debugger
             // 查看模式下才显示
             if (!this.isEditFile) {
                 this.$el.querySelectorAll('.el-upload-list__item-status-label').forEach((el: HTMLElement, i) => {
@@ -182,7 +184,6 @@ export default class Index extends Vue {
         })
     }
     addDownloadIcon(el: HTMLElement, file) {
-        debugger
         let isView = false
         const url = file.url
         let urlv = ''
@@ -258,18 +259,16 @@ export default class Index extends Vue {
     /**
      * 更新关联业务表记录ID
      */
-    updateRelevance(refTableID) {
-        return new Promise(resolve => {
-            const blobRelevance = {
-                ids: this.uploadFiles.map(file => file.id),
-                refTableName: this.refTableName,
-                refTableID: refTableID
-            }
-
-            // attachmentService.updateRelevance(blobRelevance, result => {
-            //     resolve(result)
-            // })
-        })
+    async updateRelevance(refTableID) {
+        const blobRelevance = {
+            ids: this.uploadFiles.map(file => file.id),
+            refTableName: this.refTableName,
+            refTableID: refTableID
+        }
+        const { success, data } = await attachmentService.updateRelevance(blobRelevance)
+        if (success) {
+            return data
+        }
     }
 }
 </script>

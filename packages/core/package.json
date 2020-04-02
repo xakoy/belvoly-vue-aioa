@@ -1,9 +1,8 @@
 {
-  "name": "@belvoly-vue-aioa/tinymce",
+  "name": "@belvoly-vue-aioa/core",
   "version": "0.0.1",
-  "description": "智能办公前端Vue组件库-tinymce",
+  "description": "",
   "main": "dist/index.js",
-  "types": "types/index.d.ts",
   "scripts": {
     "build": "rollup -c",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,13 +10,13 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "@tinymce/tinymce-vue": "^3.2.0",
-    "tinymce": "^5.2.1"
-  },
   "devDependencies": {
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-typescript2": "^0.27.0",
     "rollup-plugin-vue": "^5.1.6"
+  },
+  "dependencies": {
+    "element-ui": "^2.13.0",
+    "axios": "^0.19.2"
   }
 }

@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('vue-property-decorator'), require('element-ui')) :
-    typeof define === 'function' && define.amd ? define(['exports', 'vue-property-decorator', 'element-ui'], factory) :
-    (global = global || self, factory(global.ui = {}, global.vuePropertyDecorator, global.elementUi));
-}(this, (function (exports, vuePropertyDecorator, elementUi) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('vue-property-decorator'), require('element-ui'), require('@belvoly-vue-aioa/core')) :
+    typeof define === 'function' && define.amd ? define(['exports', 'vue-property-decorator', 'element-ui', '@belvoly-vue-aioa/core'], factory) :
+    (global = global || self, factory(global.ui = {}, global.vuePropertyDecorator, global.elementUi, global.core));
+}(this, (function (exports, vuePropertyDecorator, elementUi, core) { 'use strict';
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -26,15 +26,15 @@
         return c > 3 && r && Object.defineProperty(target, key, r), r;
     }
 
-    // import attachmentService from '@/services/attachmentService'
+    const { attachmentService } = core.services;
     const config = {
         sharedservice: {
             assets: {
-                baseURI: ''
+                baseURI: `${core.globalConfig.apiHost}/sharedservice/assets`
             }
         },
         api: {
-            baseURI: ''
+            baseURI: core.globalConfig.apiHost
         },
         o365: {
             enabled: false,
@@ -62,6 +62,9 @@
         }
         get uploadTip() {
             return `最多允许上传${this.maxSize}MB的内容`;
+        }
+        mounted() {
+            this.watchFileList(this.fileList);
         }
         watchFileList(newValue) {
             this.uploadFiles = [...newValue];
@@ -93,17 +96,17 @@
             const supportFileTypes = config.o365.supportFileTypes;
             return supportFileTypes.includes(extension);
         }
-        handleRemove(file) {
+        async handleRemove(file) {
             const id = file.id || file.response.data.id;
-            // attachmentService.deleteAttachment(id, data => {
-            //     this.$message({
-            //         message: '删除附件成功',
-            //         type: 'success',
-            //         onClose: () => {}
-            //     })
-            //     const fileIndex = this.uploadFiles.findIndex(file => file.id === id)
-            //     this.uploadFiles.splice(fileIndex, 1)
-            // })
+            const { success } = await attachmentService.remove(id);
+            if (success) {
+                elementUi.Message({
+                    message: '删除附件成功',
+                    type: 'success'
+                });
+                const fileIndex = this.uploadFiles.findIndex(file => file.id === id);
+                this.uploadFiles.splice(fileIndex, 1);
+            }
         }
         beforeRemove(file) {
             return elementUi.MessageBox.confirm(`确定移除 ${file.name}？`);
@@ -192,6 +195,7 @@
             const iNode = document.createElement('i');
             iNode.className = 'fc fc-down-o';
             downloadElement.prepend(iNode);
+            el.parentNode.insertBefore(downloadElement, el);
         }
         showFileIcon(el, file) {
             let extension = file.extension;
@@ -208,7 +212,7 @@
             const assertBaseURI = `${config.sharedservice.assets.baseURI}/img/files`;
             const iconUrl = `${assertBaseURI}/${removedDotExtension}.png`;
             const errorUrl = `${assertBaseURI}/default.png`;
-            el.previousSibling.parentElement.remove();
+            // el.previousSibling.parentElement.remove()
             const imgElement = document.createElement('img');
             imgElement.className = 'el-upload-file-icon';
             imgElement.src = iconUrl;
@@ -221,17 +225,16 @@
         /**
          * 更新关联业务表记录ID
          */
-        updateRelevance(refTableID) {
-            return new Promise(resolve => {
-                const blobRelevance = {
-                    ids: this.uploadFiles.map(file => file.id),
-                    refTableName: this.refTableName,
-                    refTableID: refTableID
-                };
-                // attachmentService.updateRelevance(blobRelevance, result => {
-                //     resolve(result)
-                // })
-            });
+        async updateRelevance(refTableID) {
+            const blobRelevance = {
+                ids: this.uploadFiles.map(file => file.id),
+                refTableName: this.refTableName,
+                refTableID: refTableID
+            };
+            const { success, data } = await attachmentService.updateRelevance(blobRelevance);
+            if (success) {
+                return data;
+            }
         }
     };
     __decorate([
@@ -458,7 +461,7 @@
       /* style */
       const __vue_inject_styles__ = function (inject) {
         if (!inject) return
-        inject("data-v-94112e1e_0", { source: ".upload-detail .el-upload--text {\n  display: none !important;\n}\n.upload-detail .el-upload-list__item:hover .el-icon-close,\n.upload-detail .el-upload-list__item:hover .el-icon-close-tip {\n  display: none;\n}\n.upload-detail .el-upload-list__item .el-icon-close-tip {\n  display: none !important;\n}\n.upload-detail .el-upload-list__item .el-upload-list__item-name .el-upload-file-icon {\n  width: 16px;\n  height: 16px;\n  vertical-align: text-bottom;\n  margin-right: 7px;\n}\n", map: {"version":3,"sources":["Index.vue"],"names":[],"mappings":"AAAA;EACE,wBAAwB;AAC1B;AACA;;EAEE,aAAa;AACf;AACA;EACE,wBAAwB;AAC1B;AACA;EACE,WAAW;EACX,YAAY;EACZ,2BAA2B;EAC3B,iBAAiB;AACnB","file":"Index.vue","sourcesContent":[".upload-detail .el-upload--text {\n  display: none !important;\n}\n.upload-detail .el-upload-list__item:hover .el-icon-close,\n.upload-detail .el-upload-list__item:hover .el-icon-close-tip {\n  display: none;\n}\n.upload-detail .el-upload-list__item .el-icon-close-tip {\n  display: none !important;\n}\n.upload-detail .el-upload-list__item .el-upload-list__item-name .el-upload-file-icon {\n  width: 16px;\n  height: 16px;\n  vertical-align: text-bottom;\n  margin-right: 7px;\n}\n"]}, media: undefined });
+        inject("data-v-239ecaa2_0", { source: ".upload-detail .el-upload--text {\n  display: none !important;\n}\n.upload-detail .el-upload-list__item:hover .el-icon-close,\n.upload-detail .el-upload-list__item:hover .el-icon-close-tip {\n  display: none;\n}\n.upload-detail .el-upload-list__item .el-icon-close-tip {\n  display: none !important;\n}\n.upload-detail .el-upload-list__item .el-upload-list__item-name .el-upload-file-icon {\n  width: 16px;\n  height: 16px;\n  vertical-align: text-bottom;\n  margin-right: 7px;\n}\n", map: {"version":3,"sources":["Index.vue"],"names":[],"mappings":"AAAA;EACE,wBAAwB;AAC1B;AACA;;EAEE,aAAa;AACf;AACA;EACE,wBAAwB;AAC1B;AACA;EACE,WAAW;EACX,YAAY;EACZ,2BAA2B;EAC3B,iBAAiB;AACnB","file":"Index.vue","sourcesContent":[".upload-detail .el-upload--text {\n  display: none !important;\n}\n.upload-detail .el-upload-list__item:hover .el-icon-close,\n.upload-detail .el-upload-list__item:hover .el-icon-close-tip {\n  display: none;\n}\n.upload-detail .el-upload-list__item .el-icon-close-tip {\n  display: none !important;\n}\n.upload-detail .el-upload-list__item .el-upload-list__item-name .el-upload-file-icon {\n  width: 16px;\n  height: 16px;\n  vertical-align: text-bottom;\n  margin-right: 7px;\n}\n"]}, media: undefined });
 
       };
       /* scoped */
