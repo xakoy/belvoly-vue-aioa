@@ -219,9 +219,213 @@
         query
     };
 
+    /**
+     * 查询子数据字典
+     * @param {String} code
+     * @param {*} callback
+     */
+    function queryChild(code) {
+        request(`${gloablConfig.apiHost}/bua/dic/queryChild`, {
+            method: 'GET',
+            data: {
+                code: code
+            }
+        });
+    }
+    var dictService = {
+        queryChild
+    };
+
+    /**
+     * 查询组织机构树
+     * @method queryOrgTree
+     * @param {string} orgCode 父组织机构代号
+     */
+    function queryOrgTree(orgCode) {
+        return request(`${gloablConfig.apiHost}/bua/org/descendants`, {
+            method: 'GET',
+            data: {
+                orgCode: orgCode
+            }
+        });
+    }
+    /**
+     * 查询顶层组织机构详细信息
+     * @method getOrgRoot
+     */
+    function getOrgRoot() {
+        return request(`${gloablConfig.apiHost}/bua/org/root`);
+    }
+    /**
+     * 查询当前机构代号对应该机构的祖先列表
+     * @method queryOrgAncestor
+     * @param {string} orgCode 机构代号
+     */
+    function queryOrgAncestor(orgCode) {
+        return request(`${gloablConfig.apiHost}/bua/org/ancestor`, {
+            method: 'GET',
+            data: {
+                orgCode: orgCode
+            }
+        });
+    }
+    /**
+     * 查询用户所属的单位信息
+     * @method getUnitInfo
+     * @param {string} userUid 用户账号
+     */
+    function getUnitInfo(userUid) {
+        return request(`${gloablConfig.apiHost}/bua/user/unit`, {
+            method: 'GET',
+            data: {
+                userUid: userUid
+            }
+        });
+    }
+    /**
+     * 获取子组织机构列表
+     * @method queryChildren
+     * @param {string} orgCode 机构标识
+     */
+    function queryChildren(orgCode) {
+        return request(`${gloablConfig.apiHost}/bua/org/queryChildren`, {
+            method: 'GET',
+            data: {
+                orgCode: orgCode
+            }
+        });
+    }
+    /**
+     * 获取当前机构的相关信息
+     * @method getOrgInfo
+     * @param {string} orgCode 机构标识
+     */
+    function getOrgInfo(orgCode) {
+        return request(`${gloablConfig.apiHost}/bua/org/${orgCode}`);
+    }
+    var orgService = {
+        queryOrgTree,
+        getOrgRoot,
+        queryOrgAncestor,
+        getUnitInfo,
+        queryChildren,
+        getOrgInfo
+    };
+
+    /**
+     * 查询我的下属
+     * @method queryMySubordinates
+     * @param {string} userUid 用户账号
+     */
+    function queryMySubordinates(userUid) {
+        return request(`${gloablConfig.apiHost}/bua/org/MySubordinates`, {
+            method: 'GET',
+            data: {
+                userUid: userUid
+            }
+        });
+    }
+    /**
+     * 查询用户个人信息
+     * @method getUserBaseInfo
+     * @param {string} uid
+     */
+    const getUserBaseInfo = function (uid) {
+        return request(`${gloablConfig.apiHost}/bua/user/getUser`, {
+            method: 'GET',
+            data: {
+                userUid: uid
+            }
+        });
+    };
+    /**
+     * 查询当前用户个人信息
+     * @method getCurrentUserInfo
+     */
+    function getCurrentUserInfo() {
+        return request(`${gloablConfig.apiHost}/private/bua/user/getUserForMultiUnit`);
+    }
+    /**
+     * 查询用户头像
+     * @method getPicture
+     * @param {string} uid
+     */
+    function getPicture(uid) {
+        return request(`${gloablConfig.apiHost}/bua/user/getPicture`, {
+            method: 'GET',
+            data: {
+                userUid: uid
+            }
+        });
+    }
+    /**
+     * 根据用户的名称或者账号模糊查询
+     * @method searchUsers
+     * @param {string} userUid
+     * @param {string} userName
+     * @param {*} callback
+     */
+    function searchUsers(userUid, userName) {
+        return request(`${gloablConfig.apiHost}/bua/user/searchUsers`, {
+            method: 'GET',
+            data: {
+                userUid: userUid,
+                userName: userName
+            }
+        });
+    }
+    /**
+     * 查询机构下面的所有用户（穿透查询）
+     * @method queryByOrgCodeAllUsers
+     * @param {string} orgCode
+     * @param {*} callback
+     */
+    function queryByOrgCodeAllUsers(orgCode) {
+        return request(`${gloablConfig.apiHost}/bua/user/queryByOrgCodeAllUsers`, {
+            method: 'GET',
+            data: {
+                orgCode: orgCode,
+                includeLocked: false
+            }
+        });
+    }
+    /**
+     * 获取用户所属的单位信息
+     */
+    function getUserUnits() {
+        return request(`${gloablConfig.apiHost}/private/bua/user/units`);
+    }
+    /**
+     * 查询机构下面的所有用户
+     * @method queryByOrgCode
+     * @param {string} orgCode
+     * @param {*} callback
+     */
+    const queryByOrgCode = function (orgCode) {
+        return request(`${gloablConfig.apiHost}/bua/user/queryByOrgCode`, {
+            method: 'GET',
+            data: {
+                orgCode: orgCode
+            }
+        });
+    };
+    var userService = {
+        queryMySubordinates,
+        getUserUnits,
+        getUserBaseInfo,
+        getCurrentUserInfo,
+        getPicture,
+        searchUsers,
+        queryByOrgCodeAllUsers,
+        queryByOrgCode
+    };
+
     var index$1 = /*#__PURE__*/Object.freeze({
         __proto__: null,
-        attachmentService: attachmentService
+        attachmentService: attachmentService,
+        dictService: dictService,
+        orgService: orgService,
+        userService: userService
     });
 
     exports.globalConfig = gloablConfig;
