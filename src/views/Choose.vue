@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-input v-model="item.names" readonly @click.native="inputClickHandler" />
-        <choose-people-or-org v-model="item.codes" :names.sync="item.names" :visible.sync="opickerToToVisible" @selected="selectedHandler" />
+        <choose-people-or-org v-model="item.codes" :isShowGlobal="true" :names.sync="item.names" :visible.sync="opickerToToVisible" @selected="selectedHandler" />
     </div>
 </template>
 

@@ -493,7 +493,6 @@
     const { orgService, userService } = core.services;
 
     var script$1 = {
-        name: 'OApicker',
         props: {
             title: {
                 type: String,
@@ -514,10 +513,15 @@
             visible: {
                 type: Boolean,
                 default: false
+            },
+            isShowGlobal: {
+                type: Boolean,
+                default: false
             }
         },
         data() {
             return {
+                activeTabName: 'unit',
                 currentIndex: null,
                 props: {
                     label: 'name',
@@ -583,6 +587,9 @@
             this.selectedObjectsOrg = JSON.parse(defaultOrg);
         },
         methods: {
+            tabClickHandler(tab) {
+                this.activeTabName = tab.name;
+            },
             // 查询机构下的用户
             queryUserByOrgCode(orgCode) {
                 this.toBeSelect = [];
@@ -1071,111 +1078,154 @@
                     },
                     [
                       _c(
-                        "el-row",
-                        { staticStyle: { width: "100%" } },
+                        "el-tabs",
+                        {
+                          on: { "tab-click": _vm.tabClickHandler },
+                          model: {
+                            value: _vm.activeTabName,
+                            callback: function($$v) {
+                              _vm.activeTabName = $$v;
+                            },
+                            expression: "activeTabName"
+                          }
+                        },
                         [
-                          _c("el-col", { attrs: { span: 23 } }, [
-                            _c("input", {
-                              directives: [
-                                {
-                                  name: "model",
-                                  rawName: "v-model",
-                                  value: _vm.selectUser,
-                                  expression: "selectUser"
-                                }
-                              ],
-                              staticClass: "serchIcon",
-                              attrs: { placeholder: "用户名称\\账号" },
-                              domProps: { value: _vm.selectUser },
-                              on: {
-                                keyup: function($event) {
-                                  if (
-                                    !$event.type.indexOf("key") &&
-                                    _vm._k(
-                                      $event.keyCode,
-                                      "enter",
-                                      13,
-                                      $event.key,
-                                      "Enter"
-                                    )
-                                  ) {
-                                    return null
-                                  }
-                                  return _vm.keyupSubmit(_vm.event)
-                                },
-                                input: function($event) {
-                                  if ($event.target.composing) {
-                                    return
-                                  }
-                                  _vm.selectUser = $event.target.value;
-                                }
-                              }
-                            })
-                          ]),
-                          _vm._v(" "),
                           _c(
-                            "el-col",
-                            { attrs: { span: 1 } },
+                            "el-tab-pane",
+                            { attrs: { label: "本单位", name: "unit" } },
                             [
                               _c(
-                                "el-button",
-                                {
-                                  staticClass: "serchButtonAndText",
-                                  attrs: { title: "查询用户" },
-                                  on: {
-                                    click: function($event) {
-                                      return _vm.buttonSearch(_vm.event)
+                                "el-row",
+                                { staticStyle: { width: "100%" } },
+                                [
+                                  _c("el-col", { attrs: { span: 23 } }, [
+                                    _c("input", {
+                                      directives: [
+                                        {
+                                          name: "model",
+                                          rawName: "v-model",
+                                          value: _vm.selectUser,
+                                          expression: "selectUser"
+                                        }
+                                      ],
+                                      staticClass: "serchIcon",
+                                      attrs: { placeholder: "用户名称\\账号" },
+                                      domProps: { value: _vm.selectUser },
+                                      on: {
+                                        keyup: function($event) {
+                                          if (
+                                            !$event.type.indexOf("key") &&
+                                            _vm._k(
+                                              $event.keyCode,
+                                              "enter",
+                                              13,
+                                              $event.key,
+                                              "Enter"
+                                            )
+                                          ) {
+                                            return null
+                                          }
+                                          return _vm.keyupSubmit(_vm.event)
+                                        },
+                                        input: function($event) {
+                                          if ($event.target.composing) {
+                                            return
+                                          }
+                                          _vm.selectUser = $event.target.value;
+                                        }
+                                      }
+                                    })
+                                  ]),
+                                  _vm._v(" "),
+                                  _c(
+                                    "el-col",
+                                    { attrs: { span: 1 } },
+                                    [
+                                      _c(
+                                        "el-button",
+                                        {
+                                          staticClass: "serchButtonAndText",
+                                          attrs: { title: "查询用户" },
+                                          on: {
+                                            click: function($event) {
+                                              return _vm.buttonSearch()
+                                            }
+                                          }
+                                        },
+                                        [_c("i", { staticClass: "fc fc-search" })]
+                                      )
+                                    ],
+                                    1
+                                  )
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c("el-tree", {
+                                ref: "tree",
+                                attrs: {
+                                  "show-checkbox": _vm.isShowCheckBox,
+                                  "node-key": "id",
+                                  props: _vm.props,
+                                  lazy: "",
+                                  "default-expanded-keys": _vm.defaultExpandedKeys,
+                                  "check-strictly": _vm.strictly,
+                                  load: _vm.loadNode
+                                },
+                                on: {
+                                  "node-click": _vm.handleNodeClick,
+                                  "check-change": _vm.handleCheckChange
+                                },
+                                scopedSlots: _vm._u([
+                                  {
+                                    key: "default",
+                                    fn: function(ref) {
+                                      var node = ref.node;
+                                      return [
+                                        _c(
+                                          "span",
+                                          { staticStyle: { "font-size": "14px" } },
+                                          [
+                                            _c(
+                                              "span",
+                                              {
+                                                staticStyle: {
+                                                  "padding-right": "3px"
+                                                }
+                                              },
+                                              [
+                                                _c("i", {
+                                                  staticClass: "fc fc-company"
+                                                })
+                                              ]
+                                            ),
+                                            _vm._v(" "),
+                                            _c("span", [_vm._v(_vm._s(node.label))])
+                                          ]
+                                        )
+                                      ]
                                     }
                                   }
-                                },
-                                [_c("i", { staticClass: "fc fc-search" })]
-                              )
+                                ])
+                              })
                             ],
                             1
-                          )
+                          ),
+                          _vm._v(" "),
+                          _vm.isShowGlobal
+                            ? _c(
+                                "el-tab-pane",
+                                { attrs: { label: "全局", name: "gloabl" } },
+                                [
+                                  _vm._v(
+                                    "\n                            全局\n                        "
+                                  )
+                                ]
+                              )
+                            : _vm._e()
                         ],
                         1
-                      ),
-                      _vm._v(" "),
-                      _c("el-tree", {
-                        ref: "tree",
-                        attrs: {
-                          "show-checkbox": _vm.isShowCheckBox,
-                          "node-key": "id",
-                          props: _vm.props,
-                          lazy: "",
-                          "default-expanded-keys": _vm.defaultExpandedKeys,
-                          "check-strictly": _vm.strictly,
-                          load: _vm.loadNode
-                        },
-                        on: {
-                          "node-click": _vm.handleNodeClick,
-                          "check-change": _vm.handleCheckChange
-                        },
-                        scopedSlots: _vm._u([
-                          {
-                            key: "default",
-                            fn: function(ref) {
-                              var node = ref.node;
-                              return [
-                                _c(
-                                  "span",
-                                  { staticStyle: { "font-size": "14px" } },
-                                  [
-                                    _c(
-                                      "span",
-                                      { staticStyle: { "padding-right": "3px" } },
-                                      [_c("i", { staticClass: "fc fc-company" })]
-                                    ),
-                                    _vm._v(" "),
-                                    _c("span", [_vm._v(_vm._s(node.label))])
-                                  ]
-                                )
-                              ]
-                            }
-                          }
-                        ])
-                      })
+                      )
                     ],
                     1
                   ),
@@ -1702,7 +1752,7 @@
       /* style */
       const __vue_inject_styles__$1 = function (inject) {
         if (!inject) return
-        inject("data-v-147a496c_0", { source: ".alert {\n  width: 100%;\n  height: 100%;\n  position: fixed;\n  left: 0;\n  top: 0;\n  z-index: 20;\n}\n.alert .alert_mask {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n  background-color: rgba(0, 0, 0, 0.5);\n}\n.alert .alert_con {\n  position: absolute;\n  left: 50%;\n  top: 45%;\n  width: 60%;\n  transform: translate(-50%, -50%);\n  background-color: #fff;\n  overflow: hidden;\n}\n.alert .alert_head {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 17px 20px;\n  font-size: 16px;\n  background: #f2f2f2;\n  border-bottom: 1px solid #c3c3c3;\n}\n.alert .alert_close {\n  color: #909399;\n  cursor: pointer;\n}\n.alert .alert_close:hover {\n  color: #4090e2;\n}\n.alert-view .alert_body {\n  display: flex;\n  height: 400px;\n}\n.alert .alert_tree {\n  width: 30%;\n  padding: 16px;\n  overflow-y: auto;\n}\n.alert .alert_select {\n  width: 50%;\n  margin-left: -1px;\n  padding: 16px;\n  overflow-y: auto;\n  position: relative;\n}\n.alert .alert_bind {\n  position: absolute;\n  right: 0;\n  top: 50%;\n  width: 44px;\n  transform: translateY(-50%);\n}\n.alert .alert_foot {\n  text-align: right;\n  padding: 10px 20px;\n  background: #f2f2f2;\n  border-top: 1px solid #c3c3c3;\n}\n.alert .m-icon {\n  background: #ccc;\n  width: 30px;\n  height: 30px;\n  text-align: center;\n  line-height: 30px;\n  color: #fff;\n  font-size: 22px;\n}\n.alert_to_be_select {\n  width: 50%;\n  border: 0 solid #d8d8d8;\n  margin: 0 10px;\n  padding: 16px;\n  overflow: auto;\n  border-width: 0 1px;\n}\n.alert_select_title {\n  overflow: hidden;\n}\n.alert_select_left.name {\n  color: #409eff;\n}\n.alert_select_right {\n  float: right;\n}\n.alert_select_right .el-checkbox {\n  margin-right: 10px;\n}\n.alert_select_right .el-checkbox:last-child {\n  margin-right: 0;\n}\n.alert_select_right .el-checkbox__label {\n  padding-left: 5px;\n}\n/**绿色勾*/\n.myicon-tick-checked {\n  display: inline-block;\n  margin-right: 20px;\n  cursor: pointer;\n  width: 30px;\n  height: 30px;\n  border-radius: 50%;\n  font-size: 12px;\n  text-align: center;\n  line-height: 30px;\n  margin-right: 10px;\n  position: relative;\n  background-color: #1f64a3;\n}\n.myicon-tick-checked:before,\n.myicon-tick-checked:after {\n  content: '';\n  pointer-events: none;\n  position: absolute;\n  color: white;\n  border: 1px solid;\n  background-color: white;\n}\n.myicon-tick-checked:before {\n  width: 2px;\n  height: 2px;\n  left: 28%;\n  top: 48%;\n  transform: skew(0deg, 60deg);\n  -ms-transform: skew(0deg, 60deg);\n  -webkit-transform: skew(0deg, 60deg);\n}\n.myicon-tick-checked:after {\n  width: 8px;\n  height: 2px;\n  left: 41%;\n  top: 43%;\n  transform: skew(0deg, -60deg);\n  -ms-transform: skew(0deg, -60deg);\n  -webkit-transform: skew(0deg, -40deg);\n}\n.myAvatar {\n  height: 30px;\n  width: 30px;\n  border-radius: 50%;\n  margin-top: -4px;\n}\n.serchButtonAndText {\n  margin-left: -57px;\n  margin-top: 1px;\n  padding-bottom: 9px;\n  padding-top: 9px;\n}\n.serchIcon {\n  width: 100%;\n  box-sizing: border-box;\n  border: 2px solid #ccc;\n  border-radius: 4px;\n  font-size: 14px;\n  background-color: white;\n  background-position: 10px 7px;\n  background-repeat: no-repeat;\n  padding: 7px 57px 7px 7px;\n}\n.alert_select_list li {\n  display: inline-block;\n  margin-right: 20px;\n  margin-bottom: 10px;\n  cursor: pointer;\n}\n.alert_select_list li .alert_select_icon {\n  display: inline-block;\n  width: 30px;\n  height: 30px;\n  background: #409eff;\n  color: #fff;\n  border-radius: 50%;\n  font-size: 12px;\n  text-align: center;\n  line-height: 30px;\n  margin-right: 10px;\n}\n.alert_select_list li .alert_select_icon .close_icon {\n  display: none;\n}\n.alert_select_list li .alert_select_icon:hover .close_icon {\n  display: inline-block;\n}\n.alert_select_list li .alert_select_icon:hover .name_icon {\n  display: none;\n}\n.alert_select_list li .alert_select_name {\n  display: inline-block;\n  vertical-align: middle;\n}\n.alert_select_list li .alert_select_name b,\n.alert_select_list li .alert_select_name i {\n  display: block;\n  font-style: normal;\n  font-weight: normal;\n}\n.alert_select_list li .alert_select_name i {\n  font-size: 12px;\n  margin-top: -5px;\n  color: #999;\n}\n.alert_clear {\n  color: red;\n  cursor: pointer;\n}\n.alert_selected_number {\n  color: #409eff;\n}\n", map: {"version":3,"sources":["Index.vue"],"names":[],"mappings":"AAAA;EACE,WAAW;EACX,YAAY;EACZ,eAAe;EACf,OAAO;EACP,MAAM;EACN,WAAW;AACb;AACA;EACE,WAAW;EACX,YAAY;EACZ,kBAAkB;EAClB,OAAO;EACP,MAAM;EACN,oCAAoC;AACtC;AACA;EACE,kBAAkB;EAClB,SAAS;EACT,QAAQ;EACR,UAAU;EACV,gCAAgC;EAChC,sBAAsB;EACtB,gBAAgB;AAClB;AACA;EACE,aAAa;EACb,8BAA8B;EAC9B,mBAAmB;EACnB,kBAAkB;EAClB,eAAe;EACf,mBAAmB;EACnB,gCAAgC;AAClC;AACA;EACE,cAAc;EACd,eAAe;AACjB;AACA;EACE,cAAc;AAChB;AACA;EACE,aAAa;EACb,aAAa;AACf;AACA;EACE,UAAU;EACV,aAAa;EACb,gBAAgB;AAClB;AACA;EACE,UAAU;EACV,iBAAiB;EACjB,aAAa;EACb,gBAAgB;EAChB,kBAAkB;AACpB;AACA;EACE,kBAAkB;EAClB,QAAQ;EACR,QAAQ;EACR,WAAW;EACX,2BAA2B;AAC7B;AACA;EACE,iBAAiB;EACjB,kBAAkB;EAClB,mBAAmB;EACnB,6BAA6B;AAC/B;AACA;EACE,gBAAgB;EAChB,WAAW;EACX,YAAY;EACZ,kBAAkB;EAClB,iBAAiB;EACjB,WAAW;EACX,eAAe;AACjB;AACA;EACE,UAAU;EACV,uBAAuB;EACvB,cAAc;EACd,aAAa;EACb,cAAc;EACd,mBAAmB;AACrB;AACA;EACE,gBAAgB;AAClB;AACA;EACE,cAAc;AAChB;AACA;EACE,YAAY;AACd;AACA;EACE,kBAAkB;AACpB;AACA;EACE,eAAe;AACjB;AACA;EACE,iBAAiB;AACnB;AACA,OAAO;AACP;EACE,qBAAqB;EACrB,kBAAkB;EAClB,eAAe;EACf,WAAW;EACX,YAAY;EACZ,kBAAkB;EAClB,eAAe;EACf,kBAAkB;EAClB,iBAAiB;EACjB,kBAAkB;EAClB,kBAAkB;EAClB,yBAAyB;AAC3B;AACA;;EAEE,WAAW;EACX,oBAAoB;EACpB,kBAAkB;EAClB,YAAY;EACZ,iBAAiB;EACjB,uBAAuB;AACzB;AACA;EACE,UAAU;EACV,WAAW;EACX,SAAS;EACT,QAAQ;EACR,4BAA4B;EAC5B,gCAAgC;EAChC,oCAAoC;AACtC;AACA;EACE,UAAU;EACV,WAAW;EACX,SAAS;EACT,QAAQ;EACR,6BAA6B;EAC7B,iCAAiC;EACjC,qCAAqC;AACvC;AACA;EACE,YAAY;EACZ,WAAW;EACX,kBAAkB;EAClB,gBAAgB;AAClB;AACA;EACE,kBAAkB;EAClB,eAAe;EACf,mBAAmB;EACnB,gBAAgB;AAClB;AACA;EACE,WAAW;EACX,sBAAsB;EACtB,sBAAsB;EACtB,kBAAkB;EAClB,eAAe;EACf,uBAAuB;EACvB,6BAA6B;EAC7B,4BAA4B;EAC5B,yBAAyB;AAC3B;AACA;EACE,qBAAqB;EACrB,kBAAkB;EAClB,mBAAmB;EACnB,eAAe;AACjB;AACA;EACE,qBAAqB;EACrB,WAAW;EACX,YAAY;EACZ,mBAAmB;EACnB,WAAW;EACX,kBAAkB;EAClB,eAAe;EACf,kBAAkB;EAClB,iBAAiB;EACjB,kBAAkB;AACpB;AACA;EACE,aAAa;AACf;AACA;EACE,qBAAqB;AACvB;AACA;EACE,aAAa;AACf;AACA;EACE,qBAAqB;EACrB,sBAAsB;AACxB;AACA;;EAEE,cAAc;EACd,kBAAkB;EAClB,mBAAmB;AACrB;AACA;EACE,eAAe;EACf,gBAAgB;EAChB,WAAW;AACb;AACA;EACE,UAAU;EACV,eAAe;AACjB;AACA;EACE,cAAc;AAChB","file":"Index.vue","sourcesContent":[".alert {\n  width: 100%;\n  height: 100%;\n  position: fixed;\n  left: 0;\n  top: 0;\n  z-index: 20;\n}\n.alert .alert_mask {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n  background-color: rgba(0, 0, 0, 0.5);\n}\n.alert .alert_con {\n  position: absolute;\n  left: 50%;\n  top: 45%;\n  width: 60%;\n  transform: translate(-50%, -50%);\n  background-color: #fff;\n  overflow: hidden;\n}\n.alert .alert_head {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 17px 20px;\n  font-size: 16px;\n  background: #f2f2f2;\n  border-bottom: 1px solid #c3c3c3;\n}\n.alert .alert_close {\n  color: #909399;\n  cursor: pointer;\n}\n.alert .alert_close:hover {\n  color: #4090e2;\n}\n.alert-view .alert_body {\n  display: flex;\n  height: 400px;\n}\n.alert .alert_tree {\n  width: 30%;\n  padding: 16px;\n  overflow-y: auto;\n}\n.alert .alert_select {\n  width: 50%;\n  margin-left: -1px;\n  padding: 16px;\n  overflow-y: auto;\n  position: relative;\n}\n.alert .alert_bind {\n  position: absolute;\n  right: 0;\n  top: 50%;\n  width: 44px;\n  transform: translateY(-50%);\n}\n.alert .alert_foot {\n  text-align: right;\n  padding: 10px 20px;\n  background: #f2f2f2;\n  border-top: 1px solid #c3c3c3;\n}\n.alert .m-icon {\n  background: #ccc;\n  width: 30px;\n  height: 30px;\n  text-align: center;\n  line-height: 30px;\n  color: #fff;\n  font-size: 22px;\n}\n.alert_to_be_select {\n  width: 50%;\n  border: 0 solid #d8d8d8;\n  margin: 0 10px;\n  padding: 16px;\n  overflow: auto;\n  border-width: 0 1px;\n}\n.alert_select_title {\n  overflow: hidden;\n}\n.alert_select_left.name {\n  color: #409eff;\n}\n.alert_select_right {\n  float: right;\n}\n.alert_select_right .el-checkbox {\n  margin-right: 10px;\n}\n.alert_select_right .el-checkbox:last-child {\n  margin-right: 0;\n}\n.alert_select_right .el-checkbox__label {\n  padding-left: 5px;\n}\n/**绿色勾*/\n.myicon-tick-checked {\n  display: inline-block;\n  margin-right: 20px;\n  cursor: pointer;\n  width: 30px;\n  height: 30px;\n  border-radius: 50%;\n  font-size: 12px;\n  text-align: center;\n  line-height: 30px;\n  margin-right: 10px;\n  position: relative;\n  background-color: #1f64a3;\n}\n.myicon-tick-checked:before,\n.myicon-tick-checked:after {\n  content: '';\n  pointer-events: none;\n  position: absolute;\n  color: white;\n  border: 1px solid;\n  background-color: white;\n}\n.myicon-tick-checked:before {\n  width: 2px;\n  height: 2px;\n  left: 28%;\n  top: 48%;\n  transform: skew(0deg, 60deg);\n  -ms-transform: skew(0deg, 60deg);\n  -webkit-transform: skew(0deg, 60deg);\n}\n.myicon-tick-checked:after {\n  width: 8px;\n  height: 2px;\n  left: 41%;\n  top: 43%;\n  transform: skew(0deg, -60deg);\n  -ms-transform: skew(0deg, -60deg);\n  -webkit-transform: skew(0deg, -40deg);\n}\n.myAvatar {\n  height: 30px;\n  width: 30px;\n  border-radius: 50%;\n  margin-top: -4px;\n}\n.serchButtonAndText {\n  margin-left: -57px;\n  margin-top: 1px;\n  padding-bottom: 9px;\n  padding-top: 9px;\n}\n.serchIcon {\n  width: 100%;\n  box-sizing: border-box;\n  border: 2px solid #ccc;\n  border-radius: 4px;\n  font-size: 14px;\n  background-color: white;\n  background-position: 10px 7px;\n  background-repeat: no-repeat;\n  padding: 7px 57px 7px 7px;\n}\n.alert_select_list li {\n  display: inline-block;\n  margin-right: 20px;\n  margin-bottom: 10px;\n  cursor: pointer;\n}\n.alert_select_list li .alert_select_icon {\n  display: inline-block;\n  width: 30px;\n  height: 30px;\n  background: #409eff;\n  color: #fff;\n  border-radius: 50%;\n  font-size: 12px;\n  text-align: center;\n  line-height: 30px;\n  margin-right: 10px;\n}\n.alert_select_list li .alert_select_icon .close_icon {\n  display: none;\n}\n.alert_select_list li .alert_select_icon:hover .close_icon {\n  display: inline-block;\n}\n.alert_select_list li .alert_select_icon:hover .name_icon {\n  display: none;\n}\n.alert_select_list li .alert_select_name {\n  display: inline-block;\n  vertical-align: middle;\n}\n.alert_select_list li .alert_select_name b,\n.alert_select_list li .alert_select_name i {\n  display: block;\n  font-style: normal;\n  font-weight: normal;\n}\n.alert_select_list li .alert_select_name i {\n  font-size: 12px;\n  margin-top: -5px;\n  color: #999;\n}\n.alert_clear {\n  color: red;\n  cursor: pointer;\n}\n.alert_selected_number {\n  color: #409eff;\n}\n"]}, media: undefined });
+        inject("data-v-7894ac6a_0", { source: ".alert {\n  width: 100%;\n  height: 100%;\n  position: fixed;\n  left: 0;\n  top: 0;\n  z-index: 20;\n}\n.alert .alert_mask {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n  background-color: rgba(0, 0, 0, 0.5);\n}\n.alert .alert_con {\n  position: absolute;\n  left: 50%;\n  top: 45%;\n  width: 60%;\n  transform: translate(-50%, -50%);\n  background-color: #fff;\n  overflow: hidden;\n}\n.alert .alert_head {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 17px 20px;\n  font-size: 16px;\n  background: #f2f2f2;\n  border-bottom: 1px solid #c3c3c3;\n}\n.alert .alert_close {\n  color: #909399;\n  cursor: pointer;\n}\n.alert .alert_close:hover {\n  color: #4090e2;\n}\n.alert-view .alert_body {\n  display: flex;\n  height: 400px;\n}\n.alert .alert_tree {\n  width: 30%;\n  padding: 16px;\n  overflow-y: auto;\n}\n.alert .alert_select {\n  width: 50%;\n  margin-left: -1px;\n  padding: 16px;\n  overflow-y: auto;\n  position: relative;\n}\n.alert .alert_bind {\n  position: absolute;\n  right: 0;\n  top: 50%;\n  width: 44px;\n  transform: translateY(-50%);\n}\n.alert .alert_foot {\n  text-align: right;\n  padding: 10px 20px;\n  background: #f2f2f2;\n  border-top: 1px solid #c3c3c3;\n}\n.alert .m-icon {\n  background: #ccc;\n  width: 30px;\n  height: 30px;\n  text-align: center;\n  line-height: 30px;\n  color: #fff;\n  font-size: 22px;\n}\n.alert_to_be_select {\n  width: 50%;\n  border: 0 solid #d8d8d8;\n  margin: 0 10px;\n  padding: 16px;\n  overflow: auto;\n  border-width: 0 1px;\n}\n.alert_select_title {\n  overflow: hidden;\n}\n.alert_select_left.name {\n  color: #409eff;\n}\n.alert_select_right {\n  float: right;\n}\n.alert_select_right .el-checkbox {\n  margin-right: 10px;\n}\n.alert_select_right .el-checkbox:last-child {\n  margin-right: 0;\n}\n.alert_select_right .el-checkbox__label {\n  padding-left: 5px;\n}\n/**绿色勾*/\n.myicon-tick-checked {\n  display: inline-block;\n  margin-right: 20px;\n  cursor: pointer;\n  width: 30px;\n  height: 30px;\n  border-radius: 50%;\n  font-size: 12px;\n  text-align: center;\n  line-height: 30px;\n  margin-right: 10px;\n  position: relative;\n  background-color: #1f64a3;\n}\n.myicon-tick-checked:before,\n.myicon-tick-checked:after {\n  content: '';\n  pointer-events: none;\n  position: absolute;\n  color: white;\n  border: 1px solid;\n  background-color: white;\n}\n.myicon-tick-checked:before {\n  width: 2px;\n  height: 2px;\n  left: 28%;\n  top: 48%;\n  transform: skew(0deg, 60deg);\n  -ms-transform: skew(0deg, 60deg);\n  -webkit-transform: skew(0deg, 60deg);\n}\n.myicon-tick-checked:after {\n  width: 8px;\n  height: 2px;\n  left: 41%;\n  top: 43%;\n  transform: skew(0deg, -60deg);\n  -ms-transform: skew(0deg, -60deg);\n  -webkit-transform: skew(0deg, -40deg);\n}\n.myAvatar {\n  height: 30px;\n  width: 30px;\n  border-radius: 50%;\n  margin-top: -4px;\n}\n.serchButtonAndText {\n  margin-left: -57px;\n  margin-top: 1px;\n  padding-bottom: 9px;\n  padding-top: 9px;\n}\n.serchIcon {\n  width: 100%;\n  box-sizing: border-box;\n  border: 2px solid #ccc;\n  border-radius: 4px;\n  font-size: 14px;\n  background-color: white;\n  background-position: 10px 7px;\n  background-repeat: no-repeat;\n  padding: 7px 57px 7px 7px;\n}\n.alert_select_list li {\n  display: inline-block;\n  margin-right: 20px;\n  margin-bottom: 10px;\n  cursor: pointer;\n}\n.alert_select_list li .alert_select_icon {\n  display: inline-block;\n  width: 30px;\n  height: 30px;\n  background: #409eff;\n  color: #fff;\n  border-radius: 50%;\n  font-size: 12px;\n  text-align: center;\n  line-height: 30px;\n  margin-right: 10px;\n}\n.alert_select_list li .alert_select_icon .close_icon {\n  display: none;\n}\n.alert_select_list li .alert_select_icon:hover .close_icon {\n  display: inline-block;\n}\n.alert_select_list li .alert_select_icon:hover .name_icon {\n  display: none;\n}\n.alert_select_list li .alert_select_name {\n  display: inline-block;\n  vertical-align: middle;\n}\n.alert_select_list li .alert_select_name b,\n.alert_select_list li .alert_select_name i {\n  display: block;\n  font-style: normal;\n  font-weight: normal;\n}\n.alert_select_list li .alert_select_name i {\n  font-size: 12px;\n  margin-top: -5px;\n  color: #999;\n}\n.alert_clear {\n  color: red;\n  cursor: pointer;\n}\n.alert_selected_number {\n  color: #409eff;\n}\n", map: {"version":3,"sources":["Index.vue"],"names":[],"mappings":"AAAA;EACE,WAAW;EACX,YAAY;EACZ,eAAe;EACf,OAAO;EACP,MAAM;EACN,WAAW;AACb;AACA;EACE,WAAW;EACX,YAAY;EACZ,kBAAkB;EAClB,OAAO;EACP,MAAM;EACN,oCAAoC;AACtC;AACA;EACE,kBAAkB;EAClB,SAAS;EACT,QAAQ;EACR,UAAU;EACV,gCAAgC;EAChC,sBAAsB;EACtB,gBAAgB;AAClB;AACA;EACE,aAAa;EACb,8BAA8B;EAC9B,mBAAmB;EACnB,kBAAkB;EAClB,eAAe;EACf,mBAAmB;EACnB,gCAAgC;AAClC;AACA;EACE,cAAc;EACd,eAAe;AACjB;AACA;EACE,cAAc;AAChB;AACA;EACE,aAAa;EACb,aAAa;AACf;AACA;EACE,UAAU;EACV,aAAa;EACb,gBAAgB;AAClB;AACA;EACE,UAAU;EACV,iBAAiB;EACjB,aAAa;EACb,gBAAgB;EAChB,kBAAkB;AACpB;AACA;EACE,kBAAkB;EAClB,QAAQ;EACR,QAAQ;EACR,WAAW;EACX,2BAA2B;AAC7B;AACA;EACE,iBAAiB;EACjB,kBAAkB;EAClB,mBAAmB;EACnB,6BAA6B;AAC/B;AACA;EACE,gBAAgB;EAChB,WAAW;EACX,YAAY;EACZ,kBAAkB;EAClB,iBAAiB;EACjB,WAAW;EACX,eAAe;AACjB;AACA;EACE,UAAU;EACV,uBAAuB;EACvB,cAAc;EACd,aAAa;EACb,cAAc;EACd,mBAAmB;AACrB;AACA;EACE,gBAAgB;AAClB;AACA;EACE,cAAc;AAChB;AACA;EACE,YAAY;AACd;AACA;EACE,kBAAkB;AACpB;AACA;EACE,eAAe;AACjB;AACA;EACE,iBAAiB;AACnB;AACA,OAAO;AACP;EACE,qBAAqB;EACrB,kBAAkB;EAClB,eAAe;EACf,WAAW;EACX,YAAY;EACZ,kBAAkB;EAClB,eAAe;EACf,kBAAkB;EAClB,iBAAiB;EACjB,kBAAkB;EAClB,kBAAkB;EAClB,yBAAyB;AAC3B;AACA;;EAEE,WAAW;EACX,oBAAoB;EACpB,kBAAkB;EAClB,YAAY;EACZ,iBAAiB;EACjB,uBAAuB;AACzB;AACA;EACE,UAAU;EACV,WAAW;EACX,SAAS;EACT,QAAQ;EACR,4BAA4B;EAC5B,gCAAgC;EAChC,oCAAoC;AACtC;AACA;EACE,UAAU;EACV,WAAW;EACX,SAAS;EACT,QAAQ;EACR,6BAA6B;EAC7B,iCAAiC;EACjC,qCAAqC;AACvC;AACA;EACE,YAAY;EACZ,WAAW;EACX,kBAAkB;EAClB,gBAAgB;AAClB;AACA;EACE,kBAAkB;EAClB,eAAe;EACf,mBAAmB;EACnB,gBAAgB;AAClB;AACA;EACE,WAAW;EACX,sBAAsB;EACtB,sBAAsB;EACtB,kBAAkB;EAClB,eAAe;EACf,uBAAuB;EACvB,6BAA6B;EAC7B,4BAA4B;EAC5B,yBAAyB;AAC3B;AACA;EACE,qBAAqB;EACrB,kBAAkB;EAClB,mBAAmB;EACnB,eAAe;AACjB;AACA;EACE,qBAAqB;EACrB,WAAW;EACX,YAAY;EACZ,mBAAmB;EACnB,WAAW;EACX,kBAAkB;EAClB,eAAe;EACf,kBAAkB;EAClB,iBAAiB;EACjB,kBAAkB;AACpB;AACA;EACE,aAAa;AACf;AACA;EACE,qBAAqB;AACvB;AACA;EACE,aAAa;AACf;AACA;EACE,qBAAqB;EACrB,sBAAsB;AACxB;AACA;;EAEE,cAAc;EACd,kBAAkB;EAClB,mBAAmB;AACrB;AACA;EACE,eAAe;EACf,gBAAgB;EAChB,WAAW;AACb;AACA;EACE,UAAU;EACV,eAAe;AACjB;AACA;EACE,cAAc;AAChB","file":"Index.vue","sourcesContent":[".alert {\n  width: 100%;\n  height: 100%;\n  position: fixed;\n  left: 0;\n  top: 0;\n  z-index: 20;\n}\n.alert .alert_mask {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n  background-color: rgba(0, 0, 0, 0.5);\n}\n.alert .alert_con {\n  position: absolute;\n  left: 50%;\n  top: 45%;\n  width: 60%;\n  transform: translate(-50%, -50%);\n  background-color: #fff;\n  overflow: hidden;\n}\n.alert .alert_head {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 17px 20px;\n  font-size: 16px;\n  background: #f2f2f2;\n  border-bottom: 1px solid #c3c3c3;\n}\n.alert .alert_close {\n  color: #909399;\n  cursor: pointer;\n}\n.alert .alert_close:hover {\n  color: #4090e2;\n}\n.alert-view .alert_body {\n  display: flex;\n  height: 400px;\n}\n.alert .alert_tree {\n  width: 30%;\n  padding: 16px;\n  overflow-y: auto;\n}\n.alert .alert_select {\n  width: 50%;\n  margin-left: -1px;\n  padding: 16px;\n  overflow-y: auto;\n  position: relative;\n}\n.alert .alert_bind {\n  position: absolute;\n  right: 0;\n  top: 50%;\n  width: 44px;\n  transform: translateY(-50%);\n}\n.alert .alert_foot {\n  text-align: right;\n  padding: 10px 20px;\n  background: #f2f2f2;\n  border-top: 1px solid #c3c3c3;\n}\n.alert .m-icon {\n  background: #ccc;\n  width: 30px;\n  height: 30px;\n  text-align: center;\n  line-height: 30px;\n  color: #fff;\n  font-size: 22px;\n}\n.alert_to_be_select {\n  width: 50%;\n  border: 0 solid #d8d8d8;\n  margin: 0 10px;\n  padding: 16px;\n  overflow: auto;\n  border-width: 0 1px;\n}\n.alert_select_title {\n  overflow: hidden;\n}\n.alert_select_left.name {\n  color: #409eff;\n}\n.alert_select_right {\n  float: right;\n}\n.alert_select_right .el-checkbox {\n  margin-right: 10px;\n}\n.alert_select_right .el-checkbox:last-child {\n  margin-right: 0;\n}\n.alert_select_right .el-checkbox__label {\n  padding-left: 5px;\n}\n/**绿色勾*/\n.myicon-tick-checked {\n  display: inline-block;\n  margin-right: 20px;\n  cursor: pointer;\n  width: 30px;\n  height: 30px;\n  border-radius: 50%;\n  font-size: 12px;\n  text-align: center;\n  line-height: 30px;\n  margin-right: 10px;\n  position: relative;\n  background-color: #1f64a3;\n}\n.myicon-tick-checked:before,\n.myicon-tick-checked:after {\n  content: '';\n  pointer-events: none;\n  position: absolute;\n  color: white;\n  border: 1px solid;\n  background-color: white;\n}\n.myicon-tick-checked:before {\n  width: 2px;\n  height: 2px;\n  left: 28%;\n  top: 48%;\n  transform: skew(0deg, 60deg);\n  -ms-transform: skew(0deg, 60deg);\n  -webkit-transform: skew(0deg, 60deg);\n}\n.myicon-tick-checked:after {\n  width: 8px;\n  height: 2px;\n  left: 41%;\n  top: 43%;\n  transform: skew(0deg, -60deg);\n  -ms-transform: skew(0deg, -60deg);\n  -webkit-transform: skew(0deg, -40deg);\n}\n.myAvatar {\n  height: 30px;\n  width: 30px;\n  border-radius: 50%;\n  margin-top: -4px;\n}\n.serchButtonAndText {\n  margin-left: -57px;\n  margin-top: 1px;\n  padding-bottom: 9px;\n  padding-top: 9px;\n}\n.serchIcon {\n  width: 100%;\n  box-sizing: border-box;\n  border: 2px solid #ccc;\n  border-radius: 4px;\n  font-size: 14px;\n  background-color: white;\n  background-position: 10px 7px;\n  background-repeat: no-repeat;\n  padding: 7px 57px 7px 7px;\n}\n.alert_select_list li {\n  display: inline-block;\n  margin-right: 20px;\n  margin-bottom: 10px;\n  cursor: pointer;\n}\n.alert_select_list li .alert_select_icon {\n  display: inline-block;\n  width: 30px;\n  height: 30px;\n  background: #409eff;\n  color: #fff;\n  border-radius: 50%;\n  font-size: 12px;\n  text-align: center;\n  line-height: 30px;\n  margin-right: 10px;\n}\n.alert_select_list li .alert_select_icon .close_icon {\n  display: none;\n}\n.alert_select_list li .alert_select_icon:hover .close_icon {\n  display: inline-block;\n}\n.alert_select_list li .alert_select_icon:hover .name_icon {\n  display: none;\n}\n.alert_select_list li .alert_select_name {\n  display: inline-block;\n  vertical-align: middle;\n}\n.alert_select_list li .alert_select_name b,\n.alert_select_list li .alert_select_name i {\n  display: block;\n  font-style: normal;\n  font-weight: normal;\n}\n.alert_select_list li .alert_select_name i {\n  font-size: 12px;\n  margin-top: -5px;\n  color: #999;\n}\n.alert_clear {\n  color: red;\n  cursor: pointer;\n}\n.alert_selected_number {\n  color: #409eff;\n}\n"]}, media: undefined });
 
       };
       /* scoped */

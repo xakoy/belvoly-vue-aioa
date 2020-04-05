@@ -12,38 +12,45 @@
                 </div>
                 <div class="alert_body">
                     <div class="alert_tree tree-color" id="alert_tree">
-                        <el-row style="width:100%">
-                            <el-col :span="23">
-                                <input v-model="selectUser" class="serchIcon" @keyup.enter="keyupSubmit(event)" placeholder="用户名称\账号" />
-                            </el-col>
-                            <el-col :span="1">
-                                <el-button title="查询用户" class="serchButtonAndText" @click="buttonSearch(event)">
-                                    <i class="fc fc-search"></i>
-                                </el-button>
-                            </el-col>
-                        </el-row>
+                        <el-tabs v-model="activeTabName" @tab-click="tabClickHandler">
+                            <el-tab-pane label="本单位" name="unit">
+                                <el-row style="width:100%">
+                                    <el-col :span="23">
+                                        <input v-model="selectUser" class="serchIcon" @keyup.enter="keyupSubmit(event)" placeholder="用户名称\账号" />
+                                    </el-col>
+                                    <el-col :span="1">
+                                        <el-button title="查询用户" class="serchButtonAndText" @click="buttonSearch()">
+                                            <i class="fc fc-search"></i>
+                                        </el-button>
+                                    </el-col>
+                                </el-row>
 
-                        <el-tree
-                            ref="tree"
-                            :show-checkbox="isShowCheckBox"
-                            node-key="id"
-                            :props="props"
-                            lazy
-                            :default-expanded-keys="defaultExpandedKeys"
-                            :check-strictly="strictly"
-                            :load="loadNode"
-                            @node-click="handleNodeClick"
-                            @check-change="handleCheckChange"
-                        >
-                            <template v-slot="{ node }">
-                                <span style="font-size: 14px;">
-                                    <span style="padding-right: 3px;">
-                                        <i class="fc fc-company" />
-                                    </span>
-                                    <span>{{ node.label }}</span>
-                                </span>
-                            </template>
-                        </el-tree>
+                                <el-tree
+                                    ref="tree"
+                                    :show-checkbox="isShowCheckBox"
+                                    node-key="id"
+                                    :props="props"
+                                    lazy
+                                    :default-expanded-keys="defaultExpandedKeys"
+                                    :check-strictly="strictly"
+                                    :load="loadNode"
+                                    @node-click="handleNodeClick"
+                                    @check-change="handleCheckChange"
+                                >
+                                    <template v-slot="{ node }">
+                                        <span style="font-size: 14px;">
+                                            <span style="padding-right: 3px;">
+                                                <i class="fc fc-company" />
+                                            </span>
+                                            <span>{{ node.label }}</span>
+                                        </span>
+                                    </template>
+                                </el-tree>
+                            </el-tab-pane>
+                            <el-tab-pane label="全局" name="gloabl" v-if="isShowGlobal">
+                                全局
+                            </el-tab-pane>
+                        </el-tabs>
                     </div>
                     <div class="alert_to_be_select">
                         <div class="alert_select_title">
@@ -199,10 +206,15 @@ export default {
         visible: {
             type: Boolean,
             default: false
+        },
+        isShowGlobal: {
+            type: Boolean,
+            default: false
         }
     },
     data() {
         return {
+            activeTabName: 'unit',
             currentIndex: null,
             props: {
                 label: 'name',
@@ -268,6 +280,9 @@ export default {
         this.selectedObjectsOrg = JSON.parse(defaultOrg)
     },
     methods: {
+        tabClickHandler(tab) {
+            this.activeTabName = tab.name
+        },
         // 查询机构下的用户
         queryUserByOrgCode(orgCode) {
             this.toBeSelect = []
