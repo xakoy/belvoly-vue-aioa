@@ -17,6 +17,11 @@ const routes: RouteConfig[] = [
                 path: 'upload',
                 name: 'upload',
                 component: () => import('./views/Upload.vue')
+            },
+            {
+                path: 'choose',
+                name: 'choose',
+                component: () => import('./views/Choose.vue')
             }
         ]
     }

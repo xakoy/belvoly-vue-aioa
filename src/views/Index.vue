@@ -29,6 +29,10 @@ export default class Index extends Vue {
         {
             name: 'upload',
             path: 'upload'
+        },
+        {
+            name: 'choose',
+            path: 'choose'
         }
     ]
 

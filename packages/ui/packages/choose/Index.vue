@@ -179,7 +179,6 @@ import { services } from '@belvoly-vue-aioa/core'
 const { orgService, userService } = services
 
 export default {
-    name: 'OApicker',
     props: {
         title: {
             type: String,
