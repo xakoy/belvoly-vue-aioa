@@ -61,7 +61,7 @@ function getPicture(uid) {
  */
 function searchUsers(userUid, userName) {
     return request(`${config.apiHost}/bua/user/searchUsers`, {
-        method: 'GET',
+        method: 'POST',
         data: {
             userUid: userUid,
             userName: userName

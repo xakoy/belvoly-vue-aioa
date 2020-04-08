@@ -182,8 +182,13 @@
 </template>
 
 <script>
-import { services } from '@belvoly-vue-aioa/core'
+import { services, globalConfig } from '@belvoly-vue-aioa/core'
 const { orgService, userService } = services
+const config = {
+    api: {
+        baseURI: globalConfig.apiHost
+    }
+}
 
 export default {
     props: {
@@ -284,26 +289,23 @@ export default {
             this.activeTabName = tab.name
         },
         // 查询机构下的用户
-        queryUserByOrgCode(orgCode) {
+        async queryUserByOrgCode(orgCode) {
             this.toBeSelect = []
-            userService.queryByOrgCode(orgCode, ({ data }) => {
-                this.setChooseUser(data)
-            })
+            const { data } = await userService.queryByOrgCode(orgCode)
+            this.setChooseUser(data)
         },
         // 查询机构下穿透的用户集合
-        queryAllUsersByOrgCode(orgCode) {
+        async queryAllUsersByOrgCode(orgCode) {
             this.toBeSelect = []
-            userService.queryByOrgCodeAllUsers(orgCode, ({ data }) => {
-                this.setChooseUser(data)
-            })
+            const { data } = await userService.queryByOrgCodeAllUsers(orgCode)
+            this.setChooseUser(data)
         },
         // 查询过滤用户
-        queryUserBySearch() {
+        async queryUserBySearch() {
             this.toBeSelect = []
             this.toBeSelectOrgName = '用户查询'
-            userService.searchUsers(this.selectUser, this.selectUser, ({ data }) => {
-                this.setChooseUser(data)
-            })
+            const { data } = await userService.searchUsers(this.selectUser, this.selectUser)
+            this.setChooseUser(data)
         },
         // 设置可选的用户集合
         setChooseUser(data) {
@@ -347,75 +349,76 @@ export default {
             return newData
         },
         // 查询机构下一层子机构
-        queryChildren(orgCode, resolve, parentInfo) {
-            orgService.queryChildren(orgCode, ({ data }) => {
-                if (data) {
-                    const newData = this.convertDataDef(data)
-                    if (parentInfo) {
-                        this.defaultExpandedKeysId = orgCode
-                        this.defaultExpandedKeys = [orgCode]
-                        const convertData = [
-                            {
-                                id: parentInfo.orgCode,
-                                name: parentInfo.orgName,
-                                value: parentInfo.orgCode,
-                                type: 'org',
-                                leaf: false,
-                                data: parentInfo,
-                                children: [newData]
-                            }
-                        ]
-                        return resolve(convertData)
-                    } else {
-                        return resolve(newData)
-                    }
+        async queryChildren(orgCode, resolve, parentInfo) {
+            const { data } = await orgService.queryChildren(orgCode)
+            if (data) {
+                const newData = this.convertDataDef(data)
+                if (parentInfo) {
+                    this.defaultExpandedKeysId = orgCode
+                    this.defaultExpandedKeys = [orgCode]
+                    const convertData = [
+                        {
+                            id: parentInfo.orgCode,
+                            name: parentInfo.orgName,
+                            value: parentInfo.orgCode,
+                            type: 'org',
+                            leaf: false,
+                            data: parentInfo,
+                            children: [newData]
+                        }
+                    ]
+                    resolve(convertData)
+                } else {
+                    resolve(newData)
                 }
-            })
+            }
         },
-        loadSubNode(orgCode, resolve, mode) {
+        async loadSubNode(orgCode, resolve, mode) {
             if (mode === '1') {
                 // 查询本机构信息，并查询子机构信息
-                orgService.getOrgInfo(orgCode, ({ data }) => {
-                    if (data) this.queryChildren(orgCode, resolve, data)
-                })
-            } else this.queryChildren(orgCode, resolve, null) // 查询子机构信息
+                const { data } = await orgService.getOrgInfo(orgCode)
+                if (data) {
+                    await this.queryChildren(orgCode, resolve, data)
+                }
+            } else {
+                await this.queryChildren(orgCode, resolve, null) // 查询子机构信息
+            }
         },
         // 树的初始加载
-        loadNode(node, resolve) {
+        async loadNode(node, resolve) {
             const rootOrgCode = this.rootOrgCode
             if (node.level === 0 && rootOrgCode === '') {
-                orgService.getOrgRoot(({ data }) => {
-                    if (data) {
-                        this.queryChildren(data.orgCode, resolve, data)
-                    }
-                })
+                const { data } = await orgService.getOrgRoot()
+                if (data) {
+                    await this.queryChildren(data.orgCode, resolve, data)
+                }
             } else if (node.level === 0 && rootOrgCode !== '') {
-                this.loadSubNode(rootOrgCode, resolve, '1')
+                await this.loadSubNode(rootOrgCode, resolve, '1')
             } else {
                 const orgCode = node.data.value
-                this.loadSubNode(orgCode, resolve, '2')
+                await this.loadSubNode(orgCode, resolve, '2')
             }
         },
         // 节点点击事件
-        showDepartmentClick(val) {
+        async showDepartmentClick(val) {
             if (this.toBeSelectOrgName !== '用户查询' && this.toBeSelectOrgCode !== '') {
                 if (val) {
-                    this.queryAllUsersByOrgCode(this.toBeSelectOrgCode)
+                    await this.queryAllUsersByOrgCode(this.toBeSelectOrgCode)
                 } else {
-                    this.queryUserByOrgCode(this.toBeSelectOrgCode)
+                    await this.queryUserByOrgCode(this.toBeSelectOrgCode)
                 }
             }
         },
         // 节点点击事件
-        handleNodeClick(data) {
+        async handleNodeClick(data) {
             this.checkAll = false
             this.selectUser = ''
             this.toBeSelectOrgName = data.name
             this.toBeSelectOrgCode = data.value
             if (this.showDepartmentalUsers) {
-                this.queryAllUsersByOrgCode(data.value)
+                await this.queryAllUsersByOrgCode(data.value)
             } else {
-                this.queryUserByOrgCode(data.value)
+                await this.queryUserByOrgCode(data.value)
             }
         },
         // 单选模式下，数据清理
@@ -456,7 +459,7 @@ export default {
         },
         // 获取用户头像
         getNameIcon(userUid) {
-            const nameIcon = `${this.$config.get('api.baseURI')}/bua/avatar/getHeadPhoto?userUid=` + userUid
+            const nameIcon = `${config.api.baseURI}/bua/avatar/getHeadPhoto?userUid=` + userUid
             return nameIcon
         },
         // 获取机构头像
@@ -728,7 +731,18 @@ export default {
     left: 0;
     top: 0;
     z-index: 20;
+    text-align: left;
     //   display: none;
+
+    ul {
+        line-height: 24px;
+        padding: 0;
+        margin: 0;
+    }
+
+    li {
+        margin: 0;
+    }
 }
 
 .alert .alert_mask {
@@ -887,7 +901,6 @@ export default {
     height: 30px;
     width: 30px;
     border-radius: 50%;
-    margin-top: -4px;
 }
 
 .serchButtonAndText {
@@ -917,6 +930,7 @@ export default {
         margin-bottom: 10px;
         cursor: pointer;
         .alert_select_icon {
+            vertical-align: middle;
             display: inline-block;
             width: 30px;
             height: 30px;

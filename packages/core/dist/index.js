@@ -367,7 +367,7 @@
      */
     function searchUsers(userUid, userName) {
         return request(`${gloablConfig.apiHost}/bua/user/searchUsers`, {
-            method: 'GET',
+            method: 'POST',
             data: {
                 userUid: userUid,
                 userName: userName
