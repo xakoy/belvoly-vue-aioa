@@ -1,6 +1,6 @@
 {
   "name": "@belvoly-vue-aioa/core",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -16,7 +16,7 @@
     "rollup-plugin-vue": "^5.1.6"
   },
   "dependencies": {
-    "element-ui": "^2.13.0",
-    "axios": "^0.19.2"
+    "axios": "^0.19.2",
+    "element-ui": "^2.13.0"
   }
 }
