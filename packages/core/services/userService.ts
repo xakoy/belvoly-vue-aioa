@@ -1,6 +1,22 @@
 import { request } from '../utils/request'
 import config from '../config'
 
+export interface User {
+    userUid?: string
+    userName?: string
+    userFullName?: string
+    userEmail?: string
+    userEmailPublic?: string
+    userType?: string
+    userSex?: string
+    userLocked?: string
+    userSequence?: string
+    orgCode?: string
+    orgName?: string
+    mobilePhone?: string
+    officePhone?: string
+}
+
 /**
  * 查询我的下属
  * @method queryMySubordinates
@@ -60,7 +76,7 @@ function getPicture(uid) {
  * @param {*} callback
  */
 function searchUsers(userUid, userName) {
-    return request(`${config.apiHost}/bua/user/searchUsers`, {
+    return request<User[]>(`${config.apiHost}/bua/user/searchUsers`, {
         method: 'POST',
         data: {
             userUid: userUid,
@@ -76,7 +92,7 @@ function searchUsers(userUid, userName) {
  * @param {*} callback
  */
 function queryByOrgCodeAllUsers(orgCode) {
-    return request(`${config.apiHost}/bua/user/queryByOrgCodeAllUsers`, {
+    return request<User[]>(`${config.apiHost}/bua/user/queryByOrgCodeAllUsers`, {
         method: 'GET',
         data: {
             orgCode: orgCode,
@@ -99,7 +115,7 @@ function getUserUnits() {
  * @param {*} callback
  */
 const queryByOrgCode = function(orgCode) {
-    return request(`${config.apiHost}/bua/user/queryByOrgCode`, {
+    return request<User[]>(`${config.apiHost}/bua/user/queryByOrgCode`, {
         method: 'GET',
         data: {
             orgCode: orgCode

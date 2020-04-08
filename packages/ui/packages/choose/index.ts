@@ -1,3 +1,3 @@
-import ChoosePeopleOrOrg from './Index.vue'
+import ChoosePeopleOrOrg from './New.vue'
 
 export { ChoosePeopleOrOrg }

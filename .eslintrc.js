@@ -7,7 +7,7 @@ module.exports = {
     parserOptions: {
         parser: "@typescript-eslint/parser",
         ecmaFeatures: {
-            // jsx: false
+            jsx: false
         }
     },
     rules: {

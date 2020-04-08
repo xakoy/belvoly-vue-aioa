@@ -1,5 +1,23 @@
 import { request } from '../utils/request'
 import config from '../config'
+
+export interface Org {
+    orgName?: string
+    orgCode?: string
+    /**
+     * 组织类型
+     */
+    orgType?: string
+    /**
+     * 单位类型
+     */
+    unitType?: string
+    /**
+     * 排序号
+     */
+    orgSequence?: string
+}
+
 /**
  * 查询组织机构树
  * @method queryOrgTree
@@ -19,7 +37,7 @@ function queryOrgTree(orgCode) {
  * @method getOrgRoot
  */
 function getOrgRoot() {
-    return request(`${config.apiHost}/bua/org/root`)
+    return request<Org>(`${config.apiHost}/bua/org/root`)
 }
 
 /**
@@ -56,7 +74,17 @@ function getUnitInfo(userUid) {
  * @param {string} orgCode 机构标识
  */
 function queryChildren(orgCode) {
-    return request(`${config.apiHost}/bua/org/queryChildren`, {
+    return request<
+        {
+            orgName: string
+            orgCode: string
+            orgParentCode: string
+            orgType: string
+            orgSequence: string
+            orgParentName: string
+            hasChildOrg: boolean
+        }[]
+    >(`${config.apiHost}/bua/org/queryChildren`, {
         method: 'GET',
         data: {
             orgCode: orgCode

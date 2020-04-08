@@ -49,6 +49,27 @@
                             </el-tab-pane>
                             <el-tab-pane label="全局" name="gloabl" v-if="isShowGlobal">
                                 全局
+                                <el-tree
+                                    ref="globaltree"
+                                    :show-checkbox="isShowCheckBox"
+                                    node-key="id"
+                                    :props="props"
+                                    lazy
+                                    :default-expanded-keys="defaultExpandedKeys"
+                                    :check-strictly="strictly"
+                                    :load="loadGlobalNode"
+                                    @node-click="handleNodeClick"
+                                    @check-change="handleCheckChange"
+                                >
+                                    <template v-slot="{ node }">
+                                        <span style="font-size: 14px;">
+                                            <span style="padding-right: 3px;">
+                                                <i class="fc fc-company" />
+                                            </span>
+                                            <span>{{ node.label }}</span>
+                                        </span>
+                                    </template>
+                                </el-tree>
                             </el-tab-pane>
                         </el-tabs>
                     </div>
@@ -387,13 +408,26 @@ export default {
         // 树的初始加载
         async loadNode(node, resolve) {
             const rootOrgCode = this.rootOrgCode
-            if (node.level === 0 && rootOrgCode === '') {
+            if (node.level === 0) {
+                if (rootOrgCode) {
+                    await this.loadSubNode(rootOrgCode, resolve, '1')
+                } else {
+                    const { data } = await orgService.getOrgRoot()
+                    if (data) {
+                        await this.queryChildren(data.orgCode, resolve, data)
+                    }
+                }
+            } else {
+                const orgCode = node.data.value
+                await this.loadSubNode(orgCode, resolve, '2')
+            }
+        },
+        async loadGlobalNode(node, resolve) {
+            if (node.level === 0) {
                 const { data } = await orgService.getOrgRoot()
                 if (data) {
                     await this.queryChildren(data.orgCode, resolve, data)
                 }
-            } else if (node.level === 0 && rootOrgCode !== '') {
-                await this.loadSubNode(rootOrgCode, resolve, '1')
             } else {
                 const orgCode = node.data.value
                 await this.loadSubNode(orgCode, resolve, '2')
@@ -520,9 +554,13 @@ export default {
                 user.checked = false
             })
         },
-        handleClickClearOrg() {
+        clearSelectedOrgs() {
             this.$refs.tree.setCheckedKeys([])
+            this.$refs.globaltree.setCheckedKeys([])
             this.selectedObjectsOrg = []
+        },
+        handleClickClearOrg() {
+            this.clearSelectedOrgs()
         },
         handleClickConfirm() {
             this.selectedObjectsReturn = JSON.stringify(this.selectedObjects)
@@ -569,21 +607,21 @@ export default {
         // 清除节点数据、折叠节点
         clearSelected() {
             // 折叠所有节点
-            for (let i = 0; i < this.$refs.tree.store._getAllNodes().length; i++) {
-                this.$refs.tree.store._getAllNodes()[i].expanded = this.isexpand
-            }
+            // for (let i = 0; i < this.$refs.tree.store._getAllNodes().length; i++) {
+            //     this.$refs.tree.store._getAllNodes()[i].expanded = this.isexpand
+            // }
 
             this.defaultExpandedKeys = [this.defaultExpandedKeysId]
 
             // 节点滚动条置顶 scrollTo(x,y) 不是IE和Edge才滚动
-            const userAgent = navigator.userAgent
-            const isOpera = userAgent.indexOf('Opera') > -1
-            if (!(userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1 && !isOpera) && !(userAgent.indexOf('Edge') > -1) && !(userAgent.indexOf('rv:') > -1)) {
-                document.getElementById('alert_tree').scrollTo(0, 0)
-            }
+            // const userAgent = navigator.userAgent
+            // const isOpera = userAgent.indexOf('Opera') > -1
+            // if (!(userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1 && !isOpera) && !(userAgent.indexOf('Edge') > -1) && !(userAgent.indexOf('rv:') > -1)) {
+            //     document.getElementById('alert_tree').scrollTo(0, 0)
+            // }
 
-            // 清空选中的内容
-            this.$refs.tree.setCheckedKeys([])
+            this.clearSelectedOrgs()
+
             this.toBeSelect = []
             this.toBeSelectOrgName = ''
             this.showDepartmentalUsers = false
