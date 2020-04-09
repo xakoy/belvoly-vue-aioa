@@ -586,7 +586,7 @@ interface TreeNode {
         position: fixed;
         left: 0;
         top: 0;
-        z-index: 20;
+        z-index: 9999;
         text-align: left;
         line-height: 24px;
     }
