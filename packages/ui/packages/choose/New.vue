@@ -1,103 +1,106 @@
 <template>
-    <div class="alert" v-show="visible">
-        <div class="alert_mask" @click="handleClickMask"></div>
-        <div class="alert_con">
-            <div class="alert_head">
+    <div class="bv-choose-people_wrapper" v-show="visible">
+        <div class="bv-choose-people_mask" @click="handleClickMask"></div>
+        <div class="bv-choose-people">
+            <div class="bv-choose-people_head">
                 <div>{{ title }}</div>
-                <div class="alert_close fc fc-close" @click="handleClickClose"></div>
+                <div class="bv-choose-people_close fc fc-close" @click="handleClickClose"></div>
             </div>
-            <div class="alert-view">
+            <div class="bv-choose-people_view">
                 <div>
                     <slot name="header"></slot>
                 </div>
-                <div class="alert_body">
-                    <div class="alert_tree tree-color">
+                <div class="bv-choose-people_body">
+                    <div class="bv-choose-people_tree">
                         <el-tabs v-model="tab.activeTabName" @tab-click="tabClickHandler">
                             <el-tab-pane label="本单位" name="unit">
-                                <el-row style="width:100%">
-                                    <el-col :span="23">
-                                        <input v-model="searchText" class="serchIcon" @keyup.enter="keyupSubmit(event)" placeholder="用户名称\账号" />
-                                    </el-col>
-                                    <el-col :span="1">
-                                        <el-button title="查询用户" class="serchButtonAndText" @click="searchUnitUserHandler">
-                                            <i class="fc fc-search"></i>
-                                        </el-button>
-                                    </el-col>
-                                </el-row>
+                                <div class="bv-choose-people_treenav">
+                                    <div class="bv-choose-people_search">
+                                        <el-input v-model="searchText" @keyup.enter="keyupSubmit(event)" placeholder="用户名称\账号">
+                                            <template v-slot:append>
+                                                <el-button title="查询用户" class="bv-choose-people_search_button" @click="searchUnitUserHandler">
+                                                    <i class="fc fc-search"></i>
+                                                </el-button>
+                                            </template>
+                                        </el-input>
+                                    </div>
 
-                                <el-tree
-                                    ref="tree"
-                                    :show-checkbox="isShowCheckBox"
-                                    :expand-on-click-node="false"
-                                    node-key="id"
-                                    :props="{
-                                        label: 'name',
-                                        children: 'zones',
-                                        isLeaf: 'leaf'
-                                    }"
-                                    lazy
-                                    :default-expanded-keys="defaultExpandedKeys"
-                                    :check-strictly="true"
-                                    :load="loadUnitOrgs"
-                                    @node-click="handleTreeNodeClick"
-                                    @check-change="handleTreeNodeCheckChange"
-                                >
-                                    <template v-slot="{ node }">
-                                        <span style="font-size: 14px;">
-                                            <span style="padding-right: 3px;">
-                                                <i class="fc fc-company" />
+                                    <el-tree
+                                        ref="tree"
+                                        :show-checkbox="isShowCheckBox"
+                                        :expand-on-click-node="false"
+                                        node-key="id"
+                                        :props="{
+                                            label: 'name',
+                                            children: 'zones',
+                                            isLeaf: 'leaf'
+                                        }"
+                                        lazy
+                                        :default-expanded-keys="defaultExpandedKeys"
+                                        :check-strictly="true"
+                                        :load="loadUnitOrgs"
+                                        @node-click="handleTreeNodeClick"
+                                        @check-change="handleTreeNodeCheckChange"
+                                    >
+                                        <template v-slot="{ node }">
+                                            <span style="font-size: 14px;">
+                                                <span style="padding-right: 3px;">
+                                                    <i class="fc fc-company" />
+                                                </span>
+                                                <span>{{ node.label }}</span>
                                             </span>
-                                            <span>{{ node.label }}</span>
-                                        </span>
-                                    </template>
-                                </el-tree>
+                                        </template>
+                                    </el-tree>
+                                </div>
                             </el-tab-pane>
                             <el-tab-pane label="全局" name="gloabl" v-if="isShowGlobal">
-                                <el-tree
-                                    ref="globaltree"
-                                    :show-checkbox="isShowCheckBox"
-                                    node-key="id"
-                                    :expand-on-click-node="false"
-                                    :props="{
-                                        label: 'name',
-                                        children: 'zones',
-                                        isLeaf: 'leaf'
-                                    }"
-                                    lazy
-                                    :default-expanded-keys="defaultExpandedKeys"
-                                    :check-strictly="true"
-                                    :load="loadGlobalOrgs"
-                                    @node-click="handleTreeNodeClick"
-                                    @check-change="handleTreeNodeCheckChange"
-                                >
-                                    <template v-slot="{ node }">
-                                        <span style="font-size: 14px;">
-                                            <span style="padding-right: 3px;">
-                                                <i class="fc fc-company" />
+                                <div class="bv-choose-people_treenav">
+                                    <el-tree
+                                        ref="globaltree"
+                                        :show-checkbox="isShowCheckBox"
+                                        node-key="id"
+                                        :expand-on-click-node="false"
+                                        :props="{
+                                            label: 'name',
+                                            children: 'zones',
+                                            isLeaf: 'leaf'
+                                        }"
+                                        lazy
+                                        :default-expanded-keys="defaultExpandedKeys"
+                                        :check-strictly="true"
+                                        :load="loadGlobalOrgs"
+                                        @node-click="handleTreeNodeClick"
+                                        @check-change="handleTreeNodeCheckChange"
+                                    >
+                                        <template v-slot="{ node }">
+                                            <span style="font-size: 14px;">
+                                                <span style="padding-right: 3px;">
+                                                    <i class="fc fc-company" />
+                                                </span>
+                                                <span>{{ node.label }}</span>
                                             </span>
-                                            <span>{{ node.label }}</span>
-                                        </span>
-                                    </template>
-                                </el-tree>
+                                        </template>
+                                    </el-tree>
+                                </div>
                             </el-tab-pane>
                         </el-tabs>
                     </div>
-                    <div class="alert_to_be_select">
-                        <div class="alert_select_title">
-                            <span class="alert_select_left name">{{ currentSelectOrg ? currentSelectOrg.orgName : '' }}</span>
-                            <span class="alert_select_right checkbox-color">
+                    <div class="bv-choose-people_canselect">
+                        <div class="bv-choose-people_canselect_title">
+                            <span class="bv-choose-people_canselect_title_left bv-choose-people_canselect_title_primary">{{ currentSelectOrg ? currentSelectOrg.orgName : '' }}</span>
+                            <span class="bv-choose-people_canselect_title_right">
                                 <el-checkbox @change="showDepartmentClick" v-model="showDepartmentalUsers">显示子部门用户</el-checkbox>
                                 <!-- <el-checkbox v-model="checkAll" :disabled="checkAllDisabled">全选</el-checkbox> -->
                             </span>
                         </div>
-                        <div class="alert_select_peoples" style="overflow: auto;">
-                            <ul class="alert_select_list">
-                                <li v-for="(item, index) in canSelecteUsers" :key="index" @click="handleSelectUser(item, $event)">
-                                    <span :class="{ alert_select_icon: !item.checked, 'myicon-tick-checked': item.checked }" :style="{ color: item.checked ? '#1f64a3' : '' }">
+                        <div style="overflow: auto;">
+                            <ul class="bv-choose-people_canselect_list">
+                                <li class="bv-choose-people_select_item" v-for="(item, index) in canSelecteUsers" :key="index" @click="handleSelectUser(item, $event)">
+                                    <span :class="{ 'bv-choose-people_select_item_avatar': !item.checked, 'bv-choose-people_select_item_checked': item.checked }">
                                         <span v-show="item.checked">.</span>
-                                        <img v-show="!item.checked" :src="getUserIcon(item.data)" class="myAvatar" />
+                                        <img v-show="!item.checked" :src="getUserIcon(item.data)" />
                                     </span>
-                                    <span class="alert_select_name">
+                                    <span class="bv-choose-people_select_item_name">
                                         <b>{{ item.name }}</b>
                                         <i>{{ item.data.orgName }}</i>
                                     </span>
@@ -106,27 +109,29 @@
                         </div>
                     </div>
                     <template v-if="mode === 'orgAndUser'">
-                        <div class="alert_select" style="padding-left: 5px;">
-                            <div style="height:50%;">
-                                <div class="alert_select_title">
-                                    <span class="alert_select_left">
+                        <div class="bv-choose-people_select">
+                            <div style="height:50%;" class="bv-choose-people_selectbox">
+                                <div class="bv-choose-people_canselect_title">
+                                    <span class="bv-choose-people_canselect_title_left">
                                         已选用户：
-                                        <span class="alert_selected_number">{{ selectNumber }} 名</span>
+                                        <span class="bv-choose-people_canselect_title_primary">{{ selectNumber }} 名</span>
                                     </span>
-                                    <span class="alert_select_right" style="padding-right: 10px;">
-                                        <span class="alert_clear" @click="handleClearSelectedUsers">清空</span>
+                                    <span class="bv-choose-people_canselect_title_right" style="padding-right: 10px;">
+                                        <span class="bv-choose-people_canselect_clear" @click="handleClearSelectedUsers">清空</span>
                                     </span>
                                 </div>
-                                <div style=" height:88%;  padding-top: 3px; overflow: auto;">
-                                    <ul class="alert_select_list">
-                                        <li v-for="(item, index) in selectedUsers" :key="index">
-                                            <span class="alert_select_icon">
-                                                <span class="close_icon" @click="handleRemoveSelectedUser(item, index)" title="删除" style="font-size:large;margin-top: -2px;">x</span>
-                                                <span class="name_icon">
-                                                    <img :src="getUserIcon(item.data)" class="myAvatar" />
+                                <div class="bv-choose-people_selectbox_content">
+                                    <ul>
+                                        <li class="bv-choose-people_select_item" v-for="(item, index) in selectedUsers" :key="index">
+                                            <span class="bv-choose-people_select_item_avatar">
+                                                <span class="bv-choose-people_select_item_avatar_close" @click="handleRemoveSelectedUser(item, index)" title="删除">
+                                                    x
+                                                </span>
+                                                <span class="bv-choose-people_select_item_avatar_name">
+                                                    <img :src="getUserIcon(item.data)" />
                                                 </span>
                                             </span>
-                                            <span class="alert_select_name" @click="handleClick(index)">
+                                            <span class="bv-choose-people_select_item_name" @click="handleClick(index)">
                                                 <b>{{ item.name }}</b>
                                                 <i>{{ item.orgName }}</i>
                                             </span>
@@ -134,24 +139,26 @@
                                     </ul>
                                 </div>
                             </div>
-                            <div style="height:50%;">
-                                <div class="alert_select_title">
-                                    <span class="alert_select_left">
+                            <div style="height:50%;" class="bv-choose-people_selectbox">
+                                <div class="bv-choose-people_canselect_title">
+                                    <span class="bv-choose-people_canselect_title_left">
                                         已选机构：
-                                        <span class="alert_selected_number">{{ selectNumberOrg }} 个</span>
+                                        <span class="bv-choose-people_canselect_title_primary">{{ selectNumberOrg }} 个</span>
                                     </span>
-                                    <span class="alert_select_right" style="padding-right: 10px;">
-                                        <span class="alert_clear" @click="handleClearSelectedOrgs">清空</span>
+                                    <span class="bv-choose-people_canselect_title_right" style="padding-right: 10px;">
+                                        <span class="bv-choose-people_canselect_clear" @click="handleClearSelectedOrgs">清空</span>
                                     </span>
                                 </div>
-                                <div style=" height:88%;  padding-top: 3px; overflow: auto;">
-                                    <ul class="alert_select_list">
-                                        <li v-for="(item, index) in selectedOrgs" :key="index">
-                                            <span class="alert_select_icon">
-                                                <span class="close_icon" @click="handleClickRemoveOrg(item, index)" title="删除" style="font-size:large;margin-top: -2px;">x</span>
-                                                <span class="name_icon">{{ getOrgIcon(item.name) }}</span>
+                                <div class="bv-choose-people_selectbox_content">
+                                    <ul>
+                                        <li class="bv-choose-people_select_item" v-for="(item, index) in selectedOrgs" :key="index">
+                                            <span class="bv-choose-people_select_item_avatar">
+                                                <span class="bv-choose-people_select_item_avatar_close" @click="handleClickRemoveOrg(item, index)" title="删除">
+                                                    x
+                                                </span>
+                                                <span class="bv-choose-people_select_item_avatar_name">{{ getOrgIcon(item.name) }}</span>
                                             </span>
-                                            <span class="alert_select_name" @click="handleClick(index)">
+                                            <span class="bv-choose-people_select_item_name" @click="handleClick(index)">
                                                 <b>{{ item.name }}</b>
                                                 <i>{{ item.orgName }}</i>
                                             </span>
@@ -162,26 +169,28 @@
                         </div>
                     </template>
                     <template v-else>
-                        <div class="alert_select" style="padding-left: 5px;">
-                            <div class="alert_select_title">
-                                <span class="alert_select_left">
+                        <div class="bv-choose-people_selectbox">
+                            <div class="bv-choose-people_canselect_title">
+                                <span class="bv-choose-people_canselect_title_left">
                                     已选用户：
-                                    <span class="alert_selected_number">{{ selectNumber }} 名</span>
+                                    <span class="bv-choose-people_canselect_title_primary">{{ selectNumber }} 名</span>
                                 </span>
-                                <span class="alert_select_right" style="padding-right: 10px;">
-                                    <span class="alert_clear" @click="handleClearSelectedUsers">清空</span>
+                                <span class="bv-choose-people_canselect_title_right" style="padding-right: 10px;">
+                                    <span class="bv-choose-people_canselect_clear" @click="handleClearSelectedUsers">清空</span>
                                 </span>
                             </div>
-                            <div style="padding-top: 3px;">
-                                <ul class="alert_select_list">
-                                    <li v-for="(item, index) in selectedUsers" :key="index">
-                                        <span class="alert_select_icon">
-                                            <span class="close_icon" @click="handleRemoveSelectedUser(item, index)" title="删除" style="font-size:large;margin-top: -2px;">x</span>
+                            <div class="bv-choose-people_selectbox_content">
+                                <ul>
+                                    <li class="bv-choose-people_select_item" v-for="(item, index) in selectedUsers" :key="index">
+                                        <span class="bv-choose-people_select_item_avatar">
+                                            <span class="bv-choose-people_select_item_avatar_close" @click="handleRemoveSelectedUser(item, index)" title="删除">
+                                                x
+                                            </span>
                                             <span class="name_icon">
                                                 <img :src="getUserIcon(item.data)" class="myAvatar" />
                                             </span>
                                         </span>
-                                        <span class="alert_select_name" @click="handleClick(index)">
+                                        <span class="bv-choose-people_select_item_name" @click="handleClick(index)">
                                             <b>{{ item.name }}</b>
                                             <i>{{ item.orgName }}</i>
                                         </span>
@@ -195,7 +204,7 @@
                     <slot name="footer"></slot>
                 </div>
             </div>
-            <div class="alert_foot">
+            <div class="bv-choose-people_foot">
                 <el-button type="primary" @click="handleClickConfirm">确定</el-button>
                 <el-button @click="handleClickClose">取消</el-button>
             </div>
@@ -570,18 +579,18 @@ interface TreeNode {
 </script>
 
 <style lang="less">
-.alert {
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    left: 0;
-    top: 0;
-    z-index: 20;
-    text-align: left;
-    //   display: none;
-
-    ul {
+.bv-choose-people {
+    &_wrapper {
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 20;
+        text-align: left;
         line-height: 24px;
+    }
+    ul {
         padding: 0;
         margin: 0;
     }
@@ -589,17 +598,6 @@ interface TreeNode {
     li {
         margin: 0;
     }
-}
-
-.alert .alert_mask {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    left: 0;
-    top: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-.alert .alert_con {
     position: absolute;
     left: 50%;
     top: 45%;
@@ -608,174 +606,134 @@ interface TreeNode {
     transform: translate(-50%, -50%);
     background-color: #fff;
     overflow: hidden;
-}
-.alert .alert_head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 17px 20px;
-    font-size: 16px;
-    background: #f2f2f2;
-    border-bottom: 1px solid #c3c3c3;
-}
-.alert .alert_close {
-    color: #909399;
-    cursor: pointer;
-}
-.alert .alert_close:hover {
-    color: #4090e2;
-}
-.alert-view .alert_body {
-    display: flex;
-    height: 400px;
-}
-.alert .alert_tree {
-    width: 30%;
-    padding: 16px;
-    overflow-y: auto;
-}
-.alert .alert_select {
-    width: 50%;
-    margin-left: -1px;
-    padding: 16px;
-    overflow-y: auto;
-    position: relative;
-}
 
-.alert .alert_bind {
-    position: absolute;
-    right: 0;
-    top: 50%;
-    width: 44px;
-    transform: translateY(-50%);
-}
-.alert .alert_foot {
-    text-align: right;
-    padding: 10px 20px;
-    background: #f2f2f2;
-    border-top: 1px solid #c3c3c3;
-}
-
-.alert .m-icon {
-    background: #ccc;
-    width: 30px;
-    height: 30px;
-    text-align: center;
-    line-height: 30px;
-    color: #fff;
-    font-size: 22px;
-}
-.alert_to_be_select {
-    width: 50%;
-    border: 0 solid #d8d8d8;
-    margin: 0 10px;
-    padding: 16px;
-    overflow: auto;
-    border-width: 0 1px;
-}
-.alert_select {
-    &_title {
-        overflow: hidden;
+    &_mask {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        background-color: rgba(0, 0, 0, 0.5);
     }
-    &_left {
-        &.name {
-            color: #409eff;
+
+    &_head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 17px 20px;
+        font-size: 16px;
+        background: #f2f2f2;
+        border-bottom: 1px solid #c3c3c3;
+    }
+    &_close {
+        color: #909399;
+        cursor: pointer;
+        &:hover {
+            color: #4090e2;
         }
     }
-    &_right {
-        float: right;
-        .el-checkbox {
-            margin-right: 10px;
-            &:last-child {
-                margin-right: 0;
+
+    &_body {
+        display: flex;
+        height: 400px;
+    }
+    &_tree {
+        width: 30%;
+        min-width: 200px;
+        .el-tabs {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            .el-tabs__content {
+                flex: 1;
+            }
+            .el-tab-pane {
+                height: 100%;
+            }
+            .el-tabs__nav-wrap {
+                padding-left: 20px;
             }
         }
-        .el-checkbox__label {
-            padding-left: 5px;
+    }
+
+    &_treenav {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+
+        .el-tree {
+            flex: 1;
+            overflow: auto;
+        }
+        .el-tree-node__children {
+            overflow: visible;
         }
     }
-}
 
-/**绿色勾*/
-.myicon-tick-checked {
-    display: inline-block;
-    margin-right: 20px;
-    // margin-bottom: 10px;
-    cursor: pointer;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    font-size: 12px;
-    text-align: center;
-    line-height: 30px;
-    margin-right: 10px;
-    position: relative;
-    background-color: #1f64a3;
-}
+    &_search {
+        padding: 10px;
+        padding-top: 0;
+    }
+    &_search_button {
+        margin-left: -57px;
+        margin-top: 1px;
+        padding-bottom: 9px;
+        padding-top: 9px;
+    }
 
-.myicon-tick-checked:before,
-.myicon-tick-checked:after {
-    content: '';
-    pointer-events: none;
-    position: absolute;
-    color: white;
-    border: 1px solid;
-    background-color: white;
-}
+    &_selectbox {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
 
-.myicon-tick-checked:before {
-    width: 2px;
-    height: 2px;
-    left: 28%;
-    top: 48%;
-    transform: skew(0deg, 60deg);
-    -ms-transform: skew(0deg, 60deg);
-    -webkit-transform: skew(0deg, 60deg);
-}
+        &_content {
+            flex: 1;
+            overflow: auto;
+            padding: 5px 0;
+            box-sizing: border-box;
+        }
+    }
 
-.myicon-tick-checked:after {
-    width: 8px;
-    height: 2px;
-    left: 41%;
-    top: 43%;
-    transform: skew(0deg, -60deg);
-    -ms-transform: skew(0deg, -60deg);
-    -webkit-transform: skew(0deg, -40deg);
-}
+    &_canselect {
+        width: 50%;
+        border: 0 solid #d8d8d8;
+        padding: 16px;
+        overflow: auto;
+        border-width: 0 1px;
 
-.myAvatar {
-    height: 30px;
-    width: 30px;
-    border-radius: 50%;
-}
-
-.serchButtonAndText {
-    margin-left: -57px;
-    margin-top: 1px;
-    padding-bottom: 9px;
-    padding-top: 9px;
-}
-
-.serchIcon {
-    width: 100%;
-    box-sizing: border-box;
-    border: 2px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-    background-color: white;
-    // background-image: url("~@/assets/img/searchicon.png");
-    background-position: 10px 7px;
-    background-repeat: no-repeat;
-    padding: 7px 57px 7px 7px;
-}
-
-.alert_select_list {
-    li {
+        &_clear {
+            color: red;
+            cursor: pointer;
+        }
+        &_title {
+            overflow: hidden;
+            &_primary {
+                color: #409eff;
+            }
+            &_left {
+                float: left;
+            }
+            &_right {
+                float: right;
+                .el-checkbox {
+                    margin-right: 10px;
+                    &:last-child {
+                        margin-right: 0;
+                    }
+                }
+                .el-checkbox__label {
+                    padding-left: 5px;
+                }
+            }
+        }
+    }
+    &_select_item {
         display: inline-block;
         margin-right: 20px;
         margin-bottom: 10px;
         cursor: pointer;
-        .alert_select_icon {
+
+        &_avatar {
             vertical-align: middle;
             display: inline-block;
             width: 30px;
@@ -787,20 +745,26 @@ interface TreeNode {
             text-align: center;
             line-height: 30px;
             margin-right: 10px;
-            .close_icon {
-                display: none;
+            img {
+                height: 30px;
+                width: 30px;
+                border-radius: 50%;
             }
 
-            &:hover {
-                .close_icon {
-                    display: inline-block;
-                }
-                .name_icon {
-                    display: none;
-                }
+            &_close {
+                display: none;
+                font-size: large;
+                margin-top: -2px;
+            }
+            &:hover &_close {
+                display: inline-block;
+            }
+
+            &:hover &_name {
+                display: none;
             }
         }
-        .alert_select_name {
+        &_name {
             display: inline-block;
             vertical-align: middle;
             b,
@@ -816,12 +780,67 @@ interface TreeNode {
             }
         }
     }
+
+    &_select {
+        width: 50%;
+        margin-left: -1px;
+        padding: 16px;
+        overflow-y: auto;
+        position: relative;
+        padding-left: 5px;
+    }
+
+    &_foot {
+        text-align: right;
+        padding: 10px 20px;
+        background: #f2f2f2;
+        border-top: 1px solid #c3c3c3;
+    }
 }
-.alert_clear {
-    color: red;
+
+.bv-choose-people_select_item_checked {
+    display: inline-block;
+    margin-right: 20px;
+    // margin-bottom: 10px;
     cursor: pointer;
-}
-.alert_selected_number {
-    color: #409eff;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: 12px;
+    text-align: center;
+    line-height: 30px;
+    margin-right: 10px;
+    position: relative;
+    background-color: #1f64a3;
+    color: #1f64a3;
+
+    &:before,
+    &:after {
+        content: '';
+        pointer-events: none;
+        position: absolute;
+        color: white;
+        border: 1px solid;
+        background-color: white;
+    }
+
+    &:before {
+        width: 2px;
+        height: 2px;
+        left: 28%;
+        top: 48%;
+        transform: skew(0deg, 60deg);
+        -ms-transform: skew(0deg, 60deg);
+        -webkit-transform: skew(0deg, 60deg);
+    }
+    &:after {
+        width: 8px;
+        height: 2px;
+        left: 41%;
+        top: 43%;
+        transform: skew(0deg, -60deg);
+        -ms-transform: skew(0deg, -60deg);
+        -webkit-transform: skew(0deg, -40deg);
+    }
 }
 </style>
