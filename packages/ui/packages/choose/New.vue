@@ -108,7 +108,7 @@
                             </ul>
                         </div>
                     </div>
-                    <template v-if="mode === 'orgAndUser'">
+                    <template v-if="!isOnlyChooseUser">
                         <div class="bv-choose-people_select">
                             <div style="height:50%;" class="bv-choose-people_selectbox">
                                 <div class="bv-choose-people_canselect_title">
@@ -235,7 +235,6 @@ export default class New extends Vue {
     @Prop({}) defaultUsers: NameValue[]
     @Prop({}) defaultOrgs: NameValue[]
 
-    isShowCheckBox = true
     defaultExpandedKeys = []
 
     /**
@@ -275,6 +274,18 @@ export default class New extends Vue {
      * 搜索框显示文本
      */
     searchText = ''
+
+    get isShowCheckBox() {
+        return !this.isOnlyChooseUser
+    }
+
+    get isOnlyChooseUser() {
+        return this.mode !== 'orgAndUser'
+    }
+
+    get isSingleMode() {
+        return this.selectionMode === 'single'
+    }
 
     get selectNumber() {
         return this.selectedUsers.length
@@ -370,10 +381,6 @@ export default class New extends Vue {
     async searchUnitUserHandler() {
         const { data } = await userService.searchUsers(this.searchText, this.searchText)
         this.setChooseUser(data)
-    }
-
-    get isSingleMode() {
-        return this.selectionMode === 'single'
     }
 
     async handleTreeNodeClick(data: TreeNode) {
