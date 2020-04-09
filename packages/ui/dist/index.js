@@ -546,6 +546,12 @@
             if (this.defaultOrgs) {
                 this.selectedOrgs.push(...this.defaultOrgs);
             }
+            document.body.appendChild(this.$el);
+        }
+        destroyed() {
+            if (this.$el && this.$el.parentNode) {
+                this.$el.parentNode.removeChild(this.$el);
+            }
         }
         // 树的初始加载
         async loadUnitOrgs(node, resolve) {
@@ -842,37 +848,34 @@
               expression: "visible"
             }
           ],
-          staticClass: "alert"
+          staticClass: "bv-choose-people_wrapper"
         },
         [
           _c("div", {
-            staticClass: "alert_mask",
+            staticClass: "bv-choose-people_mask",
             on: { click: _vm.handleClickMask }
           }),
           _vm._v(" "),
-          _c("div", { staticClass: "alert_con" }, [
-            _c("div", { staticClass: "alert_head" }, [
+          _c("div", { staticClass: "bv-choose-people" }, [
+            _c("div", { staticClass: "bv-choose-people_head" }, [
               _c("div", [_vm._v(_vm._s(_vm.title))]),
               _vm._v(" "),
               _c("div", {
-                staticClass: "alert_close fc fc-close",
+                staticClass: "bv-choose-people_close fc fc-close",
                 on: { click: _vm.handleClickClose }
               })
             ]),
             _vm._v(" "),
-            _c("div", { staticClass: "alert-view" }, [
+            _c("div", { staticClass: "bv-choose-people_view" }, [
               _c("div", [_vm._t("header")], 2),
               _vm._v(" "),
               _c(
                 "div",
-                { staticClass: "alert_body" },
+                { staticClass: "bv-choose-people_body" },
                 [
                   _c(
                     "div",
-                    {
-                      staticClass: "alert_tree tree-color",
-                      attrs: { id: "alert_tree" }
-                    },
+                    { staticClass: "bv-choose-people_tree" },
                     [
                       _c(
                         "el-tabs",
@@ -892,135 +895,77 @@
                             { attrs: { label: "本单位", name: "unit" } },
                             [
                               _c(
-                                "el-row",
-                                { staticStyle: { width: "100%" } },
+                                "div",
+                                { staticClass: "bv-choose-people_treenav" },
                                 [
-                                  _c("el-col", { attrs: { span: 23 } }, [
-                                    _c("input", {
-                                      directives: [
-                                        {
-                                          name: "model",
-                                          rawName: "v-model",
+                                  _c(
+                                    "div",
+                                    { staticClass: "bv-choose-people_search" },
+                                    [
+                                      _c("el-input", {
+                                        attrs: { placeholder: "用户名称\\账号" },
+                                        on: {
+                                          keyup: function($event) {
+                                            if (
+                                              !$event.type.indexOf("key") &&
+                                              _vm._k(
+                                                $event.keyCode,
+                                                "enter",
+                                                13,
+                                                $event.key,
+                                                "Enter"
+                                              )
+                                            ) {
+                                              return null
+                                            }
+                                            return _vm.keyupSubmit(_vm.event)
+                                          }
+                                        },
+                                        scopedSlots: _vm._u([
+                                          {
+                                            key: "append",
+                                            fn: function() {
+                                              return [
+                                                _c(
+                                                  "el-button",
+                                                  {
+                                                    staticClass:
+                                                      "bv-choose-people_search_button",
+                                                    attrs: { title: "查询用户" },
+                                                    on: {
+                                                      click:
+                                                        _vm.searchUnitUserHandler
+                                                    }
+                                                  },
+                                                  [
+                                                    _c("i", {
+                                                      staticClass: "fc fc-search"
+                                                    })
+                                                  ]
+                                                )
+                                              ]
+                                            },
+                                            proxy: true
+                                          }
+                                        ]),
+                                        model: {
                                           value: _vm.searchText,
+                                          callback: function($$v) {
+                                            _vm.searchText = $$v;
+                                          },
                                           expression: "searchText"
                                         }
-                                      ],
-                                      staticClass: "serchIcon",
-                                      attrs: { placeholder: "用户名称\\账号" },
-                                      domProps: { value: _vm.searchText },
-                                      on: {
-                                        keyup: function($event) {
-                                          if (
-                                            !$event.type.indexOf("key") &&
-                                            _vm._k(
-                                              $event.keyCode,
-                                              "enter",
-                                              13,
-                                              $event.key,
-                                              "Enter"
-                                            )
-                                          ) {
-                                            return null
-                                          }
-                                          return _vm.keyupSubmit(_vm.event)
-                                        },
-                                        input: function($event) {
-                                          if ($event.target.composing) {
-                                            return
-                                          }
-                                          _vm.searchText = $event.target.value;
-                                        }
-                                      }
-                                    })
-                                  ]),
-                                  _vm._v(" "),
-                                  _c(
-                                    "el-col",
-                                    { attrs: { span: 1 } },
-                                    [
-                                      _c(
-                                        "el-button",
-                                        {
-                                          staticClass: "serchButtonAndText",
-                                          attrs: { title: "查询用户" },
-                                          on: { click: _vm.searchUnitUserHandler }
-                                        },
-                                        [_c("i", { staticClass: "fc fc-search" })]
-                                      )
+                                      })
                                     ],
                                     1
-                                  )
-                                ],
-                                1
-                              ),
-                              _vm._v(" "),
-                              _c("el-tree", {
-                                ref: "tree",
-                                attrs: {
-                                  "show-checkbox": _vm.isShowCheckBox,
-                                  "expand-on-click-node": false,
-                                  "node-key": "id",
-                                  props: {
-                                    label: "name",
-                                    children: "zones",
-                                    isLeaf: "leaf"
-                                  },
-                                  lazy: "",
-                                  "default-expanded-keys": _vm.defaultExpandedKeys,
-                                  "check-strictly": true,
-                                  load: _vm.loadUnitOrgs
-                                },
-                                on: {
-                                  "node-click": _vm.handleTreeNodeClick,
-                                  "check-change": _vm.handleTreeNodeCheckChange
-                                },
-                                scopedSlots: _vm._u([
-                                  {
-                                    key: "default",
-                                    fn: function(ref) {
-                                      var node = ref.node;
-                                      return [
-                                        _c(
-                                          "span",
-                                          { staticStyle: { "font-size": "14px" } },
-                                          [
-                                            _c(
-                                              "span",
-                                              {
-                                                staticStyle: {
-                                                  "padding-right": "3px"
-                                                }
-                                              },
-                                              [
-                                                _c("i", {
-                                                  staticClass: "fc fc-company"
-                                                })
-                                              ]
-                                            ),
-                                            _vm._v(" "),
-                                            _c("span", [_vm._v(_vm._s(node.label))])
-                                          ]
-                                        )
-                                      ]
-                                    }
-                                  }
-                                ])
-                              })
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _vm.isShowGlobal
-                            ? _c(
-                                "el-tab-pane",
-                                { attrs: { label: "全局", name: "gloabl" } },
-                                [
+                                  ),
+                                  _vm._v(" "),
                                   _c("el-tree", {
-                                    ref: "globaltree",
+                                    ref: "tree",
                                     attrs: {
                                       "show-checkbox": _vm.isShowCheckBox,
-                                      "node-key": "id",
                                       "expand-on-click-node": false,
+                                      "node-key": "id",
                                       props: {
                                         label: "name",
                                         children: "zones",
@@ -1030,57 +975,133 @@
                                       "default-expanded-keys":
                                         _vm.defaultExpandedKeys,
                                       "check-strictly": true,
-                                      load: _vm.loadGlobalOrgs
+                                      load: _vm.loadUnitOrgs
                                     },
                                     on: {
                                       "node-click": _vm.handleTreeNodeClick,
                                       "check-change": _vm.handleTreeNodeCheckChange
                                     },
-                                    scopedSlots: _vm._u(
-                                      [
-                                        {
-                                          key: "default",
-                                          fn: function(ref) {
-                                            var node = ref.node;
-                                            return [
-                                              _c(
-                                                "span",
-                                                {
-                                                  staticStyle: {
-                                                    "font-size": "14px"
-                                                  }
-                                                },
-                                                [
+                                    scopedSlots: _vm._u([
+                                      {
+                                        key: "default",
+                                        fn: function(ref) {
+                                          var node = ref.node;
+                                          return [
+                                            _c(
+                                              "span",
+                                              {
+                                                staticStyle: { "font-size": "14px" }
+                                              },
+                                              [
+                                                _c(
+                                                  "span",
+                                                  {
+                                                    staticStyle: {
+                                                      "padding-right": "3px"
+                                                    }
+                                                  },
+                                                  [
+                                                    _c("i", {
+                                                      staticClass: "fc fc-company"
+                                                    })
+                                                  ]
+                                                ),
+                                                _vm._v(" "),
+                                                _c("span", [
+                                                  _vm._v(_vm._s(node.label))
+                                                ])
+                                              ]
+                                            )
+                                          ]
+                                        }
+                                      }
+                                    ])
+                                  })
+                                ],
+                                1
+                              )
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _vm.isShowGlobal
+                            ? _c(
+                                "el-tab-pane",
+                                { attrs: { label: "全局", name: "gloabl" } },
+                                [
+                                  _c(
+                                    "div",
+                                    { staticClass: "bv-choose-people_treenav" },
+                                    [
+                                      _c("el-tree", {
+                                        ref: "globaltree",
+                                        attrs: {
+                                          "show-checkbox": _vm.isShowCheckBox,
+                                          "node-key": "id",
+                                          "expand-on-click-node": false,
+                                          props: {
+                                            label: "name",
+                                            children: "zones",
+                                            isLeaf: "leaf"
+                                          },
+                                          lazy: "",
+                                          "default-expanded-keys":
+                                            _vm.defaultExpandedKeys,
+                                          "check-strictly": true,
+                                          load: _vm.loadGlobalOrgs
+                                        },
+                                        on: {
+                                          "node-click": _vm.handleTreeNodeClick,
+                                          "check-change":
+                                            _vm.handleTreeNodeCheckChange
+                                        },
+                                        scopedSlots: _vm._u(
+                                          [
+                                            {
+                                              key: "default",
+                                              fn: function(ref) {
+                                                var node = ref.node;
+                                                return [
                                                   _c(
                                                     "span",
                                                     {
                                                       staticStyle: {
-                                                        "padding-right": "3px"
+                                                        "font-size": "14px"
                                                       }
                                                     },
                                                     [
-                                                      _c("i", {
-                                                        staticClass: "fc fc-company"
-                                                      })
+                                                      _c(
+                                                        "span",
+                                                        {
+                                                          staticStyle: {
+                                                            "padding-right": "3px"
+                                                          }
+                                                        },
+                                                        [
+                                                          _c("i", {
+                                                            staticClass:
+                                                              "fc fc-company"
+                                                          })
+                                                        ]
+                                                      ),
+                                                      _vm._v(" "),
+                                                      _c("span", [
+                                                        _vm._v(_vm._s(node.label))
+                                                      ])
                                                     ]
-                                                  ),
-                                                  _vm._v(" "),
-                                                  _c("span", [
-                                                    _vm._v(_vm._s(node.label))
-                                                  ])
+                                                  )
                                                 ]
-                                              )
-                                            ]
-                                          }
-                                        }
-                                      ],
-                                      null,
-                                      false,
-                                      1525347875
-                                    )
-                                  })
-                                ],
-                                1
+                                              }
+                                            }
+                                          ],
+                                          null,
+                                          false,
+                                          1525347875
+                                        )
+                                      })
+                                    ],
+                                    1
+                                  )
+                                ]
                               )
                             : _vm._e()
                         ],
@@ -1090,19 +1111,28 @@
                     1
                   ),
                   _vm._v(" "),
-                  _c("div", { staticClass: "alert_to_be_select" }, [
-                    _c("div", { staticClass: "alert_select_title" }, [
-                      _c("span", { staticClass: "alert_select_left name" }, [
-                        _vm._v(
-                          _vm._s(
-                            _vm.currentSelectOrg ? _vm.currentSelectOrg.orgName : ""
+                  _c("div", { staticClass: "bv-choose-people_canselect" }, [
+                    _c("div", { staticClass: "bv-choose-people_canselect_title" }, [
+                      _c(
+                        "span",
+                        {
+                          staticClass:
+                            "bv-choose-people_canselect_title_left bv-choose-people_canselect_title_primary"
+                        },
+                        [
+                          _vm._v(
+                            _vm._s(
+                              _vm.currentSelectOrg
+                                ? _vm.currentSelectOrg.orgName
+                                : ""
+                            )
                           )
-                        )
-                      ]),
+                        ]
+                      ),
                       _vm._v(" "),
                       _c(
                         "span",
-                        { staticClass: "alert_select_right checkbox-color" },
+                        { staticClass: "bv-choose-people_canselect_title_right" },
                         [
                           _c(
                             "el-checkbox",
@@ -1123,419 +1153,516 @@
                       )
                     ]),
                     _vm._v(" "),
-                    _c(
-                      "div",
-                      {
-                        staticClass: "alert_select_peoples",
-                        staticStyle: { overflow: "auto" }
-                      },
-                      [
-                        _c(
-                          "ul",
-                          { staticClass: "alert_select_list" },
-                          _vm._l(_vm.canSelecteUsers, function(item, index) {
-                            return _c(
-                              "li",
-                              {
-                                key: index,
-                                on: {
-                                  click: function($event) {
-                                    return _vm.handleSelectUser(item, $event)
-                                  }
+                    _c("div", { staticStyle: { overflow: "auto" } }, [
+                      _c(
+                        "ul",
+                        { staticClass: "bv-choose-people_canselect_list" },
+                        _vm._l(_vm.canSelecteUsers, function(item, index) {
+                          return _c(
+                            "li",
+                            {
+                              key: index,
+                              staticClass: "bv-choose-people_select_item",
+                              on: {
+                                click: function($event) {
+                                  return _vm.handleSelectUser(item, $event)
                                 }
-                              },
-                              [
-                                _c(
-                                  "span",
-                                  {
-                                    class: {
-                                      alert_select_icon: !item.checked,
-                                      "myicon-tick-checked": item.checked
-                                    },
-                                    style: { color: item.checked ? "#1f64a3" : "" }
-                                  },
-                                  [
-                                    _c(
-                                      "span",
-                                      {
-                                        directives: [
-                                          {
-                                            name: "show",
-                                            rawName: "v-show",
-                                            value: item.checked,
-                                            expression: "item.checked"
-                                          }
-                                        ]
-                                      },
-                                      [_vm._v(".")]
-                                    ),
-                                    _vm._v(" "),
-                                    _c("img", {
+                              }
+                            },
+                            [
+                              _c(
+                                "span",
+                                {
+                                  class: {
+                                    "bv-choose-people_select_item_avatar": !item.checked,
+                                    "bv-choose-people_select_item_checked":
+                                      item.checked
+                                  }
+                                },
+                                [
+                                  _c(
+                                    "span",
+                                    {
                                       directives: [
                                         {
                                           name: "show",
                                           rawName: "v-show",
-                                          value: !item.checked,
-                                          expression: "!item.checked"
+                                          value: item.checked,
+                                          expression: "item.checked"
                                         }
-                                      ],
-                                      staticClass: "myAvatar",
-                                      attrs: { src: _vm.getUserIcon(item.data) }
-                                    })
-                                  ]
-                                ),
-                                _vm._v(" "),
-                                _c("span", { staticClass: "alert_select_name" }, [
-                                  _c("b", [_vm._v(_vm._s(item.name))]),
+                                      ]
+                                    },
+                                    [_vm._v(".")]
+                                  ),
                                   _vm._v(" "),
-                                  _c("i", [_vm._v(_vm._s(item.data.orgName))])
-                                ])
-                              ]
-                            )
-                          }),
-                          0
-                        )
-                      ]
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _vm.mode === "orgAndUser"
-                    ? [
-                        _c(
-                          "div",
-                          {
-                            staticClass: "alert_select",
-                            staticStyle: { "padding-left": "5px" }
-                          },
-                          [
-                            _c("div", { staticStyle: { height: "50%" } }, [
-                              _c("div", { staticClass: "alert_select_title" }, [
-                                _c("span", { staticClass: "alert_select_left" }, [
-                                  _vm._v(
-                                    "\n                                    已选用户：\n                                    "
-                                  ),
-                                  _c(
-                                    "span",
-                                    { staticClass: "alert_selected_number" },
-                                    [_vm._v(_vm._s(_vm.selectNumber) + " 名")]
-                                  )
-                                ]),
-                                _vm._v(" "),
-                                _c(
-                                  "span",
-                                  {
-                                    staticClass: "alert_select_right",
-                                    staticStyle: { "padding-right": "10px" }
-                                  },
-                                  [
-                                    _c(
-                                      "span",
+                                  _c("img", {
+                                    directives: [
                                       {
-                                        staticClass: "alert_clear",
-                                        on: { click: _vm.handleClearSelectedUsers }
-                                      },
-                                      [_vm._v("清空")]
-                                    )
-                                  ]
-                                )
-                              ]),
-                              _vm._v(" "),
-                              _c(
-                                "div",
-                                {
-                                  staticStyle: {
-                                    height: "88%",
-                                    "padding-top": "3px",
-                                    overflow: "auto"
-                                  }
-                                },
-                                [
-                                  _c(
-                                    "ul",
-                                    { staticClass: "alert_select_list" },
-                                    _vm._l(_vm.selectedUsers, function(
-                                      item,
-                                      index
-                                    ) {
-                                      return _c("li", { key: index }, [
-                                        _c(
-                                          "span",
-                                          { staticClass: "alert_select_icon" },
-                                          [
-                                            _c(
-                                              "span",
-                                              {
-                                                staticClass: "close_icon",
-                                                staticStyle: {
-                                                  "font-size": "large",
-                                                  "margin-top": "-2px"
-                                                },
-                                                attrs: { title: "删除" },
-                                                on: {
-                                                  click: function($event) {
-                                                    return _vm.handleRemoveSelectedUser(
-                                                      item,
-                                                      index
-                                                    )
-                                                  }
-                                                }
-                                              },
-                                              [_vm._v("x")]
-                                            ),
-                                            _vm._v(" "),
-                                            _c(
-                                              "span",
-                                              { staticClass: "name_icon" },
-                                              [
-                                                _c("img", {
-                                                  staticClass: "myAvatar",
-                                                  attrs: {
-                                                    src: _vm.getUserIcon(item.data)
-                                                  }
-                                                })
-                                              ]
-                                            )
-                                          ]
-                                        ),
-                                        _vm._v(" "),
-                                        _c(
-                                          "span",
-                                          {
-                                            staticClass: "alert_select_name",
-                                            on: {
-                                              click: function($event) {
-                                                return _vm.handleClick(index)
-                                              }
-                                            }
-                                          },
-                                          [
-                                            _c("b", [_vm._v(_vm._s(item.name))]),
-                                            _vm._v(" "),
-                                            _c("i", [_vm._v(_vm._s(item.orgName))])
-                                          ]
-                                        )
-                                      ])
-                                    }),
-                                    0
-                                  )
+                                        name: "show",
+                                        rawName: "v-show",
+                                        value: !item.checked,
+                                        expression: "!item.checked"
+                                      }
+                                    ],
+                                    attrs: { src: _vm.getUserIcon(item.data) }
+                                  })
                                 ]
-                              )
-                            ]),
-                            _vm._v(" "),
-                            _c("div", { staticStyle: { height: "50%" } }, [
-                              _c("div", { staticClass: "alert_select_title" }, [
-                                _c("span", { staticClass: "alert_select_left" }, [
-                                  _vm._v(
-                                    "\n                                    已选机构：\n                                    "
-                                  ),
-                                  _c(
-                                    "span",
-                                    { staticClass: "alert_selected_number" },
-                                    [_vm._v(_vm._s(_vm.selectNumberOrg) + " 个")]
-                                  )
-                                ]),
-                                _vm._v(" "),
-                                _c(
-                                  "span",
-                                  {
-                                    staticClass: "alert_select_right",
-                                    staticStyle: { "padding-right": "10px" }
-                                  },
-                                  [
-                                    _c(
-                                      "span",
-                                      {
-                                        staticClass: "alert_clear",
-                                        on: { click: _vm.handleClearSelectedOrgs }
-                                      },
-                                      [_vm._v("清空")]
-                                    )
-                                  ]
-                                )
-                              ]),
-                              _vm._v(" "),
-                              _c(
-                                "div",
-                                {
-                                  staticStyle: {
-                                    height: "88%",
-                                    "padding-top": "3px",
-                                    overflow: "auto"
-                                  }
-                                },
-                                [
-                                  _c(
-                                    "ul",
-                                    { staticClass: "alert_select_list" },
-                                    _vm._l(_vm.selectedOrgs, function(item, index) {
-                                      return _c("li", { key: index }, [
-                                        _c(
-                                          "span",
-                                          { staticClass: "alert_select_icon" },
-                                          [
-                                            _c(
-                                              "span",
-                                              {
-                                                staticClass: "close_icon",
-                                                staticStyle: {
-                                                  "font-size": "large",
-                                                  "margin-top": "-2px"
-                                                },
-                                                attrs: { title: "删除" },
-                                                on: {
-                                                  click: function($event) {
-                                                    return _vm.handleClickRemoveOrg(
-                                                      item,
-                                                      index
-                                                    )
-                                                  }
-                                                }
-                                              },
-                                              [_vm._v("x")]
-                                            ),
-                                            _vm._v(" "),
-                                            _c(
-                                              "span",
-                                              { staticClass: "name_icon" },
-                                              [
-                                                _vm._v(
-                                                  _vm._s(_vm.getOrgIcon(item.name))
-                                                )
-                                              ]
-                                            )
-                                          ]
-                                        ),
-                                        _vm._v(" "),
-                                        _c(
-                                          "span",
-                                          {
-                                            staticClass: "alert_select_name",
-                                            on: {
-                                              click: function($event) {
-                                                return _vm.handleClick(index)
-                                              }
-                                            }
-                                          },
-                                          [
-                                            _c("b", [_vm._v(_vm._s(item.name))]),
-                                            _vm._v(" "),
-                                            _c("i", [_vm._v(_vm._s(item.orgName))])
-                                          ]
-                                        )
-                                      ])
-                                    }),
-                                    0
-                                  )
-                                ]
-                              )
-                            ])
-                          ]
-                        )
-                      ]
-                    : [
-                        _c(
-                          "div",
-                          {
-                            staticClass: "alert_select",
-                            staticStyle: { "padding-left": "5px" }
-                          },
-                          [
-                            _c("div", { staticClass: "alert_select_title" }, [
-                              _c("span", { staticClass: "alert_select_left" }, [
-                                _vm._v(
-                                  "\n                                已选用户：\n                                "
-                                ),
-                                _c(
-                                  "span",
-                                  { staticClass: "alert_selected_number" },
-                                  [_vm._v(_vm._s(_vm.selectNumber) + " 名")]
-                                )
-                              ]),
+                              ),
                               _vm._v(" "),
                               _c(
                                 "span",
                                 {
-                                  staticClass: "alert_select_right",
+                                  staticClass: "bv-choose-people_select_item_name"
+                                },
+                                [
+                                  _c("b", [_vm._v(_vm._s(item.name))]),
+                                  _vm._v(" "),
+                                  _c("i", [_vm._v(_vm._s(item.data.orgName))])
+                                ]
+                              )
+                            ]
+                          )
+                        }),
+                        0
+                      )
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _vm.mode === "orgAndUser"
+                    ? [
+                        _c("div", { staticClass: "bv-choose-people_select" }, [
+                          _c(
+                            "div",
+                            {
+                              staticClass: "bv-choose-people_selectbox",
+                              staticStyle: { height: "50%" }
+                            },
+                            [
+                              _c(
+                                "div",
+                                { staticClass: "bv-choose-people_canselect_title" },
+                                [
+                                  _c(
+                                    "span",
+                                    {
+                                      staticClass:
+                                        "bv-choose-people_canselect_title_left"
+                                    },
+                                    [
+                                      _vm._v(
+                                        "\n                                    已选用户：\n                                    "
+                                      ),
+                                      _c(
+                                        "span",
+                                        {
+                                          staticClass:
+                                            "bv-choose-people_canselect_title_primary"
+                                        },
+                                        [_vm._v(_vm._s(_vm.selectNumber) + " 名")]
+                                      )
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "span",
+                                    {
+                                      staticClass:
+                                        "bv-choose-people_canselect_title_right",
+                                      staticStyle: { "padding-right": "10px" }
+                                    },
+                                    [
+                                      _c(
+                                        "span",
+                                        {
+                                          staticClass:
+                                            "bv-choose-people_canselect_clear",
+                                          on: {
+                                            click: _vm.handleClearSelectedUsers
+                                          }
+                                        },
+                                        [_vm._v("清空")]
+                                      )
+                                    ]
+                                  )
+                                ]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "div",
+                                {
+                                  staticClass: "bv-choose-people_selectbox_content"
+                                },
+                                [
+                                  _c(
+                                    "ul",
+                                    _vm._l(_vm.selectedUsers, function(
+                                      item,
+                                      index
+                                    ) {
+                                      return _c(
+                                        "li",
+                                        {
+                                          key: index,
+                                          staticClass:
+                                            "bv-choose-people_select_item"
+                                        },
+                                        [
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass:
+                                                "bv-choose-people_select_item_avatar"
+                                            },
+                                            [
+                                              _c(
+                                                "span",
+                                                {
+                                                  staticClass:
+                                                    "bv-choose-people_select_item_avatar_close",
+                                                  attrs: { title: "删除" },
+                                                  on: {
+                                                    click: function($event) {
+                                                      return _vm.handleRemoveSelectedUser(
+                                                        item,
+                                                        index
+                                                      )
+                                                    }
+                                                  }
+                                                },
+                                                [
+                                                  _vm._v(
+                                                    "\n                                                x\n                                            "
+                                                  )
+                                                ]
+                                              ),
+                                              _vm._v(" "),
+                                              _c(
+                                                "span",
+                                                {
+                                                  staticClass:
+                                                    "bv-choose-people_select_item_avatar_name"
+                                                },
+                                                [
+                                                  _c("img", {
+                                                    attrs: {
+                                                      src: _vm.getUserIcon(
+                                                        item.data
+                                                      )
+                                                    }
+                                                  })
+                                                ]
+                                              )
+                                            ]
+                                          ),
+                                          _vm._v(" "),
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass:
+                                                "bv-choose-people_select_item_name",
+                                              on: {
+                                                click: function($event) {
+                                                  return _vm.handleClick(index)
+                                                }
+                                              }
+                                            },
+                                            [
+                                              _c("b", [_vm._v(_vm._s(item.name))]),
+                                              _vm._v(" "),
+                                              _c("i", [
+                                                _vm._v(_vm._s(item.orgName))
+                                              ])
+                                            ]
+                                          )
+                                        ]
+                                      )
+                                    }),
+                                    0
+                                  )
+                                ]
+                              )
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            {
+                              staticClass: "bv-choose-people_selectbox",
+                              staticStyle: { height: "50%" }
+                            },
+                            [
+                              _c(
+                                "div",
+                                { staticClass: "bv-choose-people_canselect_title" },
+                                [
+                                  _c(
+                                    "span",
+                                    {
+                                      staticClass:
+                                        "bv-choose-people_canselect_title_left"
+                                    },
+                                    [
+                                      _vm._v(
+                                        "\n                                    已选机构：\n                                    "
+                                      ),
+                                      _c(
+                                        "span",
+                                        {
+                                          staticClass:
+                                            "bv-choose-people_canselect_title_primary"
+                                        },
+                                        [
+                                          _vm._v(
+                                            _vm._s(_vm.selectNumberOrg) + " 个"
+                                          )
+                                        ]
+                                      )
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "span",
+                                    {
+                                      staticClass:
+                                        "bv-choose-people_canselect_title_right",
+                                      staticStyle: { "padding-right": "10px" }
+                                    },
+                                    [
+                                      _c(
+                                        "span",
+                                        {
+                                          staticClass:
+                                            "bv-choose-people_canselect_clear",
+                                          on: { click: _vm.handleClearSelectedOrgs }
+                                        },
+                                        [_vm._v("清空")]
+                                      )
+                                    ]
+                                  )
+                                ]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "div",
+                                {
+                                  staticClass: "bv-choose-people_selectbox_content"
+                                },
+                                [
+                                  _c(
+                                    "ul",
+                                    _vm._l(_vm.selectedOrgs, function(item, index) {
+                                      return _c(
+                                        "li",
+                                        {
+                                          key: index,
+                                          staticClass:
+                                            "bv-choose-people_select_item"
+                                        },
+                                        [
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass:
+                                                "bv-choose-people_select_item_avatar"
+                                            },
+                                            [
+                                              _c(
+                                                "span",
+                                                {
+                                                  staticClass:
+                                                    "bv-choose-people_select_item_avatar_close",
+                                                  attrs: { title: "删除" },
+                                                  on: {
+                                                    click: function($event) {
+                                                      return _vm.handleClickRemoveOrg(
+                                                        item,
+                                                        index
+                                                      )
+                                                    }
+                                                  }
+                                                },
+                                                [
+                                                  _vm._v(
+                                                    "\n                                                x\n                                            "
+                                                  )
+                                                ]
+                                              ),
+                                              _vm._v(" "),
+                                              _c(
+                                                "span",
+                                                {
+                                                  staticClass:
+                                                    "bv-choose-people_select_item_avatar_name"
+                                                },
+                                                [
+                                                  _vm._v(
+                                                    _vm._s(
+                                                      _vm.getOrgIcon(item.name)
+                                                    )
+                                                  )
+                                                ]
+                                              )
+                                            ]
+                                          ),
+                                          _vm._v(" "),
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass:
+                                                "bv-choose-people_select_item_name",
+                                              on: {
+                                                click: function($event) {
+                                                  return _vm.handleClick(index)
+                                                }
+                                              }
+                                            },
+                                            [
+                                              _c("b", [_vm._v(_vm._s(item.name))]),
+                                              _vm._v(" "),
+                                              _c("i", [
+                                                _vm._v(_vm._s(item.orgName))
+                                              ])
+                                            ]
+                                          )
+                                        ]
+                                      )
+                                    }),
+                                    0
+                                  )
+                                ]
+                              )
+                            ]
+                          )
+                        ])
+                      ]
+                    : [
+                        _c("div", { staticClass: "bv-choose-people_selectbox" }, [
+                          _c(
+                            "div",
+                            { staticClass: "bv-choose-people_canselect_title" },
+                            [
+                              _c(
+                                "span",
+                                {
+                                  staticClass:
+                                    "bv-choose-people_canselect_title_left"
+                                },
+                                [
+                                  _vm._v(
+                                    "\n                                已选用户：\n                                "
+                                  ),
+                                  _c(
+                                    "span",
+                                    {
+                                      staticClass:
+                                        "bv-choose-people_canselect_title_primary"
+                                    },
+                                    [_vm._v(_vm._s(_vm.selectNumber) + " 名")]
+                                  )
+                                ]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "span",
+                                {
+                                  staticClass:
+                                    "bv-choose-people_canselect_title_right",
                                   staticStyle: { "padding-right": "10px" }
                                 },
                                 [
                                   _c(
                                     "span",
                                     {
-                                      staticClass: "alert_clear",
+                                      staticClass:
+                                        "bv-choose-people_canselect_clear",
                                       on: { click: _vm.handleClearSelectedUsers }
                                     },
                                     [_vm._v("清空")]
                                   )
                                 ]
                               )
-                            ]),
-                            _vm._v(" "),
-                            _c("div", { staticStyle: { "padding-top": "3px" } }, [
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            { staticClass: "bv-choose-people_selectbox_content" },
+                            [
                               _c(
                                 "ul",
-                                { staticClass: "alert_select_list" },
                                 _vm._l(_vm.selectedUsers, function(item, index) {
-                                  return _c("li", { key: index }, [
-                                    _c(
-                                      "span",
-                                      { staticClass: "alert_select_icon" },
-                                      [
-                                        _c(
-                                          "span",
-                                          {
-                                            staticClass: "close_icon",
-                                            staticStyle: {
-                                              "font-size": "large",
-                                              "margin-top": "-2px"
-                                            },
-                                            attrs: { title: "删除" },
-                                            on: {
-                                              click: function($event) {
-                                                return _vm.handleRemoveSelectedUser(
-                                                  item,
-                                                  index
-                                                )
+                                  return _c(
+                                    "li",
+                                    {
+                                      key: index,
+                                      staticClass: "bv-choose-people_select_item"
+                                    },
+                                    [
+                                      _c(
+                                        "span",
+                                        {
+                                          staticClass:
+                                            "bv-choose-people_select_item_avatar"
+                                        },
+                                        [
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass:
+                                                "bv-choose-people_select_item_avatar_close",
+                                              attrs: { title: "删除" },
+                                              on: {
+                                                click: function($event) {
+                                                  return _vm.handleRemoveSelectedUser(
+                                                    item,
+                                                    index
+                                                  )
+                                                }
                                               }
+                                            },
+                                            [
+                                              _vm._v(
+                                                "\n                                            x\n                                        "
+                                              )
+                                            ]
+                                          ),
+                                          _vm._v(" "),
+                                          _c("span", { staticClass: "name_icon" }, [
+                                            _c("img", {
+                                              staticClass: "myAvatar",
+                                              attrs: {
+                                                src: _vm.getUserIcon(item.data)
+                                              }
+                                            })
+                                          ])
+                                        ]
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "span",
+                                        {
+                                          staticClass:
+                                            "bv-choose-people_select_item_name",
+                                          on: {
+                                            click: function($event) {
+                                              return _vm.handleClick(index)
                                             }
-                                          },
-                                          [_vm._v("x")]
-                                        ),
-                                        _vm._v(" "),
-                                        _c("span", { staticClass: "name_icon" }, [
-                                          _c("img", {
-                                            staticClass: "myAvatar",
-                                            attrs: {
-                                              src: _vm.getUserIcon(item.data)
-                                            }
-                                          })
-                                        ])
-                                      ]
-                                    ),
-                                    _vm._v(" "),
-                                    _c(
-                                      "span",
-                                      {
-                                        staticClass: "alert_select_name",
-                                        on: {
-                                          click: function($event) {
-                                            return _vm.handleClick(index)
                                           }
-                                        }
-                                      },
-                                      [
-                                        _c("b", [_vm._v(_vm._s(item.name))]),
-                                        _vm._v(" "),
-                                        _c("i", [_vm._v(_vm._s(item.orgName))])
-                                      ]
-                                    )
-                                  ])
+                                        },
+                                        [
+                                          _c("b", [_vm._v(_vm._s(item.name))]),
+                                          _vm._v(" "),
+                                          _c("i", [_vm._v(_vm._s(item.orgName))])
+                                        ]
+                                      )
+                                    ]
+                                  )
                                 }),
                                 0
                               )
-                            ])
-                          ]
-                        )
+                            ]
+                          )
+                        ])
                       ]
                 ],
                 2
@@ -1546,7 +1673,7 @@
             _vm._v(" "),
             _c(
               "div",
-              { staticClass: "alert_foot" },
+              { staticClass: "bv-choose-people_foot" },
               [
                 _c(
                   "el-button",
@@ -1573,7 +1700,7 @@
       /* style */
       const __vue_inject_styles__$1 = function (inject) {
         if (!inject) return
-        inject("data-v-24d0788b_0", { source: ".alert {\n  width: 100%;\n  height: 100%;\n  position: fixed;\n  left: 0;\n  top: 0;\n  z-index: 20;\n  text-align: left;\n}\n.alert ul {\n  line-height: 24px;\n  padding: 0;\n  margin: 0;\n}\n.alert li {\n  margin: 0;\n}\n.alert .alert_mask {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n  background-color: rgba(0, 0, 0, 0.5);\n}\n.alert .alert_con {\n  position: absolute;\n  left: 50%;\n  top: 45%;\n  width: 60%;\n  transform: translate(-50%, -50%);\n  background-color: #fff;\n  overflow: hidden;\n}\n.alert .alert_head {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 17px 20px;\n  font-size: 16px;\n  background: #f2f2f2;\n  border-bottom: 1px solid #c3c3c3;\n}\n.alert .alert_close {\n  color: #909399;\n  cursor: pointer;\n}\n.alert .alert_close:hover {\n  color: #4090e2;\n}\n.alert-view .alert_body {\n  display: flex;\n  height: 400px;\n}\n.alert .alert_tree {\n  width: 30%;\n  padding: 16px;\n  overflow-y: auto;\n}\n.alert .alert_select {\n  width: 50%;\n  margin-left: -1px;\n  padding: 16px;\n  overflow-y: auto;\n  position: relative;\n}\n.alert .alert_bind {\n  position: absolute;\n  right: 0;\n  top: 50%;\n  width: 44px;\n  transform: translateY(-50%);\n}\n.alert .alert_foot {\n  text-align: right;\n  padding: 10px 20px;\n  background: #f2f2f2;\n  border-top: 1px solid #c3c3c3;\n}\n.alert .m-icon {\n  background: #ccc;\n  width: 30px;\n  height: 30px;\n  text-align: center;\n  line-height: 30px;\n  color: #fff;\n  font-size: 22px;\n}\n.alert_to_be_select {\n  width: 50%;\n  border: 0 solid #d8d8d8;\n  margin: 0 10px;\n  padding: 16px;\n  overflow: auto;\n  border-width: 0 1px;\n}\n.alert_select_title {\n  overflow: hidden;\n}\n.alert_select_left.name {\n  color: #409eff;\n}\n.alert_select_right {\n  float: right;\n}\n.alert_select_right .el-checkbox {\n  margin-right: 10px;\n}\n.alert_select_right .el-checkbox:last-child {\n  margin-right: 0;\n}\n.alert_select_right .el-checkbox__label {\n  padding-left: 5px;\n}\n/**绿色勾*/\n.myicon-tick-checked {\n  display: inline-block;\n  margin-right: 20px;\n  cursor: pointer;\n  width: 30px;\n  height: 30px;\n  border-radius: 50%;\n  font-size: 12px;\n  text-align: center;\n  line-height: 30px;\n  margin-right: 10px;\n  position: relative;\n  background-color: #1f64a3;\n}\n.myicon-tick-checked:before,\n.myicon-tick-checked:after {\n  content: '';\n  pointer-events: none;\n  position: absolute;\n  color: white;\n  border: 1px solid;\n  background-color: white;\n}\n.myicon-tick-checked:before {\n  width: 2px;\n  height: 2px;\n  left: 28%;\n  top: 48%;\n  transform: skew(0deg, 60deg);\n  -ms-transform: skew(0deg, 60deg);\n  -webkit-transform: skew(0deg, 60deg);\n}\n.myicon-tick-checked:after {\n  width: 8px;\n  height: 2px;\n  left: 41%;\n  top: 43%;\n  transform: skew(0deg, -60deg);\n  -ms-transform: skew(0deg, -60deg);\n  -webkit-transform: skew(0deg, -40deg);\n}\n.myAvatar {\n  height: 30px;\n  width: 30px;\n  border-radius: 50%;\n}\n.serchButtonAndText {\n  margin-left: -57px;\n  margin-top: 1px;\n  padding-bottom: 9px;\n  padding-top: 9px;\n}\n.serchIcon {\n  width: 100%;\n  box-sizing: border-box;\n  border: 2px solid #ccc;\n  border-radius: 4px;\n  font-size: 14px;\n  background-color: white;\n  background-position: 10px 7px;\n  background-repeat: no-repeat;\n  padding: 7px 57px 7px 7px;\n}\n.alert_select_list li {\n  display: inline-block;\n  margin-right: 20px;\n  margin-bottom: 10px;\n  cursor: pointer;\n}\n.alert_select_list li .alert_select_icon {\n  vertical-align: middle;\n  display: inline-block;\n  width: 30px;\n  height: 30px;\n  background: #409eff;\n  color: #fff;\n  border-radius: 50%;\n  font-size: 12px;\n  text-align: center;\n  line-height: 30px;\n  margin-right: 10px;\n}\n.alert_select_list li .alert_select_icon .close_icon {\n  display: none;\n}\n.alert_select_list li .alert_select_icon:hover .close_icon {\n  display: inline-block;\n}\n.alert_select_list li .alert_select_icon:hover .name_icon {\n  display: none;\n}\n.alert_select_list li .alert_select_name {\n  display: inline-block;\n  vertical-align: middle;\n}\n.alert_select_list li .alert_select_name b,\n.alert_select_list li .alert_select_name i {\n  display: block;\n  font-style: normal;\n  font-weight: normal;\n}\n.alert_select_list li .alert_select_name i {\n  font-size: 12px;\n  margin-top: -5px;\n  color: #999;\n}\n.alert_clear {\n  color: red;\n  cursor: pointer;\n}\n.alert_selected_number {\n  color: #409eff;\n}\n", map: {"version":3,"sources":["New.vue"],"names":[],"mappings":"AAAA;EACE,WAAW;EACX,YAAY;EACZ,eAAe;EACf,OAAO;EACP,MAAM;EACN,WAAW;EACX,gBAAgB;AAClB;AACA;EACE,iBAAiB;EACjB,UAAU;EACV,SAAS;AACX;AACA;EACE,SAAS;AACX;AACA;EACE,WAAW;EACX,YAAY;EACZ,kBAAkB;EAClB,OAAO;EACP,MAAM;EACN,oCAAoC;AACtC;AACA;EACE,kBAAkB;EAClB,SAAS;EACT,QAAQ;EACR,UAAU;EACV,gCAAgC;EAChC,sBAAsB;EACtB,gBAAgB;AAClB;AACA;EACE,aAAa;EACb,8BAA8B;EAC9B,mBAAmB;EACnB,kBAAkB;EAClB,eAAe;EACf,mBAAmB;EACnB,gCAAgC;AAClC;AACA;EACE,cAAc;EACd,eAAe;AACjB;AACA;EACE,cAAc;AAChB;AACA;EACE,aAAa;EACb,aAAa;AACf;AACA;EACE,UAAU;EACV,aAAa;EACb,gBAAgB;AAClB;AACA;EACE,UAAU;EACV,iBAAiB;EACjB,aAAa;EACb,gBAAgB;EAChB,kBAAkB;AACpB;AACA;EACE,kBAAkB;EAClB,QAAQ;EACR,QAAQ;EACR,WAAW;EACX,2BAA2B;AAC7B;AACA;EACE,iBAAiB;EACjB,kBAAkB;EAClB,mBAAmB;EACnB,6BAA6B;AAC/B;AACA;EACE,gBAAgB;EAChB,WAAW;EACX,YAAY;EACZ,kBAAkB;EAClB,iBAAiB;EACjB,WAAW;EACX,eAAe;AACjB;AACA;EACE,UAAU;EACV,uBAAuB;EACvB,cAAc;EACd,aAAa;EACb,cAAc;EACd,mBAAmB;AACrB;AACA;EACE,gBAAgB;AAClB;AACA;EACE,cAAc;AAChB;AACA;EACE,YAAY;AACd;AACA;EACE,kBAAkB;AACpB;AACA;EACE,eAAe;AACjB;AACA;EACE,iBAAiB;AACnB;AACA,OAAO;AACP;EACE,qBAAqB;EACrB,kBAAkB;EAClB,eAAe;EACf,WAAW;EACX,YAAY;EACZ,kBAAkB;EAClB,eAAe;EACf,kBAAkB;EAClB,iBAAiB;EACjB,kBAAkB;EAClB,kBAAkB;EAClB,yBAAyB;AAC3B;AACA;;EAEE,WAAW;EACX,oBAAoB;EACpB,kBAAkB;EAClB,YAAY;EACZ,iBAAiB;EACjB,uBAAuB;AACzB;AACA;EACE,UAAU;EACV,WAAW;EACX,SAAS;EACT,QAAQ;EACR,4BAA4B;EAC5B,gCAAgC;EAChC,oCAAoC;AACtC;AACA;EACE,UAAU;EACV,WAAW;EACX,SAAS;EACT,QAAQ;EACR,6BAA6B;EAC7B,iCAAiC;EACjC,qCAAqC;AACvC;AACA;EACE,YAAY;EACZ,WAAW;EACX,kBAAkB;AACpB;AACA;EACE,kBAAkB;EAClB,eAAe;EACf,mBAAmB;EACnB,gBAAgB;AAClB;AACA;EACE,WAAW;EACX,sBAAsB;EACtB,sBAAsB;EACtB,kBAAkB;EAClB,eAAe;EACf,uBAAuB;EACvB,6BAA6B;EAC7B,4BAA4B;EAC5B,yBAAyB;AAC3B;AACA;EACE,qBAAqB;EACrB,kBAAkB;EAClB,mBAAmB;EACnB,eAAe;AACjB;AACA;EACE,sBAAsB;EACtB,qBAAqB;EACrB,WAAW;EACX,YAAY;EACZ,mBAAmB;EACnB,WAAW;EACX,kBAAkB;EAClB,eAAe;EACf,kBAAkB;EAClB,iBAAiB;EACjB,kBAAkB;AACpB;AACA;EACE,aAAa;AACf;AACA;EACE,qBAAqB;AACvB;AACA;EACE,aAAa;AACf;AACA;EACE,qBAAqB;EACrB,sBAAsB;AACxB;AACA;;EAEE,cAAc;EACd,kBAAkB;EAClB,mBAAmB;AACrB;AACA;EACE,eAAe;EACf,gBAAgB;EAChB,WAAW;AACb;AACA;EACE,UAAU;EACV,eAAe;AACjB;AACA;EACE,cAAc;AAChB","file":"New.vue","sourcesContent":[".alert {\n  width: 100%;\n  height: 100%;\n  position: fixed;\n  left: 0;\n  top: 0;\n  z-index: 20;\n  text-align: left;\n}\n.alert ul {\n  line-height: 24px;\n  padding: 0;\n  margin: 0;\n}\n.alert li {\n  margin: 0;\n}\n.alert .alert_mask {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n  background-color: rgba(0, 0, 0, 0.5);\n}\n.alert .alert_con {\n  position: absolute;\n  left: 50%;\n  top: 45%;\n  width: 60%;\n  transform: translate(-50%, -50%);\n  background-color: #fff;\n  overflow: hidden;\n}\n.alert .alert_head {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 17px 20px;\n  font-size: 16px;\n  background: #f2f2f2;\n  border-bottom: 1px solid #c3c3c3;\n}\n.alert .alert_close {\n  color: #909399;\n  cursor: pointer;\n}\n.alert .alert_close:hover {\n  color: #4090e2;\n}\n.alert-view .alert_body {\n  display: flex;\n  height: 400px;\n}\n.alert .alert_tree {\n  width: 30%;\n  padding: 16px;\n  overflow-y: auto;\n}\n.alert .alert_select {\n  width: 50%;\n  margin-left: -1px;\n  padding: 16px;\n  overflow-y: auto;\n  position: relative;\n}\n.alert .alert_bind {\n  position: absolute;\n  right: 0;\n  top: 50%;\n  width: 44px;\n  transform: translateY(-50%);\n}\n.alert .alert_foot {\n  text-align: right;\n  padding: 10px 20px;\n  background: #f2f2f2;\n  border-top: 1px solid #c3c3c3;\n}\n.alert .m-icon {\n  background: #ccc;\n  width: 30px;\n  height: 30px;\n  text-align: center;\n  line-height: 30px;\n  color: #fff;\n  font-size: 22px;\n}\n.alert_to_be_select {\n  width: 50%;\n  border: 0 solid #d8d8d8;\n  margin: 0 10px;\n  padding: 16px;\n  overflow: auto;\n  border-width: 0 1px;\n}\n.alert_select_title {\n  overflow: hidden;\n}\n.alert_select_left.name {\n  color: #409eff;\n}\n.alert_select_right {\n  float: right;\n}\n.alert_select_right .el-checkbox {\n  margin-right: 10px;\n}\n.alert_select_right .el-checkbox:last-child {\n  margin-right: 0;\n}\n.alert_select_right .el-checkbox__label {\n  padding-left: 5px;\n}\n/**绿色勾*/\n.myicon-tick-checked {\n  display: inline-block;\n  margin-right: 20px;\n  cursor: pointer;\n  width: 30px;\n  height: 30px;\n  border-radius: 50%;\n  font-size: 12px;\n  text-align: center;\n  line-height: 30px;\n  margin-right: 10px;\n  position: relative;\n  background-color: #1f64a3;\n}\n.myicon-tick-checked:before,\n.myicon-tick-checked:after {\n  content: '';\n  pointer-events: none;\n  position: absolute;\n  color: white;\n  border: 1px solid;\n  background-color: white;\n}\n.myicon-tick-checked:before {\n  width: 2px;\n  height: 2px;\n  left: 28%;\n  top: 48%;\n  transform: skew(0deg, 60deg);\n  -ms-transform: skew(0deg, 60deg);\n  -webkit-transform: skew(0deg, 60deg);\n}\n.myicon-tick-checked:after {\n  width: 8px;\n  height: 2px;\n  left: 41%;\n  top: 43%;\n  transform: skew(0deg, -60deg);\n  -ms-transform: skew(0deg, -60deg);\n  -webkit-transform: skew(0deg, -40deg);\n}\n.myAvatar {\n  height: 30px;\n  width: 30px;\n  border-radius: 50%;\n}\n.serchButtonAndText {\n  margin-left: -57px;\n  margin-top: 1px;\n  padding-bottom: 9px;\n  padding-top: 9px;\n}\n.serchIcon {\n  width: 100%;\n  box-sizing: border-box;\n  border: 2px solid #ccc;\n  border-radius: 4px;\n  font-size: 14px;\n  background-color: white;\n  background-position: 10px 7px;\n  background-repeat: no-repeat;\n  padding: 7px 57px 7px 7px;\n}\n.alert_select_list li {\n  display: inline-block;\n  margin-right: 20px;\n  margin-bottom: 10px;\n  cursor: pointer;\n}\n.alert_select_list li .alert_select_icon {\n  vertical-align: middle;\n  display: inline-block;\n  width: 30px;\n  height: 30px;\n  background: #409eff;\n  color: #fff;\n  border-radius: 50%;\n  font-size: 12px;\n  text-align: center;\n  line-height: 30px;\n  margin-right: 10px;\n}\n.alert_select_list li .alert_select_icon .close_icon {\n  display: none;\n}\n.alert_select_list li .alert_select_icon:hover .close_icon {\n  display: inline-block;\n}\n.alert_select_list li .alert_select_icon:hover .name_icon {\n  display: none;\n}\n.alert_select_list li .alert_select_name {\n  display: inline-block;\n  vertical-align: middle;\n}\n.alert_select_list li .alert_select_name b,\n.alert_select_list li .alert_select_name i {\n  display: block;\n  font-style: normal;\n  font-weight: normal;\n}\n.alert_select_list li .alert_select_name i {\n  font-size: 12px;\n  margin-top: -5px;\n  color: #999;\n}\n.alert_clear {\n  color: red;\n  cursor: pointer;\n}\n.alert_selected_number {\n  color: #409eff;\n}\n"]}, media: undefined });
+        inject("data-v-20c7fae5_0", { source: ".bv-choose-people {\n  position: absolute;\n  left: 50%;\n  top: 45%;\n  width: 60%;\n  transform: translate(-50%, -50%);\n  background-color: #fff;\n  overflow: hidden;\n}\n.bv-choose-people_wrapper {\n  width: 100%;\n  height: 100%;\n  position: fixed;\n  left: 0;\n  top: 0;\n  z-index: 20;\n  text-align: left;\n  line-height: 24px;\n}\n.bv-choose-people ul {\n  padding: 0;\n  margin: 0;\n}\n.bv-choose-people li {\n  margin: 0;\n}\n.bv-choose-people_mask {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n  background-color: rgba(0, 0, 0, 0.5);\n}\n.bv-choose-people_head {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 17px 20px;\n  font-size: 16px;\n  background: #f2f2f2;\n  border-bottom: 1px solid #c3c3c3;\n}\n.bv-choose-people_close {\n  color: #909399;\n  cursor: pointer;\n}\n.bv-choose-people_close:hover {\n  color: #4090e2;\n}\n.bv-choose-people_body {\n  display: flex;\n  height: 400px;\n}\n.bv-choose-people_tree {\n  width: 30%;\n  min-width: 200px;\n}\n.bv-choose-people_tree .el-tabs {\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n}\n.bv-choose-people_tree .el-tabs .el-tabs__content {\n  flex: 1;\n}\n.bv-choose-people_tree .el-tabs .el-tab-pane {\n  height: 100%;\n}\n.bv-choose-people_tree .el-tabs .el-tabs__nav-wrap {\n  padding-left: 20px;\n}\n.bv-choose-people_treenav {\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n}\n.bv-choose-people_treenav .el-tree {\n  flex: 1;\n  overflow: auto;\n}\n.bv-choose-people_treenav .el-tree-node__children {\n  overflow: visible;\n}\n.bv-choose-people_search {\n  padding: 10px;\n  padding-top: 0;\n}\n.bv-choose-people_search_button {\n  margin-left: -57px;\n  margin-top: 1px;\n  padding-bottom: 9px;\n  padding-top: 9px;\n}\n.bv-choose-people_selectbox {\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n}\n.bv-choose-people_selectbox_content {\n  flex: 1;\n  overflow: auto;\n  padding: 5px 0;\n  box-sizing: border-box;\n}\n.bv-choose-people_canselect {\n  width: 50%;\n  border: 0 solid #d8d8d8;\n  padding: 16px;\n  overflow: auto;\n  border-width: 0 1px;\n}\n.bv-choose-people_canselect_clear {\n  color: red;\n  cursor: pointer;\n}\n.bv-choose-people_canselect_title {\n  overflow: hidden;\n}\n.bv-choose-people_canselect_title_primary {\n  color: #409eff;\n}\n.bv-choose-people_canselect_title_left {\n  float: left;\n}\n.bv-choose-people_canselect_title_right {\n  float: right;\n}\n.bv-choose-people_canselect_title_right .el-checkbox {\n  margin-right: 10px;\n}\n.bv-choose-people_canselect_title_right .el-checkbox:last-child {\n  margin-right: 0;\n}\n.bv-choose-people_canselect_title_right .el-checkbox__label {\n  padding-left: 5px;\n}\n.bv-choose-people_select_item {\n  display: inline-block;\n  margin-right: 20px;\n  margin-bottom: 10px;\n  cursor: pointer;\n}\n.bv-choose-people_select_item_avatar {\n  vertical-align: middle;\n  display: inline-block;\n  width: 30px;\n  height: 30px;\n  background: #409eff;\n  color: #fff;\n  border-radius: 50%;\n  font-size: 12px;\n  text-align: center;\n  line-height: 30px;\n  margin-right: 10px;\n}\n.bv-choose-people_select_item_avatar img {\n  height: 30px;\n  width: 30px;\n  border-radius: 50%;\n}\n.bv-choose-people_select_item_avatar_close {\n  display: none;\n  font-size: large;\n  margin-top: -2px;\n}\n.bv-choose-people_select_item_avatar:hover .bv-choose-people_select_item_avatar_close {\n  display: inline-block;\n}\n.bv-choose-people_select_item_avatar:hover .bv-choose-people_select_item_avatar_name {\n  display: none;\n}\n.bv-choose-people_select_item_name {\n  display: inline-block;\n  vertical-align: middle;\n}\n.bv-choose-people_select_item_name b,\n.bv-choose-people_select_item_name i {\n  display: block;\n  font-style: normal;\n  font-weight: normal;\n}\n.bv-choose-people_select_item_name i {\n  font-size: 12px;\n  margin-top: -5px;\n  color: #999;\n}\n.bv-choose-people_select {\n  width: 50%;\n  margin-left: -1px;\n  padding: 16px;\n  overflow-y: auto;\n  position: relative;\n  padding-left: 5px;\n}\n.bv-choose-people_foot {\n  text-align: right;\n  padding: 10px 20px;\n  background: #f2f2f2;\n  border-top: 1px solid #c3c3c3;\n}\n.bv-choose-people_select_item_checked {\n  display: inline-block;\n  margin-right: 20px;\n  cursor: pointer;\n  width: 30px;\n  height: 30px;\n  border-radius: 50%;\n  font-size: 12px;\n  text-align: center;\n  line-height: 30px;\n  margin-right: 10px;\n  position: relative;\n  background-color: #1f64a3;\n  color: #1f64a3;\n}\n.bv-choose-people_select_item_checked:before,\n.bv-choose-people_select_item_checked:after {\n  content: '';\n  pointer-events: none;\n  position: absolute;\n  color: white;\n  border: 1px solid;\n  background-color: white;\n}\n.bv-choose-people_select_item_checked:before {\n  width: 2px;\n  height: 2px;\n  left: 28%;\n  top: 48%;\n  transform: skew(0deg, 60deg);\n  -ms-transform: skew(0deg, 60deg);\n  -webkit-transform: skew(0deg, 60deg);\n}\n.bv-choose-people_select_item_checked:after {\n  width: 8px;\n  height: 2px;\n  left: 41%;\n  top: 43%;\n  transform: skew(0deg, -60deg);\n  -ms-transform: skew(0deg, -60deg);\n  -webkit-transform: skew(0deg, -40deg);\n}\n", map: {"version":3,"sources":["New.vue"],"names":[],"mappings":"AAAA;EACE,kBAAkB;EAClB,SAAS;EACT,QAAQ;EACR,UAAU;EACV,gCAAgC;EAChC,sBAAsB;EACtB,gBAAgB;AAClB;AACA;EACE,WAAW;EACX,YAAY;EACZ,eAAe;EACf,OAAO;EACP,MAAM;EACN,WAAW;EACX,gBAAgB;EAChB,iBAAiB;AACnB;AACA;EACE,UAAU;EACV,SAAS;AACX;AACA;EACE,SAAS;AACX;AACA;EACE,WAAW;EACX,YAAY;EACZ,kBAAkB;EAClB,OAAO;EACP,MAAM;EACN,oCAAoC;AACtC;AACA;EACE,aAAa;EACb,8BAA8B;EAC9B,mBAAmB;EACnB,kBAAkB;EAClB,eAAe;EACf,mBAAmB;EACnB,gCAAgC;AAClC;AACA;EACE,cAAc;EACd,eAAe;AACjB;AACA;EACE,cAAc;AAChB;AACA;EACE,aAAa;EACb,aAAa;AACf;AACA;EACE,UAAU;EACV,gBAAgB;AAClB;AACA;EACE,YAAY;EACZ,aAAa;EACb,sBAAsB;AACxB;AACA;EACE,OAAO;AACT;AACA;EACE,YAAY;AACd;AACA;EACE,kBAAkB;AACpB;AACA;EACE,YAAY;EACZ,aAAa;EACb,sBAAsB;AACxB;AACA;EACE,OAAO;EACP,cAAc;AAChB;AACA;EACE,iBAAiB;AACnB;AACA;EACE,aAAa;EACb,cAAc;AAChB;AACA;EACE,kBAAkB;EAClB,eAAe;EACf,mBAAmB;EACnB,gBAAgB;AAClB;AACA;EACE,YAAY;EACZ,aAAa;EACb,sBAAsB;AACxB;AACA;EACE,OAAO;EACP,cAAc;EACd,cAAc;EACd,sBAAsB;AACxB;AACA;EACE,UAAU;EACV,uBAAuB;EACvB,aAAa;EACb,cAAc;EACd,mBAAmB;AACrB;AACA;EACE,UAAU;EACV,eAAe;AACjB;AACA;EACE,gBAAgB;AAClB;AACA;EACE,cAAc;AAChB;AACA;EACE,WAAW;AACb;AACA;EACE,YAAY;AACd;AACA;EACE,kBAAkB;AACpB;AACA;EACE,eAAe;AACjB;AACA;EACE,iBAAiB;AACnB;AACA;EACE,qBAAqB;EACrB,kBAAkB;EAClB,mBAAmB;EACnB,eAAe;AACjB;AACA;EACE,sBAAsB;EACtB,qBAAqB;EACrB,WAAW;EACX,YAAY;EACZ,mBAAmB;EACnB,WAAW;EACX,kBAAkB;EAClB,eAAe;EACf,kBAAkB;EAClB,iBAAiB;EACjB,kBAAkB;AACpB;AACA;EACE,YAAY;EACZ,WAAW;EACX,kBAAkB;AACpB;AACA;EACE,aAAa;EACb,gBAAgB;EAChB,gBAAgB;AAClB;AACA;EACE,qBAAqB;AACvB;AACA;EACE,aAAa;AACf;AACA;EACE,qBAAqB;EACrB,sBAAsB;AACxB;AACA;;EAEE,cAAc;EACd,kBAAkB;EAClB,mBAAmB;AACrB;AACA;EACE,eAAe;EACf,gBAAgB;EAChB,WAAW;AACb;AACA;EACE,UAAU;EACV,iBAAiB;EACjB,aAAa;EACb,gBAAgB;EAChB,kBAAkB;EAClB,iBAAiB;AACnB;AACA;EACE,iBAAiB;EACjB,kBAAkB;EAClB,mBAAmB;EACnB,6BAA6B;AAC/B;AACA;EACE,qBAAqB;EACrB,kBAAkB;EAClB,eAAe;EACf,WAAW;EACX,YAAY;EACZ,kBAAkB;EAClB,eAAe;EACf,kBAAkB;EAClB,iBAAiB;EACjB,kBAAkB;EAClB,kBAAkB;EAClB,yBAAyB;EACzB,cAAc;AAChB;AACA;;EAEE,WAAW;EACX,oBAAoB;EACpB,kBAAkB;EAClB,YAAY;EACZ,iBAAiB;EACjB,uBAAuB;AACzB;AACA;EACE,UAAU;EACV,WAAW;EACX,SAAS;EACT,QAAQ;EACR,4BAA4B;EAC5B,gCAAgC;EAChC,oCAAoC;AACtC;AACA;EACE,UAAU;EACV,WAAW;EACX,SAAS;EACT,QAAQ;EACR,6BAA6B;EAC7B,iCAAiC;EACjC,qCAAqC;AACvC","file":"New.vue","sourcesContent":[".bv-choose-people {\n  position: absolute;\n  left: 50%;\n  top: 45%;\n  width: 60%;\n  transform: translate(-50%, -50%);\n  background-color: #fff;\n  overflow: hidden;\n}\n.bv-choose-people_wrapper {\n  width: 100%;\n  height: 100%;\n  position: fixed;\n  left: 0;\n  top: 0;\n  z-index: 20;\n  text-align: left;\n  line-height: 24px;\n}\n.bv-choose-people ul {\n  padding: 0;\n  margin: 0;\n}\n.bv-choose-people li {\n  margin: 0;\n}\n.bv-choose-people_mask {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n  background-color: rgba(0, 0, 0, 0.5);\n}\n.bv-choose-people_head {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 17px 20px;\n  font-size: 16px;\n  background: #f2f2f2;\n  border-bottom: 1px solid #c3c3c3;\n}\n.bv-choose-people_close {\n  color: #909399;\n  cursor: pointer;\n}\n.bv-choose-people_close:hover {\n  color: #4090e2;\n}\n.bv-choose-people_body {\n  display: flex;\n  height: 400px;\n}\n.bv-choose-people_tree {\n  width: 30%;\n  min-width: 200px;\n}\n.bv-choose-people_tree .el-tabs {\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n}\n.bv-choose-people_tree .el-tabs .el-tabs__content {\n  flex: 1;\n}\n.bv-choose-people_tree .el-tabs .el-tab-pane {\n  height: 100%;\n}\n.bv-choose-people_tree .el-tabs .el-tabs__nav-wrap {\n  padding-left: 20px;\n}\n.bv-choose-people_treenav {\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n}\n.bv-choose-people_treenav .el-tree {\n  flex: 1;\n  overflow: auto;\n}\n.bv-choose-people_treenav .el-tree-node__children {\n  overflow: visible;\n}\n.bv-choose-people_search {\n  padding: 10px;\n  padding-top: 0;\n}\n.bv-choose-people_search_button {\n  margin-left: -57px;\n  margin-top: 1px;\n  padding-bottom: 9px;\n  padding-top: 9px;\n}\n.bv-choose-people_selectbox {\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n}\n.bv-choose-people_selectbox_content {\n  flex: 1;\n  overflow: auto;\n  padding: 5px 0;\n  box-sizing: border-box;\n}\n.bv-choose-people_canselect {\n  width: 50%;\n  border: 0 solid #d8d8d8;\n  padding: 16px;\n  overflow: auto;\n  border-width: 0 1px;\n}\n.bv-choose-people_canselect_clear {\n  color: red;\n  cursor: pointer;\n}\n.bv-choose-people_canselect_title {\n  overflow: hidden;\n}\n.bv-choose-people_canselect_title_primary {\n  color: #409eff;\n}\n.bv-choose-people_canselect_title_left {\n  float: left;\n}\n.bv-choose-people_canselect_title_right {\n  float: right;\n}\n.bv-choose-people_canselect_title_right .el-checkbox {\n  margin-right: 10px;\n}\n.bv-choose-people_canselect_title_right .el-checkbox:last-child {\n  margin-right: 0;\n}\n.bv-choose-people_canselect_title_right .el-checkbox__label {\n  padding-left: 5px;\n}\n.bv-choose-people_select_item {\n  display: inline-block;\n  margin-right: 20px;\n  margin-bottom: 10px;\n  cursor: pointer;\n}\n.bv-choose-people_select_item_avatar {\n  vertical-align: middle;\n  display: inline-block;\n  width: 30px;\n  height: 30px;\n  background: #409eff;\n  color: #fff;\n  border-radius: 50%;\n  font-size: 12px;\n  text-align: center;\n  line-height: 30px;\n  margin-right: 10px;\n}\n.bv-choose-people_select_item_avatar img {\n  height: 30px;\n  width: 30px;\n  border-radius: 50%;\n}\n.bv-choose-people_select_item_avatar_close {\n  display: none;\n  font-size: large;\n  margin-top: -2px;\n}\n.bv-choose-people_select_item_avatar:hover .bv-choose-people_select_item_avatar_close {\n  display: inline-block;\n}\n.bv-choose-people_select_item_avatar:hover .bv-choose-people_select_item_avatar_name {\n  display: none;\n}\n.bv-choose-people_select_item_name {\n  display: inline-block;\n  vertical-align: middle;\n}\n.bv-choose-people_select_item_name b,\n.bv-choose-people_select_item_name i {\n  display: block;\n  font-style: normal;\n  font-weight: normal;\n}\n.bv-choose-people_select_item_name i {\n  font-size: 12px;\n  margin-top: -5px;\n  color: #999;\n}\n.bv-choose-people_select {\n  width: 50%;\n  margin-left: -1px;\n  padding: 16px;\n  overflow-y: auto;\n  position: relative;\n  padding-left: 5px;\n}\n.bv-choose-people_foot {\n  text-align: right;\n  padding: 10px 20px;\n  background: #f2f2f2;\n  border-top: 1px solid #c3c3c3;\n}\n.bv-choose-people_select_item_checked {\n  display: inline-block;\n  margin-right: 20px;\n  cursor: pointer;\n  width: 30px;\n  height: 30px;\n  border-radius: 50%;\n  font-size: 12px;\n  text-align: center;\n  line-height: 30px;\n  margin-right: 10px;\n  position: relative;\n  background-color: #1f64a3;\n  color: #1f64a3;\n}\n.bv-choose-people_select_item_checked:before,\n.bv-choose-people_select_item_checked:after {\n  content: '';\n  pointer-events: none;\n  position: absolute;\n  color: white;\n  border: 1px solid;\n  background-color: white;\n}\n.bv-choose-people_select_item_checked:before {\n  width: 2px;\n  height: 2px;\n  left: 28%;\n  top: 48%;\n  transform: skew(0deg, 60deg);\n  -ms-transform: skew(0deg, 60deg);\n  -webkit-transform: skew(0deg, 60deg);\n}\n.bv-choose-people_select_item_checked:after {\n  width: 8px;\n  height: 2px;\n  left: 41%;\n  top: 43%;\n  transform: skew(0deg, -60deg);\n  -ms-transform: skew(0deg, -60deg);\n  -webkit-transform: skew(0deg, -40deg);\n}\n"]}, media: undefined });
 
       };
       /* scoped */
