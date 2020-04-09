@@ -28,13 +28,16 @@ export default class ChoosePeopeleOrOrg extends Vue {
     item = {
         codes: '',
         names: '',
-        users: [],
+        users: [
+            {
+                name: '罗龙',
+                value: 'luolong'
+            }
+        ],
         orgs: []
     }
 
     inputClickHandler() {
-        console.log('click')
-
         this.opickerToToVisible = true
     }
 

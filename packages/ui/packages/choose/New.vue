@@ -98,7 +98,7 @@
                                 <li class="bv-choose-people_select_item" v-for="(item, index) in canSelecteUsers" :key="index" @click="handleSelectUser(item, $event)">
                                     <span :class="{ 'bv-choose-people_select_item_avatar': !item.checked, 'bv-choose-people_select_item_checked': item.checked }">
                                         <span v-show="item.checked">.</span>
-                                        <img v-show="!item.checked" :src="getUserIcon(item.data)" />
+                                        <img v-show="!item.checked" :src="getUserIcon(item)" />
                                     </span>
                                     <span class="bv-choose-people_select_item_name">
                                         <b>{{ item.name }}</b>
@@ -128,7 +128,7 @@
                                                     x
                                                 </span>
                                                 <span class="bv-choose-people_select_item_avatar_name">
-                                                    <img :src="getUserIcon(item.data)" />
+                                                    <img :src="getUserIcon(item)" />
                                                 </span>
                                             </span>
                                             <span class="bv-choose-people_select_item_name" @click="handleClick(index)">
@@ -186,8 +186,8 @@
                                             <span class="bv-choose-people_select_item_avatar_close" @click="handleRemoveSelectedUser(item, index)" title="删除">
                                                 x
                                             </span>
-                                            <span class="name_icon">
-                                                <img :src="getUserIcon(item.data)" class="myAvatar" />
+                                            <span class="bv-choose-people_select_item_avatar_name">
+                                                <img :src="getUserIcon(item)" />
                                             </span>
                                         </span>
                                         <span class="bv-choose-people_select_item_name" @click="handleClick(index)">
@@ -232,8 +232,8 @@ export default class New extends Vue {
     @Prop() rootOrgCode: string
     @Prop({ default: false }) visible: boolean
     @Prop({ default: false }) isShowGlobal: boolean
-    @Prop({}) defaultUsers: any
-    @Prop({}) defaultOrgs: any
+    @Prop({}) defaultUsers: NameValue[]
+    @Prop({}) defaultOrgs: NameValue[]
 
     isShowCheckBox = true
     defaultExpandedKeys = []
@@ -286,10 +286,10 @@ export default class New extends Vue {
 
     mounted() {
         if (this.defaultUsers) {
-            this.selectedUsers.push(...this.defaultUsers)
+            this.selectedUsers.push(...this.defaultUsers.map(u => this.convertToTreeNode(u, 'user')))
         }
         if (this.defaultOrgs) {
-            this.selectedOrgs.push(...this.defaultOrgs)
+            this.selectedOrgs.push(...this.defaultOrgs.map(o => this.convertToTreeNode(o, 'org')))
         }
         document.body.appendChild(this.$el)
     }
@@ -505,8 +505,8 @@ export default class New extends Vue {
     }
 
     handleClickConfirm() {
-        const users = this.selectedUsers
-        const orgs = this.selectedOrgs
+        const users = this.selectedUsers.map(u => this.convertToNameValue(u))
+        const orgs = this.selectedOrgs.map(o => this.convertToNameValue(o))
         const all = [...users, ...orgs]
         const data = {
             users: users,
@@ -524,7 +524,7 @@ export default class New extends Vue {
         this.close()
     }
     getUserIcon(user) {
-        return `${config.api.baseURI}/bua/avatar/getHeadPhoto?userUid=` + user.userUid
+        return `${config.api.baseURI}/bua/avatar/getHeadPhoto?userUid=` + user.value
     }
     // 获取机构头像
     getOrgIcon(name) {
@@ -560,21 +560,44 @@ export default class New extends Vue {
         }
     }
 
-    log(d) {
-        console.log(d)
+    convertToTreeNode(nv: NameValue, type: TreeNodeType) {
+        return <TreeNode>{
+            id: nv.value,
+            name: nv.name,
+            value: nv.value,
+            checked: true,
+            type: type,
+            data: nv.data
+        }
+    }
+
+    convertToNameValue(node: TreeNode) {
+        return <NameValue>{
+            name: node.name,
+            value: node.value,
+            data: node.data
+        }
     }
 }
+
+type TreeNodeType = 'org' | 'user'
 
 interface TreeNode {
     id: string
     name: string
     value: string
-    type: 'org' | 'user'
+    type: TreeNodeType
     leaf: boolean
     checked: boolean
     data: any
     children: TreeNode[]
     [key: string]: any
+}
+
+interface NameValue {
+    name: string
+    value: string
+    data?: any
 }
 </script>
 
