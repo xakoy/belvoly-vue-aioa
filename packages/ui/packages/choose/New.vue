@@ -11,7 +11,7 @@
                     <slot name="header"></slot>
                 </div>
                 <div class="alert_body">
-                    <div class="alert_tree tree-color" id="alert_tree">
+                    <div class="alert_tree tree-color">
                         <el-tabs v-model="tab.activeTabName" @tab-click="tabClickHandler">
                             <el-tab-pane label="本单位" name="unit">
                                 <el-row style="width:100%">
@@ -281,6 +281,13 @@ export default class New extends Vue {
         }
         if (this.defaultOrgs) {
             this.selectedOrgs.push(...this.defaultOrgs)
+        }
+        document.body.appendChild(this.$el)
+    }
+
+    destroyed() {
+        if (this.$el && this.$el.parentNode) {
+            this.$el.parentNode.removeChild(this.$el)
         }
     }
 
