@@ -498,7 +498,6 @@
     let New = class New extends vuePropertyDecorator.Vue {
         constructor() {
             super(...arguments);
-            this.isShowCheckBox = true;
             this.defaultExpandedKeys = [];
             /**
              * tab相关数据
@@ -533,6 +532,15 @@
              */
             this.searchText = '';
         }
+        get isShowCheckBox() {
+            return !this.isOnlyChooseUser;
+        }
+        get isOnlyChooseUser() {
+            return this.mode !== 'orgAndUser';
+        }
+        get isSingleMode() {
+            return this.selectionMode === 'single';
+        }
         get selectNumber() {
             return this.selectedUsers.length;
         }
@@ -541,10 +549,10 @@
         }
         mounted() {
             if (this.defaultUsers) {
-                this.selectedUsers.push(...this.defaultUsers);
+                this.selectedUsers.push(...this.defaultUsers.map(u => this.convertToTreeNode(u, 'user')));
             }
             if (this.defaultOrgs) {
-                this.selectedOrgs.push(...this.defaultOrgs);
+                this.selectedOrgs.push(...this.defaultOrgs.map(o => this.convertToTreeNode(o, 'org')));
             }
             document.body.appendChild(this.$el);
         }
@@ -623,9 +631,6 @@
         async searchUnitUserHandler() {
             const { data } = await userService.searchUsers(this.searchText, this.searchText);
             this.setChooseUser(data);
-        }
-        get isSingleMode() {
-            return this.selectionMode === 'single';
         }
         async handleTreeNodeClick(data) {
             //TODO:
@@ -743,8 +748,8 @@
             //TODO:
         }
         handleClickConfirm() {
-            const users = this.selectedUsers;
-            const orgs = this.selectedOrgs;
+            const users = this.selectedUsers.map(u => this.convertToNameValue(u));
+            const orgs = this.selectedOrgs.map(o => this.convertToNameValue(o));
             const all = [...users, ...orgs];
             const data = {
                 users: users,
@@ -762,7 +767,7 @@
             this.close();
         }
         getUserIcon(user) {
-            return `${config$1.api.baseURI}/bua/avatar/getHeadPhoto?userUid=` + user.userUid;
+            return `${config$1.api.baseURI}/bua/avatar/getHeadPhoto?userUid=` + user.value;
         }
         // 获取机构头像
         getOrgIcon(name) {
@@ -796,8 +801,22 @@
                 children: undefined
             };
         }
-        log(d) {
-            console.log(d);
+        convertToTreeNode(nv, type) {
+            return {
+                id: nv.value,
+                name: nv.name,
+                value: nv.value,
+                checked: true,
+                type: type,
+                data: nv.data
+            };
+        }
+        convertToNameValue(node) {
+            return {
+                name: node.name,
+                value: node.value,
+                data: node.data
+            };
         }
     };
     __decorate([
@@ -1204,7 +1223,7 @@
                                         expression: "!item.checked"
                                       }
                                     ],
-                                    attrs: { src: _vm.getUserIcon(item.data) }
+                                    attrs: { src: _vm.getUserIcon(item) }
                                   })
                                 ]
                               ),
@@ -1228,7 +1247,7 @@
                     ])
                   ]),
                   _vm._v(" "),
-                  _vm.mode === "orgAndUser"
+                  !_vm.isOnlyChooseUser
                     ? [
                         _c("div", { staticClass: "bv-choose-people_select" }, [
                           _c(
@@ -1345,9 +1364,7 @@
                                                 [
                                                   _c("img", {
                                                     attrs: {
-                                                      src: _vm.getUserIcon(
-                                                        item.data
-                                                      )
+                                                      src: _vm.getUserIcon(item)
                                                     }
                                                   })
                                                 ]
@@ -1627,14 +1644,20 @@
                                             ]
                                           ),
                                           _vm._v(" "),
-                                          _c("span", { staticClass: "name_icon" }, [
-                                            _c("img", {
-                                              staticClass: "myAvatar",
-                                              attrs: {
-                                                src: _vm.getUserIcon(item.data)
-                                              }
-                                            })
-                                          ])
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass:
+                                                "bv-choose-people_select_item_avatar_name"
+                                            },
+                                            [
+                                              _c("img", {
+                                                attrs: {
+                                                  src: _vm.getUserIcon(item)
+                                                }
+                                              })
+                                            ]
+                                          )
                                         ]
                                       ),
                                       _vm._v(" "),
@@ -1700,7 +1723,7 @@
       /* style */
       const __vue_inject_styles__$1 = function (inject) {
         if (!inject) return
-        inject("data-v-4ebde9a7_0", { source: ".bv-choose-people {\n  position: absolute;\n  left: 50%;\n  top: 45%;\n  width: 60%;\n  transform: translate(-50%, -50%);\n  background-color: #fff;\n  overflow: hidden;\n}\n.bv-choose-people_wrapper {\n  width: 100%;\n  height: 100%;\n  position: fixed;\n  left: 0;\n  top: 0;\n  z-index: 9999;\n  text-align: left;\n  line-height: 24px;\n}\n.bv-choose-people ul {\n  padding: 0;\n  margin: 0;\n}\n.bv-choose-people li {\n  margin: 0;\n}\n.bv-choose-people_mask {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n  background-color: rgba(0, 0, 0, 0.5);\n}\n.bv-choose-people_head {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 17px 20px;\n  font-size: 16px;\n  background: #f2f2f2;\n  border-bottom: 1px solid #c3c3c3;\n}\n.bv-choose-people_close {\n  color: #909399;\n  cursor: pointer;\n}\n.bv-choose-people_close:hover {\n  color: #4090e2;\n}\n.bv-choose-people_body {\n  display: flex;\n  height: 400px;\n}\n.bv-choose-people_tree {\n  width: 30%;\n  min-width: 200px;\n}\n.bv-choose-people_tree .el-tabs {\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n}\n.bv-choose-people_tree .el-tabs .el-tabs__content {\n  flex: 1;\n}\n.bv-choose-people_tree .el-tabs .el-tab-pane {\n  height: 100%;\n}\n.bv-choose-people_tree .el-tabs .el-tabs__nav-wrap {\n  padding-left: 20px;\n}\n.bv-choose-people_treenav {\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n}\n.bv-choose-people_treenav .el-tree {\n  flex: 1;\n  overflow: auto;\n}\n.bv-choose-people_treenav .el-tree-node__children {\n  overflow: visible;\n}\n.bv-choose-people_search {\n  padding: 10px;\n  padding-top: 0;\n}\n.bv-choose-people_search_button {\n  margin-left: -57px;\n  margin-top: 1px;\n  padding-bottom: 9px;\n  padding-top: 9px;\n}\n.bv-choose-people_selectbox {\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n}\n.bv-choose-people_selectbox_content {\n  flex: 1;\n  overflow: auto;\n  padding: 5px 0;\n  box-sizing: border-box;\n}\n.bv-choose-people_canselect {\n  width: 50%;\n  border: 0 solid #d8d8d8;\n  padding: 16px;\n  overflow: auto;\n  border-width: 0 1px;\n}\n.bv-choose-people_canselect_clear {\n  color: red;\n  cursor: pointer;\n}\n.bv-choose-people_canselect_title {\n  overflow: hidden;\n}\n.bv-choose-people_canselect_title_primary {\n  color: #409eff;\n}\n.bv-choose-people_canselect_title_left {\n  float: left;\n}\n.bv-choose-people_canselect_title_right {\n  float: right;\n}\n.bv-choose-people_canselect_title_right .el-checkbox {\n  margin-right: 10px;\n}\n.bv-choose-people_canselect_title_right .el-checkbox:last-child {\n  margin-right: 0;\n}\n.bv-choose-people_canselect_title_right .el-checkbox__label {\n  padding-left: 5px;\n}\n.bv-choose-people_select_item {\n  display: inline-block;\n  margin-right: 20px;\n  margin-bottom: 10px;\n  cursor: pointer;\n}\n.bv-choose-people_select_item_avatar {\n  vertical-align: middle;\n  display: inline-block;\n  width: 30px;\n  height: 30px;\n  background: #409eff;\n  color: #fff;\n  border-radius: 50%;\n  font-size: 12px;\n  text-align: center;\n  line-height: 30px;\n  margin-right: 10px;\n}\n.bv-choose-people_select_item_avatar img {\n  height: 30px;\n  width: 30px;\n  border-radius: 50%;\n}\n.bv-choose-people_select_item_avatar_close {\n  display: none;\n  font-size: large;\n  margin-top: -2px;\n}\n.bv-choose-people_select_item_avatar:hover .bv-choose-people_select_item_avatar_close {\n  display: inline-block;\n}\n.bv-choose-people_select_item_avatar:hover .bv-choose-people_select_item_avatar_name {\n  display: none;\n}\n.bv-choose-people_select_item_name {\n  display: inline-block;\n  vertical-align: middle;\n}\n.bv-choose-people_select_item_name b,\n.bv-choose-people_select_item_name i {\n  display: block;\n  font-style: normal;\n  font-weight: normal;\n}\n.bv-choose-people_select_item_name i {\n  font-size: 12px;\n  margin-top: -5px;\n  color: #999;\n}\n.bv-choose-people_select {\n  width: 50%;\n  margin-left: -1px;\n  padding: 16px;\n  overflow-y: auto;\n  position: relative;\n  padding-left: 5px;\n}\n.bv-choose-people_foot {\n  text-align: right;\n  padding: 10px 20px;\n  background: #f2f2f2;\n  border-top: 1px solid #c3c3c3;\n}\n.bv-choose-people_select_item_checked {\n  display: inline-block;\n  margin-right: 20px;\n  cursor: pointer;\n  width: 30px;\n  height: 30px;\n  border-radius: 50%;\n  font-size: 12px;\n  text-align: center;\n  line-height: 30px;\n  margin-right: 10px;\n  position: relative;\n  background-color: #1f64a3;\n  color: #1f64a3;\n}\n.bv-choose-people_select_item_checked:before,\n.bv-choose-people_select_item_checked:after {\n  content: '';\n  pointer-events: none;\n  position: absolute;\n  color: white;\n  border: 1px solid;\n  background-color: white;\n}\n.bv-choose-people_select_item_checked:before {\n  width: 2px;\n  height: 2px;\n  left: 28%;\n  top: 48%;\n  transform: skew(0deg, 60deg);\n  -ms-transform: skew(0deg, 60deg);\n  -webkit-transform: skew(0deg, 60deg);\n}\n.bv-choose-people_select_item_checked:after {\n  width: 8px;\n  height: 2px;\n  left: 41%;\n  top: 43%;\n  transform: skew(0deg, -60deg);\n  -ms-transform: skew(0deg, -60deg);\n  -webkit-transform: skew(0deg, -40deg);\n}\n", map: {"version":3,"sources":["New.vue"],"names":[],"mappings":"AAAA;EACE,kBAAkB;EAClB,SAAS;EACT,QAAQ;EACR,UAAU;EACV,gCAAgC;EAChC,sBAAsB;EACtB,gBAAgB;AAClB;AACA;EACE,WAAW;EACX,YAAY;EACZ,eAAe;EACf,OAAO;EACP,MAAM;EACN,aAAa;EACb,gBAAgB;EAChB,iBAAiB;AACnB;AACA;EACE,UAAU;EACV,SAAS;AACX;AACA;EACE,SAAS;AACX;AACA;EACE,WAAW;EACX,YAAY;EACZ,kBAAkB;EAClB,OAAO;EACP,MAAM;EACN,oCAAoC;AACtC;AACA;EACE,aAAa;EACb,8BAA8B;EAC9B,mBAAmB;EACnB,kBAAkB;EAClB,eAAe;EACf,mBAAmB;EACnB,gCAAgC;AAClC;AACA;EACE,cAAc;EACd,eAAe;AACjB;AACA;EACE,cAAc;AAChB;AACA;EACE,aAAa;EACb,aAAa;AACf;AACA;EACE,UAAU;EACV,gBAAgB;AAClB;AACA;EACE,YAAY;EACZ,aAAa;EACb,sBAAsB;AACxB;AACA;EACE,OAAO;AACT;AACA;EACE,YAAY;AACd;AACA;EACE,kBAAkB;AACpB;AACA;EACE,YAAY;EACZ,aAAa;EACb,sBAAsB;AACxB;AACA;EACE,OAAO;EACP,cAAc;AAChB;AACA;EACE,iBAAiB;AACnB;AACA;EACE,aAAa;EACb,cAAc;AAChB;AACA;EACE,kBAAkB;EAClB,eAAe;EACf,mBAAmB;EACnB,gBAAgB;AAClB;AACA;EACE,YAAY;EACZ,aAAa;EACb,sBAAsB;AACxB;AACA;EACE,OAAO;EACP,cAAc;EACd,cAAc;EACd,sBAAsB;AACxB;AACA;EACE,UAAU;EACV,uBAAuB;EACvB,aAAa;EACb,cAAc;EACd,mBAAmB;AACrB;AACA;EACE,UAAU;EACV,eAAe;AACjB;AACA;EACE,gBAAgB;AAClB;AACA;EACE,cAAc;AAChB;AACA;EACE,WAAW;AACb;AACA;EACE,YAAY;AACd;AACA;EACE,kBAAkB;AACpB;AACA;EACE,eAAe;AACjB;AACA;EACE,iBAAiB;AACnB;AACA;EACE,qBAAqB;EACrB,kBAAkB;EAClB,mBAAmB;EACnB,eAAe;AACjB;AACA;EACE,sBAAsB;EACtB,qBAAqB;EACrB,WAAW;EACX,YAAY;EACZ,mBAAmB;EACnB,WAAW;EACX,kBAAkB;EAClB,eAAe;EACf,kBAAkB;EAClB,iBAAiB;EACjB,kBAAkB;AACpB;AACA;EACE,YAAY;EACZ,WAAW;EACX,kBAAkB;AACpB;AACA;EACE,aAAa;EACb,gBAAgB;EAChB,gBAAgB;AAClB;AACA;EACE,qBAAqB;AACvB;AACA;EACE,aAAa;AACf;AACA;EACE,qBAAqB;EACrB,sBAAsB;AACxB;AACA;;EAEE,cAAc;EACd,kBAAkB;EAClB,mBAAmB;AACrB;AACA;EACE,eAAe;EACf,gBAAgB;EAChB,WAAW;AACb;AACA;EACE,UAAU;EACV,iBAAiB;EACjB,aAAa;EACb,gBAAgB;EAChB,kBAAkB;EAClB,iBAAiB;AACnB;AACA;EACE,iBAAiB;EACjB,kBAAkB;EAClB,mBAAmB;EACnB,6BAA6B;AAC/B;AACA;EACE,qBAAqB;EACrB,kBAAkB;EAClB,eAAe;EACf,WAAW;EACX,YAAY;EACZ,kBAAkB;EAClB,eAAe;EACf,kBAAkB;EAClB,iBAAiB;EACjB,kBAAkB;EAClB,kBAAkB;EAClB,yBAAyB;EACzB,cAAc;AAChB;AACA;;EAEE,WAAW;EACX,oBAAoB;EACpB,kBAAkB;EAClB,YAAY;EACZ,iBAAiB;EACjB,uBAAuB;AACzB;AACA;EACE,UAAU;EACV,WAAW;EACX,SAAS;EACT,QAAQ;EACR,4BAA4B;EAC5B,gCAAgC;EAChC,oCAAoC;AACtC;AACA;EACE,UAAU;EACV,WAAW;EACX,SAAS;EACT,QAAQ;EACR,6BAA6B;EAC7B,iCAAiC;EACjC,qCAAqC;AACvC","file":"New.vue","sourcesContent":[".bv-choose-people {\n  position: absolute;\n  left: 50%;\n  top: 45%;\n  width: 60%;\n  transform: translate(-50%, -50%);\n  background-color: #fff;\n  overflow: hidden;\n}\n.bv-choose-people_wrapper {\n  width: 100%;\n  height: 100%;\n  position: fixed;\n  left: 0;\n  top: 0;\n  z-index: 9999;\n  text-align: left;\n  line-height: 24px;\n}\n.bv-choose-people ul {\n  padding: 0;\n  margin: 0;\n}\n.bv-choose-people li {\n  margin: 0;\n}\n.bv-choose-people_mask {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n  background-color: rgba(0, 0, 0, 0.5);\n}\n.bv-choose-people_head {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 17px 20px;\n  font-size: 16px;\n  background: #f2f2f2;\n  border-bottom: 1px solid #c3c3c3;\n}\n.bv-choose-people_close {\n  color: #909399;\n  cursor: pointer;\n}\n.bv-choose-people_close:hover {\n  color: #4090e2;\n}\n.bv-choose-people_body {\n  display: flex;\n  height: 400px;\n}\n.bv-choose-people_tree {\n  width: 30%;\n  min-width: 200px;\n}\n.bv-choose-people_tree .el-tabs {\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n}\n.bv-choose-people_tree .el-tabs .el-tabs__content {\n  flex: 1;\n}\n.bv-choose-people_tree .el-tabs .el-tab-pane {\n  height: 100%;\n}\n.bv-choose-people_tree .el-tabs .el-tabs__nav-wrap {\n  padding-left: 20px;\n}\n.bv-choose-people_treenav {\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n}\n.bv-choose-people_treenav .el-tree {\n  flex: 1;\n  overflow: auto;\n}\n.bv-choose-people_treenav .el-tree-node__children {\n  overflow: visible;\n}\n.bv-choose-people_search {\n  padding: 10px;\n  padding-top: 0;\n}\n.bv-choose-people_search_button {\n  margin-left: -57px;\n  margin-top: 1px;\n  padding-bottom: 9px;\n  padding-top: 9px;\n}\n.bv-choose-people_selectbox {\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n}\n.bv-choose-people_selectbox_content {\n  flex: 1;\n  overflow: auto;\n  padding: 5px 0;\n  box-sizing: border-box;\n}\n.bv-choose-people_canselect {\n  width: 50%;\n  border: 0 solid #d8d8d8;\n  padding: 16px;\n  overflow: auto;\n  border-width: 0 1px;\n}\n.bv-choose-people_canselect_clear {\n  color: red;\n  cursor: pointer;\n}\n.bv-choose-people_canselect_title {\n  overflow: hidden;\n}\n.bv-choose-people_canselect_title_primary {\n  color: #409eff;\n}\n.bv-choose-people_canselect_title_left {\n  float: left;\n}\n.bv-choose-people_canselect_title_right {\n  float: right;\n}\n.bv-choose-people_canselect_title_right .el-checkbox {\n  margin-right: 10px;\n}\n.bv-choose-people_canselect_title_right .el-checkbox:last-child {\n  margin-right: 0;\n}\n.bv-choose-people_canselect_title_right .el-checkbox__label {\n  padding-left: 5px;\n}\n.bv-choose-people_select_item {\n  display: inline-block;\n  margin-right: 20px;\n  margin-bottom: 10px;\n  cursor: pointer;\n}\n.bv-choose-people_select_item_avatar {\n  vertical-align: middle;\n  display: inline-block;\n  width: 30px;\n  height: 30px;\n  background: #409eff;\n  color: #fff;\n  border-radius: 50%;\n  font-size: 12px;\n  text-align: center;\n  line-height: 30px;\n  margin-right: 10px;\n}\n.bv-choose-people_select_item_avatar img {\n  height: 30px;\n  width: 30px;\n  border-radius: 50%;\n}\n.bv-choose-people_select_item_avatar_close {\n  display: none;\n  font-size: large;\n  margin-top: -2px;\n}\n.bv-choose-people_select_item_avatar:hover .bv-choose-people_select_item_avatar_close {\n  display: inline-block;\n}\n.bv-choose-people_select_item_avatar:hover .bv-choose-people_select_item_avatar_name {\n  display: none;\n}\n.bv-choose-people_select_item_name {\n  display: inline-block;\n  vertical-align: middle;\n}\n.bv-choose-people_select_item_name b,\n.bv-choose-people_select_item_name i {\n  display: block;\n  font-style: normal;\n  font-weight: normal;\n}\n.bv-choose-people_select_item_name i {\n  font-size: 12px;\n  margin-top: -5px;\n  color: #999;\n}\n.bv-choose-people_select {\n  width: 50%;\n  margin-left: -1px;\n  padding: 16px;\n  overflow-y: auto;\n  position: relative;\n  padding-left: 5px;\n}\n.bv-choose-people_foot {\n  text-align: right;\n  padding: 10px 20px;\n  background: #f2f2f2;\n  border-top: 1px solid #c3c3c3;\n}\n.bv-choose-people_select_item_checked {\n  display: inline-block;\n  margin-right: 20px;\n  cursor: pointer;\n  width: 30px;\n  height: 30px;\n  border-radius: 50%;\n  font-size: 12px;\n  text-align: center;\n  line-height: 30px;\n  margin-right: 10px;\n  position: relative;\n  background-color: #1f64a3;\n  color: #1f64a3;\n}\n.bv-choose-people_select_item_checked:before,\n.bv-choose-people_select_item_checked:after {\n  content: '';\n  pointer-events: none;\n  position: absolute;\n  color: white;\n  border: 1px solid;\n  background-color: white;\n}\n.bv-choose-people_select_item_checked:before {\n  width: 2px;\n  height: 2px;\n  left: 28%;\n  top: 48%;\n  transform: skew(0deg, 60deg);\n  -ms-transform: skew(0deg, 60deg);\n  -webkit-transform: skew(0deg, 60deg);\n}\n.bv-choose-people_select_item_checked:after {\n  width: 8px;\n  height: 2px;\n  left: 41%;\n  top: 43%;\n  transform: skew(0deg, -60deg);\n  -ms-transform: skew(0deg, -60deg);\n  -webkit-transform: skew(0deg, -40deg);\n}\n"]}, media: undefined });
+        inject("data-v-f920abf0_0", { source: ".bv-choose-people {\n  position: absolute;\n  left: 50%;\n  top: 45%;\n  width: 60%;\n  transform: translate(-50%, -50%);\n  background-color: #fff;\n  overflow: hidden;\n}\n.bv-choose-people_wrapper {\n  width: 100%;\n  height: 100%;\n  position: fixed;\n  left: 0;\n  top: 0;\n  z-index: 9999;\n  text-align: left;\n  line-height: 24px;\n}\n.bv-choose-people ul {\n  padding: 0;\n  margin: 0;\n}\n.bv-choose-people li {\n  margin: 0;\n}\n.bv-choose-people_mask {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n  background-color: rgba(0, 0, 0, 0.5);\n}\n.bv-choose-people_head {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 17px 20px;\n  font-size: 16px;\n  background: #f2f2f2;\n  border-bottom: 1px solid #c3c3c3;\n}\n.bv-choose-people_close {\n  color: #909399;\n  cursor: pointer;\n}\n.bv-choose-people_close:hover {\n  color: #4090e2;\n}\n.bv-choose-people_body {\n  display: flex;\n  height: 400px;\n}\n.bv-choose-people_tree {\n  width: 30%;\n  min-width: 200px;\n}\n.bv-choose-people_tree .el-tabs {\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n}\n.bv-choose-people_tree .el-tabs .el-tabs__content {\n  flex: 1;\n}\n.bv-choose-people_tree .el-tabs .el-tab-pane {\n  height: 100%;\n}\n.bv-choose-people_tree .el-tabs .el-tabs__nav-wrap {\n  padding-left: 20px;\n}\n.bv-choose-people_treenav {\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n}\n.bv-choose-people_treenav .el-tree {\n  flex: 1;\n  overflow: auto;\n}\n.bv-choose-people_treenav .el-tree-node__children {\n  overflow: visible;\n}\n.bv-choose-people_search {\n  padding: 10px;\n  padding-top: 0;\n}\n.bv-choose-people_search_button {\n  margin-left: -57px;\n  margin-top: 1px;\n  padding-bottom: 9px;\n  padding-top: 9px;\n}\n.bv-choose-people_selectbox {\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n}\n.bv-choose-people_selectbox_content {\n  flex: 1;\n  overflow: auto;\n  padding: 5px 0;\n  box-sizing: border-box;\n}\n.bv-choose-people_canselect {\n  width: 50%;\n  border: 0 solid #d8d8d8;\n  padding: 16px;\n  overflow: auto;\n  border-width: 0 1px;\n}\n.bv-choose-people_canselect_clear {\n  color: red;\n  cursor: pointer;\n}\n.bv-choose-people_canselect_title {\n  overflow: hidden;\n}\n.bv-choose-people_canselect_title_primary {\n  color: #409eff;\n}\n.bv-choose-people_canselect_title_left {\n  float: left;\n}\n.bv-choose-people_canselect_title_right {\n  float: right;\n}\n.bv-choose-people_canselect_title_right .el-checkbox {\n  margin-right: 10px;\n}\n.bv-choose-people_canselect_title_right .el-checkbox:last-child {\n  margin-right: 0;\n}\n.bv-choose-people_canselect_title_right .el-checkbox__label {\n  padding-left: 5px;\n}\n.bv-choose-people_select_item {\n  display: inline-block;\n  margin-right: 20px;\n  margin-bottom: 10px;\n  cursor: pointer;\n}\n.bv-choose-people_select_item_avatar {\n  vertical-align: middle;\n  display: inline-block;\n  width: 30px;\n  height: 30px;\n  background: #409eff;\n  color: #fff;\n  border-radius: 50%;\n  font-size: 12px;\n  text-align: center;\n  line-height: 30px;\n  margin-right: 10px;\n}\n.bv-choose-people_select_item_avatar img {\n  height: 30px;\n  width: 30px;\n  border-radius: 50%;\n}\n.bv-choose-people_select_item_avatar_close {\n  display: none;\n  font-size: large;\n  margin-top: -2px;\n}\n.bv-choose-people_select_item_avatar:hover .bv-choose-people_select_item_avatar_close {\n  display: inline-block;\n}\n.bv-choose-people_select_item_avatar:hover .bv-choose-people_select_item_avatar_name {\n  display: none;\n}\n.bv-choose-people_select_item_name {\n  display: inline-block;\n  vertical-align: middle;\n}\n.bv-choose-people_select_item_name b,\n.bv-choose-people_select_item_name i {\n  display: block;\n  font-style: normal;\n  font-weight: normal;\n}\n.bv-choose-people_select_item_name i {\n  font-size: 12px;\n  margin-top: -5px;\n  color: #999;\n}\n.bv-choose-people_select {\n  width: 50%;\n  margin-left: -1px;\n  padding: 16px;\n  overflow-y: auto;\n  position: relative;\n  padding-left: 5px;\n}\n.bv-choose-people_foot {\n  text-align: right;\n  padding: 10px 20px;\n  background: #f2f2f2;\n  border-top: 1px solid #c3c3c3;\n}\n.bv-choose-people_select_item_checked {\n  display: inline-block;\n  margin-right: 20px;\n  cursor: pointer;\n  width: 30px;\n  height: 30px;\n  border-radius: 50%;\n  font-size: 12px;\n  text-align: center;\n  line-height: 30px;\n  margin-right: 10px;\n  position: relative;\n  background-color: #1f64a3;\n  color: #1f64a3;\n}\n.bv-choose-people_select_item_checked:before,\n.bv-choose-people_select_item_checked:after {\n  content: '';\n  pointer-events: none;\n  position: absolute;\n  color: white;\n  border: 1px solid;\n  background-color: white;\n}\n.bv-choose-people_select_item_checked:before {\n  width: 2px;\n  height: 2px;\n  left: 28%;\n  top: 48%;\n  transform: skew(0deg, 60deg);\n  -ms-transform: skew(0deg, 60deg);\n  -webkit-transform: skew(0deg, 60deg);\n}\n.bv-choose-people_select_item_checked:after {\n  width: 8px;\n  height: 2px;\n  left: 41%;\n  top: 43%;\n  transform: skew(0deg, -60deg);\n  -ms-transform: skew(0deg, -60deg);\n  -webkit-transform: skew(0deg, -40deg);\n}\n", map: {"version":3,"sources":["New.vue"],"names":[],"mappings":"AAAA;EACE,kBAAkB;EAClB,SAAS;EACT,QAAQ;EACR,UAAU;EACV,gCAAgC;EAChC,sBAAsB;EACtB,gBAAgB;AAClB;AACA;EACE,WAAW;EACX,YAAY;EACZ,eAAe;EACf,OAAO;EACP,MAAM;EACN,aAAa;EACb,gBAAgB;EAChB,iBAAiB;AACnB;AACA;EACE,UAAU;EACV,SAAS;AACX;AACA;EACE,SAAS;AACX;AACA;EACE,WAAW;EACX,YAAY;EACZ,kBAAkB;EAClB,OAAO;EACP,MAAM;EACN,oCAAoC;AACtC;AACA;EACE,aAAa;EACb,8BAA8B;EAC9B,mBAAmB;EACnB,kBAAkB;EAClB,eAAe;EACf,mBAAmB;EACnB,gCAAgC;AAClC;AACA;EACE,cAAc;EACd,eAAe;AACjB;AACA;EACE,cAAc;AAChB;AACA;EACE,aAAa;EACb,aAAa;AACf;AACA;EACE,UAAU;EACV,gBAAgB;AAClB;AACA;EACE,YAAY;EACZ,aAAa;EACb,sBAAsB;AACxB;AACA;EACE,OAAO;AACT;AACA;EACE,YAAY;AACd;AACA;EACE,kBAAkB;AACpB;AACA;EACE,YAAY;EACZ,aAAa;EACb,sBAAsB;AACxB;AACA;EACE,OAAO;EACP,cAAc;AAChB;AACA;EACE,iBAAiB;AACnB;AACA;EACE,aAAa;EACb,cAAc;AAChB;AACA;EACE,kBAAkB;EAClB,eAAe;EACf,mBAAmB;EACnB,gBAAgB;AAClB;AACA;EACE,YAAY;EACZ,aAAa;EACb,sBAAsB;AACxB;AACA;EACE,OAAO;EACP,cAAc;EACd,cAAc;EACd,sBAAsB;AACxB;AACA;EACE,UAAU;EACV,uBAAuB;EACvB,aAAa;EACb,cAAc;EACd,mBAAmB;AACrB;AACA;EACE,UAAU;EACV,eAAe;AACjB;AACA;EACE,gBAAgB;AAClB;AACA;EACE,cAAc;AAChB;AACA;EACE,WAAW;AACb;AACA;EACE,YAAY;AACd;AACA;EACE,kBAAkB;AACpB;AACA;EACE,eAAe;AACjB;AACA;EACE,iBAAiB;AACnB;AACA;EACE,qBAAqB;EACrB,kBAAkB;EAClB,mBAAmB;EACnB,eAAe;AACjB;AACA;EACE,sBAAsB;EACtB,qBAAqB;EACrB,WAAW;EACX,YAAY;EACZ,mBAAmB;EACnB,WAAW;EACX,kBAAkB;EAClB,eAAe;EACf,kBAAkB;EAClB,iBAAiB;EACjB,kBAAkB;AACpB;AACA;EACE,YAAY;EACZ,WAAW;EACX,kBAAkB;AACpB;AACA;EACE,aAAa;EACb,gBAAgB;EAChB,gBAAgB;AAClB;AACA;EACE,qBAAqB;AACvB;AACA;EACE,aAAa;AACf;AACA;EACE,qBAAqB;EACrB,sBAAsB;AACxB;AACA;;EAEE,cAAc;EACd,kBAAkB;EAClB,mBAAmB;AACrB;AACA;EACE,eAAe;EACf,gBAAgB;EAChB,WAAW;AACb;AACA;EACE,UAAU;EACV,iBAAiB;EACjB,aAAa;EACb,gBAAgB;EAChB,kBAAkB;EAClB,iBAAiB;AACnB;AACA;EACE,iBAAiB;EACjB,kBAAkB;EAClB,mBAAmB;EACnB,6BAA6B;AAC/B;AACA;EACE,qBAAqB;EACrB,kBAAkB;EAClB,eAAe;EACf,WAAW;EACX,YAAY;EACZ,kBAAkB;EAClB,eAAe;EACf,kBAAkB;EAClB,iBAAiB;EACjB,kBAAkB;EAClB,kBAAkB;EAClB,yBAAyB;EACzB,cAAc;AAChB;AACA;;EAEE,WAAW;EACX,oBAAoB;EACpB,kBAAkB;EAClB,YAAY;EACZ,iBAAiB;EACjB,uBAAuB;AACzB;AACA;EACE,UAAU;EACV,WAAW;EACX,SAAS;EACT,QAAQ;EACR,4BAA4B;EAC5B,gCAAgC;EAChC,oCAAoC;AACtC;AACA;EACE,UAAU;EACV,WAAW;EACX,SAAS;EACT,QAAQ;EACR,6BAA6B;EAC7B,iCAAiC;EACjC,qCAAqC;AACvC","file":"New.vue","sourcesContent":[".bv-choose-people {\n  position: absolute;\n  left: 50%;\n  top: 45%;\n  width: 60%;\n  transform: translate(-50%, -50%);\n  background-color: #fff;\n  overflow: hidden;\n}\n.bv-choose-people_wrapper {\n  width: 100%;\n  height: 100%;\n  position: fixed;\n  left: 0;\n  top: 0;\n  z-index: 9999;\n  text-align: left;\n  line-height: 24px;\n}\n.bv-choose-people ul {\n  padding: 0;\n  margin: 0;\n}\n.bv-choose-people li {\n  margin: 0;\n}\n.bv-choose-people_mask {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n  background-color: rgba(0, 0, 0, 0.5);\n}\n.bv-choose-people_head {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 17px 20px;\n  font-size: 16px;\n  background: #f2f2f2;\n  border-bottom: 1px solid #c3c3c3;\n}\n.bv-choose-people_close {\n  color: #909399;\n  cursor: pointer;\n}\n.bv-choose-people_close:hover {\n  color: #4090e2;\n}\n.bv-choose-people_body {\n  display: flex;\n  height: 400px;\n}\n.bv-choose-people_tree {\n  width: 30%;\n  min-width: 200px;\n}\n.bv-choose-people_tree .el-tabs {\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n}\n.bv-choose-people_tree .el-tabs .el-tabs__content {\n  flex: 1;\n}\n.bv-choose-people_tree .el-tabs .el-tab-pane {\n  height: 100%;\n}\n.bv-choose-people_tree .el-tabs .el-tabs__nav-wrap {\n  padding-left: 20px;\n}\n.bv-choose-people_treenav {\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n}\n.bv-choose-people_treenav .el-tree {\n  flex: 1;\n  overflow: auto;\n}\n.bv-choose-people_treenav .el-tree-node__children {\n  overflow: visible;\n}\n.bv-choose-people_search {\n  padding: 10px;\n  padding-top: 0;\n}\n.bv-choose-people_search_button {\n  margin-left: -57px;\n  margin-top: 1px;\n  padding-bottom: 9px;\n  padding-top: 9px;\n}\n.bv-choose-people_selectbox {\n  height: 100%;\n  display: flex;\n  flex-direction: column;\n}\n.bv-choose-people_selectbox_content {\n  flex: 1;\n  overflow: auto;\n  padding: 5px 0;\n  box-sizing: border-box;\n}\n.bv-choose-people_canselect {\n  width: 50%;\n  border: 0 solid #d8d8d8;\n  padding: 16px;\n  overflow: auto;\n  border-width: 0 1px;\n}\n.bv-choose-people_canselect_clear {\n  color: red;\n  cursor: pointer;\n}\n.bv-choose-people_canselect_title {\n  overflow: hidden;\n}\n.bv-choose-people_canselect_title_primary {\n  color: #409eff;\n}\n.bv-choose-people_canselect_title_left {\n  float: left;\n}\n.bv-choose-people_canselect_title_right {\n  float: right;\n}\n.bv-choose-people_canselect_title_right .el-checkbox {\n  margin-right: 10px;\n}\n.bv-choose-people_canselect_title_right .el-checkbox:last-child {\n  margin-right: 0;\n}\n.bv-choose-people_canselect_title_right .el-checkbox__label {\n  padding-left: 5px;\n}\n.bv-choose-people_select_item {\n  display: inline-block;\n  margin-right: 20px;\n  margin-bottom: 10px;\n  cursor: pointer;\n}\n.bv-choose-people_select_item_avatar {\n  vertical-align: middle;\n  display: inline-block;\n  width: 30px;\n  height: 30px;\n  background: #409eff;\n  color: #fff;\n  border-radius: 50%;\n  font-size: 12px;\n  text-align: center;\n  line-height: 30px;\n  margin-right: 10px;\n}\n.bv-choose-people_select_item_avatar img {\n  height: 30px;\n  width: 30px;\n  border-radius: 50%;\n}\n.bv-choose-people_select_item_avatar_close {\n  display: none;\n  font-size: large;\n  margin-top: -2px;\n}\n.bv-choose-people_select_item_avatar:hover .bv-choose-people_select_item_avatar_close {\n  display: inline-block;\n}\n.bv-choose-people_select_item_avatar:hover .bv-choose-people_select_item_avatar_name {\n  display: none;\n}\n.bv-choose-people_select_item_name {\n  display: inline-block;\n  vertical-align: middle;\n}\n.bv-choose-people_select_item_name b,\n.bv-choose-people_select_item_name i {\n  display: block;\n  font-style: normal;\n  font-weight: normal;\n}\n.bv-choose-people_select_item_name i {\n  font-size: 12px;\n  margin-top: -5px;\n  color: #999;\n}\n.bv-choose-people_select {\n  width: 50%;\n  margin-left: -1px;\n  padding: 16px;\n  overflow-y: auto;\n  position: relative;\n  padding-left: 5px;\n}\n.bv-choose-people_foot {\n  text-align: right;\n  padding: 10px 20px;\n  background: #f2f2f2;\n  border-top: 1px solid #c3c3c3;\n}\n.bv-choose-people_select_item_checked {\n  display: inline-block;\n  margin-right: 20px;\n  cursor: pointer;\n  width: 30px;\n  height: 30px;\n  border-radius: 50%;\n  font-size: 12px;\n  text-align: center;\n  line-height: 30px;\n  margin-right: 10px;\n  position: relative;\n  background-color: #1f64a3;\n  color: #1f64a3;\n}\n.bv-choose-people_select_item_checked:before,\n.bv-choose-people_select_item_checked:after {\n  content: '';\n  pointer-events: none;\n  position: absolute;\n  color: white;\n  border: 1px solid;\n  background-color: white;\n}\n.bv-choose-people_select_item_checked:before {\n  width: 2px;\n  height: 2px;\n  left: 28%;\n  top: 48%;\n  transform: skew(0deg, 60deg);\n  -ms-transform: skew(0deg, 60deg);\n  -webkit-transform: skew(0deg, 60deg);\n}\n.bv-choose-people_select_item_checked:after {\n  width: 8px;\n  height: 2px;\n  left: 41%;\n  top: 43%;\n  transform: skew(0deg, -60deg);\n  -ms-transform: skew(0deg, -60deg);\n  -webkit-transform: skew(0deg, -40deg);\n}\n"]}, media: undefined });
 
       };
       /* scoped */
