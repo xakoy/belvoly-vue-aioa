@@ -163,6 +163,7 @@ export default class Index extends Vue {
                 this.uploadFiles.splice(fileIndex, 1)
             }
         }
+        this.change()
     }
     async beforeRemove(file) {
         if (file.status === 'ready') {
@@ -188,7 +189,18 @@ export default class Index extends Vue {
         }
 
         this.$emit('on-success', uploadInfo)
+        this.change()
         // this.$bus.emit('uploadInfo', uploadInfo)
+    }
+
+    change() {
+        const files = this.uploadFiles.map(f => {
+            return {
+                id: f.id,
+                data: f
+            }
+        })
+        this.$emit('change', files)
     }
 
     async beforeUploadHandler(file) {
@@ -299,6 +311,10 @@ export default class Index extends Vue {
             }
         }
         if (!extension) {
+            return
+        }
+        const element = el.parentNode.querySelector('.el-upload-file-icon')
+        if (element) {
             return
         }
         const removedDotExtension = extension.substring(1)
