@@ -121,6 +121,7 @@
                     this.uploadFiles.splice(fileIndex, 1);
                 }
             }
+            this.change();
         }
         async beforeRemove(file) {
             if (file.status === 'ready') {
@@ -142,7 +143,17 @@
                 fileList: fileList
             };
             this.$emit('on-success', uploadInfo);
+            this.change();
             // this.$bus.emit('uploadInfo', uploadInfo)
+        }
+        change() {
+            const files = this.uploadFiles.map(f => {
+                return {
+                    id: f.id,
+                    data: f
+                };
+            });
+            this.$emit('change', files);
         }
         async beforeUploadHandler(file) {
             const before = this.beforeUpload || (this.isOnlyImage && this.beforeUploadImage);
@@ -241,6 +252,10 @@
                 }
             }
             if (!extension) {
+                return;
+            }
+            const element = el.parentNode.querySelector('.el-upload-file-icon');
+            if (element) {
                 return;
             }
             const removedDotExtension = extension.substring(1);
@@ -519,7 +534,7 @@
       /* style */
       const __vue_inject_styles__ = function (inject) {
         if (!inject) return
-        inject("data-v-0297652d_0", { source: ".bv-upload__tip {\n  margin-left: 10px;\n  display: inline-block;\n}\n.upload-detail .el-upload--text {\n  display: none !important;\n}\n.upload-detail .el-upload-list__item:hover .el-icon-close,\n.upload-detail .el-upload-list__item:hover .el-icon-close-tip {\n  display: none;\n}\n.upload-detail .el-upload-list__item .el-icon-close-tip {\n  display: none !important;\n}\n.upload-detail .el-upload-list__item .el-upload-list__item-name .el-upload-file-icon {\n  width: 16px;\n  height: 16px;\n  vertical-align: text-bottom;\n  margin-right: 7px;\n}\n", map: {"version":3,"sources":["Index.vue"],"names":[],"mappings":"AAAA;EACE,iBAAiB;EACjB,qBAAqB;AACvB;AACA;EACE,wBAAwB;AAC1B;AACA;;EAEE,aAAa;AACf;AACA;EACE,wBAAwB;AAC1B;AACA;EACE,WAAW;EACX,YAAY;EACZ,2BAA2B;EAC3B,iBAAiB;AACnB","file":"Index.vue","sourcesContent":[".bv-upload__tip {\n  margin-left: 10px;\n  display: inline-block;\n}\n.upload-detail .el-upload--text {\n  display: none !important;\n}\n.upload-detail .el-upload-list__item:hover .el-icon-close,\n.upload-detail .el-upload-list__item:hover .el-icon-close-tip {\n  display: none;\n}\n.upload-detail .el-upload-list__item .el-icon-close-tip {\n  display: none !important;\n}\n.upload-detail .el-upload-list__item .el-upload-list__item-name .el-upload-file-icon {\n  width: 16px;\n  height: 16px;\n  vertical-align: text-bottom;\n  margin-right: 7px;\n}\n"]}, media: undefined });
+        inject("data-v-ec7463b6_0", { source: ".bv-upload__tip {\n  margin-left: 10px;\n  display: inline-block;\n}\n.upload-detail .el-upload--text {\n  display: none !important;\n}\n.upload-detail .el-upload-list__item:hover .el-icon-close,\n.upload-detail .el-upload-list__item:hover .el-icon-close-tip {\n  display: none;\n}\n.upload-detail .el-upload-list__item .el-icon-close-tip {\n  display: none !important;\n}\n.upload-detail .el-upload-list__item .el-upload-list__item-name .el-upload-file-icon {\n  width: 16px;\n  height: 16px;\n  vertical-align: text-bottom;\n  margin-right: 7px;\n}\n", map: {"version":3,"sources":["Index.vue"],"names":[],"mappings":"AAAA;EACE,iBAAiB;EACjB,qBAAqB;AACvB;AACA;EACE,wBAAwB;AAC1B;AACA;;EAEE,aAAa;AACf;AACA;EACE,wBAAwB;AAC1B;AACA;EACE,WAAW;EACX,YAAY;EACZ,2BAA2B;EAC3B,iBAAiB;AACnB","file":"Index.vue","sourcesContent":[".bv-upload__tip {\n  margin-left: 10px;\n  display: inline-block;\n}\n.upload-detail .el-upload--text {\n  display: none !important;\n}\n.upload-detail .el-upload-list__item:hover .el-icon-close,\n.upload-detail .el-upload-list__item:hover .el-icon-close-tip {\n  display: none;\n}\n.upload-detail .el-upload-list__item .el-icon-close-tip {\n  display: none !important;\n}\n.upload-detail .el-upload-list__item .el-upload-list__item-name .el-upload-file-icon {\n  width: 16px;\n  height: 16px;\n  vertical-align: text-bottom;\n  margin-right: 7px;\n}\n"]}, media: undefined });
 
       };
       /* scoped */
