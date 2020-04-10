@@ -1,18 +1,20 @@
 <template>
-    <div>
+    <div class="bv-upload">
         <el-upload
             :action="uploadAction"
             :on-preview="handlePreview"
             :on-remove="handleRemove"
             :before-remove="beforeRemove"
-            :before-upload="beforeUpload"
+            :before-upload="beforeUploadHandler"
+            :accept="accept"
+            :limit="limit"
             multiple="multiple"
             :file-list="getFileList"
             :on-success="handleUploadSuccess"
             v-if="isEditFile"
         >
-            <el-button size="mini" type="primary">上传附件</el-button>
-            <div slot="tip" class="el-upload__tip">({{ uploadTip }})</div>
+            <el-button size="mini" type="primary" :disabled="isDisabled">上传附件</el-button>
+            <div slot="tip" class="bv-upload__tip el-upload__tip">({{ uploadTip }})</div>
         </el-upload>
         <!-- 查看附件 -->
         <el-upload class="upload-detail" :action="uploadAction" :on-preview="handlePreview" :file-list="getFileList" v-else></el-upload>
@@ -42,6 +44,10 @@ const config = {
     }
 }
 
+interface BeforeUpload {
+    (file: any): Promise<boolean>
+}
+
 @Component
 export default class Index extends Vue {
     @Prop({ default: `${config.api.baseURI}/sharedservice/blob/upload` }) action: string
@@ -52,12 +58,26 @@ export default class Index extends Vue {
     @Prop({ required: true }) typeCode: string
     @Prop() userUid: string
     @Prop({ default: true }) isEditFile: boolean
+    @Prop({ default: 9999 }) limit: number
+    /**
+     * 是否只允许图面
+     */
+    @Prop({ default: false }) isOnlyImage: boolean
+    /**
+     * 文字提示
+     */
+    @Prop() tip: string
+    /**
+     * 上传前验证
+     */
+    @Prop() beforeUpload: BeforeUpload
 
     uploadFiles: any[] = []
 
     get uploadAction() {
         return `${this.action}?refTableName=${this.refTableName}&typeCode=${this.typeCode}&creatorID=${this.userUid}`
     }
+
     get getFileList() {
         const files = this.fileList.map((c: any) => {
             if (c.displayName) {
@@ -67,8 +87,18 @@ export default class Index extends Vue {
         })
         return files
     }
+    get accept() {
+        if (this.isOnlyImage) {
+            return '.jpg,.jpeg,.png,.bmp'
+        }
+        return ''
+    }
     get uploadTip() {
-        return `最多允许上传${this.maxSize}MB的内容`
+        return this.tip || this.isOnlyImage ? `最多允许上传${this.maxSize}MB的内容，格式仅支持${this.accept}` : `最多允许上传${this.maxSize}MB的内容`
+    }
+
+    get isDisabled() {
+        return this.uploadFiles.length >= this.limit
     }
 
     mounted() {
@@ -115,6 +145,9 @@ export default class Index extends Vue {
         return supportFileTypes.includes(extension)
     }
     async handleRemove(file) {
+        if (!(file.id || file.response)) {
+            return true
+        }
         const id = file.id || file.response.data.id
 
         const { success } = await attachmentService.remove(id)
@@ -126,12 +159,18 @@ export default class Index extends Vue {
             })
 
             const fileIndex = this.uploadFiles.findIndex(file => file.id === id)
-            this.uploadFiles.splice(fileIndex, 1)
+            if (fileIndex > -1) {
+                this.uploadFiles.splice(fileIndex, 1)
+            }
         }
     }
-    beforeRemove(file) {
-        return MessageBox.confirm(`确定移除 ${file.name}？`)
+    async beforeRemove(file) {
+        if (file.status === 'ready') {
+            return true
+        }
+        return await MessageBox.confirm(`确定移除 ${file.name}？`)
     }
+
     handleUploadSuccess(response, file, fileList) {
         const successFiles = fileList.find(file => file.status === 'success')
         this.uploadFiles.push(response.data)
@@ -151,13 +190,35 @@ export default class Index extends Vue {
         this.$emit('on-success', uploadInfo)
         // this.$bus.emit('uploadInfo', uploadInfo)
     }
-    beforeUpload(file) {
+
+    async beforeUploadHandler(file) {
+        const before = this.beforeUpload || (this.isOnlyImage && this.beforeUploadImage)
+        if (before) {
+            try {
+                await before(file)
+            } catch (e) {
+                this.$message.error(e.message)
+                throw new Error(e.message)
+            }
+        }
         const isLtSize = file.size / 1024 / 1024 < this.maxSize
         if (!isLtSize) {
-            this.$message.error(`上传文件大小不能超过 ${this.maxSize}MB!`)
+            const message = `上传文件大小不能超过 ${this.maxSize}MB!`
+            this.$message.error(message)
+            throw new Error(message)
         }
-        return isLtSize
     }
+
+    async beforeUploadImage(file) {
+        const allowTypes = ['image/bmp', 'image/jpeg', 'image/png']
+
+        if (allowTypes.some(c => c === file.type)) {
+            return true
+        }
+
+        throw new Error(`图片格式不正确`)
+    }
+
     replaceFileIcons(files) {
         this.$nextTick(() => {
             this.$el.querySelectorAll('.el-icon-document').forEach((el: HTMLElement, i) => {
@@ -273,6 +334,12 @@ export default class Index extends Vue {
 }
 </script>
 <style lang="less">
+.bv-upload {
+    &__tip {
+        margin-left: 10px;
+        display: inline-block;
+    }
+}
 .upload-detail {
     .el-upload--text {
         display: none !important;
