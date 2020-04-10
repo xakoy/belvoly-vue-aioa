@@ -60,8 +60,17 @@
             });
             return files;
         }
+        get accept() {
+            if (this.isOnlyImage) {
+                return '.jpg,.jpeg,.png,.bmp';
+            }
+            return '';
+        }
         get uploadTip() {
-            return `最多允许上传${this.maxSize}MB的内容`;
+            return this.tip || this.isOnlyImage ? `最多允许上传${this.maxSize}MB的内容，格式仅支持${this.accept}` : `最多允许上传${this.maxSize}MB的内容`;
+        }
+        get isDisabled() {
+            return this.uploadFiles.length >= this.limit;
         }
         mounted() {
             this.watchFileList(this.fileList);
@@ -97,6 +106,9 @@
             return supportFileTypes.includes(extension);
         }
         async handleRemove(file) {
+            if (!(file.id || file.response)) {
+                return true;
+            }
             const id = file.id || file.response.data.id;
             const { success } = await attachmentService.remove(id);
             if (success) {
@@ -105,11 +117,16 @@
                     type: 'success'
                 });
                 const fileIndex = this.uploadFiles.findIndex(file => file.id === id);
-                this.uploadFiles.splice(fileIndex, 1);
+                if (fileIndex > -1) {
+                    this.uploadFiles.splice(fileIndex, 1);
+                }
             }
         }
-        beforeRemove(file) {
-            return elementUi.MessageBox.confirm(`确定移除 ${file.name}？`);
+        async beforeRemove(file) {
+            if (file.status === 'ready') {
+                return true;
+            }
+            return await elementUi.MessageBox.confirm(`确定移除 ${file.name}？`);
         }
         handleUploadSuccess(response, file, fileList) {
             const successFiles = fileList.find(file => file.status === 'success');
@@ -127,12 +144,30 @@
             this.$emit('on-success', uploadInfo);
             // this.$bus.emit('uploadInfo', uploadInfo)
         }
-        beforeUpload(file) {
+        async beforeUploadHandler(file) {
+            const before = this.beforeUpload || (this.isOnlyImage && this.beforeUploadImage);
+            if (before) {
+                try {
+                    await before(file);
+                }
+                catch (e) {
+                    this.$message.error(e.message);
+                    throw new Error(e.message);
+                }
+            }
             const isLtSize = file.size / 1024 / 1024 < this.maxSize;
             if (!isLtSize) {
-                this.$message.error(`上传文件大小不能超过 ${this.maxSize}MB!`);
+                const message = `上传文件大小不能超过 ${this.maxSize}MB!`;
+                this.$message.error(message);
+                throw new Error(message);
             }
-            return isLtSize;
+        }
+        async beforeUploadImage(file) {
+            const allowTypes = ['image/bmp', 'image/jpeg', 'image/png'];
+            if (allowTypes.some(c => c === file.type)) {
+                return true;
+            }
+            throw new Error(`图片格式不正确`);
         }
         replaceFileIcons(files) {
             this.$nextTick(() => {
@@ -261,6 +296,18 @@
     __decorate([
         vuePropertyDecorator.Prop({ default: true })
     ], Index.prototype, "isEditFile", void 0);
+    __decorate([
+        vuePropertyDecorator.Prop({ default: 9999 })
+    ], Index.prototype, "limit", void 0);
+    __decorate([
+        vuePropertyDecorator.Prop({ default: false })
+    ], Index.prototype, "isOnlyImage", void 0);
+    __decorate([
+        vuePropertyDecorator.Prop()
+    ], Index.prototype, "tip", void 0);
+    __decorate([
+        vuePropertyDecorator.Prop()
+    ], Index.prototype, "beforeUpload", void 0);
     __decorate([
         vuePropertyDecorator.Watch('fileList')
     ], Index.prototype, "watchFileList", null);
@@ -410,6 +457,7 @@
       var _c = _vm._self._c || _h;
       return _c(
         "div",
+        { staticClass: "bv-upload" },
         [
           _vm.isEditFile
             ? _c(
@@ -420,21 +468,31 @@
                     "on-preview": _vm.handlePreview,
                     "on-remove": _vm.handleRemove,
                     "before-remove": _vm.beforeRemove,
-                    "before-upload": _vm.beforeUpload,
+                    "before-upload": _vm.beforeUploadHandler,
+                    accept: _vm.accept,
+                    limit: _vm.limit,
                     multiple: "multiple",
                     "file-list": _vm.getFileList,
                     "on-success": _vm.handleUploadSuccess
                   }
                 },
                 [
-                  _c("el-button", { attrs: { size: "mini", type: "primary" } }, [
-                    _vm._v("上传附件")
-                  ]),
+                  _c(
+                    "el-button",
+                    {
+                      attrs: {
+                        size: "mini",
+                        type: "primary",
+                        disabled: _vm.isDisabled
+                      }
+                    },
+                    [_vm._v("上传附件")]
+                  ),
                   _vm._v(" "),
                   _c(
                     "div",
                     {
-                      staticClass: "el-upload__tip",
+                      staticClass: "bv-upload__tip el-upload__tip",
                       attrs: { slot: "tip" },
                       slot: "tip"
                     },
@@ -461,7 +519,7 @@
       /* style */
       const __vue_inject_styles__ = function (inject) {
         if (!inject) return
-        inject("data-v-833ba49c_0", { source: ".upload-detail .el-upload--text {\n  display: none !important;\n}\n.upload-detail .el-upload-list__item:hover .el-icon-close,\n.upload-detail .el-upload-list__item:hover .el-icon-close-tip {\n  display: none;\n}\n.upload-detail .el-upload-list__item .el-icon-close-tip {\n  display: none !important;\n}\n.upload-detail .el-upload-list__item .el-upload-list__item-name .el-upload-file-icon {\n  width: 16px;\n  height: 16px;\n  vertical-align: text-bottom;\n  margin-right: 7px;\n}\n", map: {"version":3,"sources":["Index.vue"],"names":[],"mappings":"AAAA;EACE,wBAAwB;AAC1B;AACA;;EAEE,aAAa;AACf;AACA;EACE,wBAAwB;AAC1B;AACA;EACE,WAAW;EACX,YAAY;EACZ,2BAA2B;EAC3B,iBAAiB;AACnB","file":"Index.vue","sourcesContent":[".upload-detail .el-upload--text {\n  display: none !important;\n}\n.upload-detail .el-upload-list__item:hover .el-icon-close,\n.upload-detail .el-upload-list__item:hover .el-icon-close-tip {\n  display: none;\n}\n.upload-detail .el-upload-list__item .el-icon-close-tip {\n  display: none !important;\n}\n.upload-detail .el-upload-list__item .el-upload-list__item-name .el-upload-file-icon {\n  width: 16px;\n  height: 16px;\n  vertical-align: text-bottom;\n  margin-right: 7px;\n}\n"]}, media: undefined });
+        inject("data-v-0297652d_0", { source: ".bv-upload__tip {\n  margin-left: 10px;\n  display: inline-block;\n}\n.upload-detail .el-upload--text {\n  display: none !important;\n}\n.upload-detail .el-upload-list__item:hover .el-icon-close,\n.upload-detail .el-upload-list__item:hover .el-icon-close-tip {\n  display: none;\n}\n.upload-detail .el-upload-list__item .el-icon-close-tip {\n  display: none !important;\n}\n.upload-detail .el-upload-list__item .el-upload-list__item-name .el-upload-file-icon {\n  width: 16px;\n  height: 16px;\n  vertical-align: text-bottom;\n  margin-right: 7px;\n}\n", map: {"version":3,"sources":["Index.vue"],"names":[],"mappings":"AAAA;EACE,iBAAiB;EACjB,qBAAqB;AACvB;AACA;EACE,wBAAwB;AAC1B;AACA;;EAEE,aAAa;AACf;AACA;EACE,wBAAwB;AAC1B;AACA;EACE,WAAW;EACX,YAAY;EACZ,2BAA2B;EAC3B,iBAAiB;AACnB","file":"Index.vue","sourcesContent":[".bv-upload__tip {\n  margin-left: 10px;\n  display: inline-block;\n}\n.upload-detail .el-upload--text {\n  display: none !important;\n}\n.upload-detail .el-upload-list__item:hover .el-icon-close,\n.upload-detail .el-upload-list__item:hover .el-icon-close-tip {\n  display: none;\n}\n.upload-detail .el-upload-list__item .el-icon-close-tip {\n  display: none !important;\n}\n.upload-detail .el-upload-list__item .el-upload-list__item-name .el-upload-file-icon {\n  width: 16px;\n  height: 16px;\n  vertical-align: text-bottom;\n  margin-right: 7px;\n}\n"]}, media: undefined });
 
       };
       /* scoped */
