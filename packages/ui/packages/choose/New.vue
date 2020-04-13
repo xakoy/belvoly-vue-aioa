@@ -16,7 +16,7 @@
                             <el-tab-pane label="本单位" name="unit">
                                 <div class="bv-choose-people_treenav">
                                     <div class="bv-choose-people_search">
-                                        <el-input v-model="searchText" @keyup.enter="keyupSubmit(event)" placeholder="用户名称\账号">
+                                        <el-input size="small" v-model="searchText" @keyup.enter.native="searchUnitUserHandler" placeholder="用户名称\账号">
                                             <template v-slot:append>
                                                 <el-button title="查询用户" class="bv-choose-people_search_button" @click="searchUnitUserHandler">
                                                     <i class="fc fc-search"></i>
@@ -55,6 +55,15 @@
                             </el-tab-pane>
                             <el-tab-pane label="全局" name="gloabl" v-if="isShowGlobal">
                                 <div class="bv-choose-people_treenav">
+                                    <div class="bv-choose-people_search">
+                                        <el-input size="small" v-model="searchText" @keyup.enter.native="searchGlobalUserHandler" placeholder="用户名称\账号">
+                                            <template v-slot:append>
+                                                <el-button title="查询用户" class="bv-choose-people_search_button" @click="searchGlobalUserHandler">
+                                                    <i class="fc fc-search"></i>
+                                                </el-button>
+                                            </template>
+                                        </el-input>
+                                    </div>
                                     <el-tree
                                         ref="globaltree"
                                         :show-checkbox="isShowCheckBox"
@@ -85,15 +94,15 @@
                             </el-tab-pane>
                         </el-tabs>
                     </div>
-                    <div class="bv-choose-people_canselect">
+                    <div class="bv-choose-people_canselect" v-loading="getUserLoading">
                         <div class="bv-choose-people_canselect_title">
                             <span class="bv-choose-people_canselect_title_left bv-choose-people_canselect_title_primary">{{ currentSelectOrg ? currentSelectOrg.orgName : '' }}</span>
                             <span class="bv-choose-people_canselect_title_right">
-                                <el-checkbox @change="showDepartmentClick" v-model="showDepartmentalUsers">显示子部门用户</el-checkbox>
+                                <el-checkbox @change="showDepartmentClick" v-if="currentSelectOrg" v-model="showDepartmentalUsers">显示子部门用户</el-checkbox>
                                 <!-- <el-checkbox v-model="checkAll" :disabled="checkAllDisabled">全选</el-checkbox> -->
                             </span>
                         </div>
-                        <div style="overflow: auto;">
+                        <div>
                             <ul class="bv-choose-people_canselect_list">
                                 <li class="bv-choose-people_select_item" v-for="(item, index) in canSelecteUsers" :key="index" @click="handleSelectUser(item, $event)">
                                     <span :class="{ 'bv-choose-people_select_item_avatar': !item.checked, 'bv-choose-people_select_item_checked': item.checked }">
@@ -275,6 +284,11 @@ export default class New extends Vue {
      */
     searchText = ''
 
+    /**
+     * 获取用户的loading开关
+     */
+    getUserLoading = false
+
     get isShowCheckBox() {
         return !this.isOnlyChooseUser
     }
@@ -379,15 +393,32 @@ export default class New extends Vue {
     }
 
     async searchUnitUserHandler() {
-        const { data } = await userService.searchUsers(this.searchText, this.searchText)
+        await this.searchUser(this.searchText, this.rootOrgCode)
+    }
+
+    async searchGlobalUserHandler() {
+        await this.searchUser(this.searchText)
+    }
+
+    async searchUser(text: string, parentCode?: string) {
+        this.currentSelectOrg = null
+        this.getUserLoading = true
+        const { data } = await userService.searchUsers(text, text, parentCode)
+        this.getUserLoading = false
         this.setChooseUser(data)
     }
 
     async handleTreeNodeClick(data: TreeNode) {
-        //TODO:
         this.currentSelectOrg = data.data
-        //TODO: 判断showDepartmentalUsers
-        await this.queryUserByOrgCode(data.value)
+        this.queryUser(this.currentSelectOrg.orgCode, this.showDepartmentalUsers)
+    }
+
+    async queryUser(orgCode: string, isQueryAllChild: boolean) {
+        if (isQueryAllChild) {
+            await this.queryAllUsersByOrgCode(orgCode)
+        } else {
+            await this.queryUserByOrgCode(orgCode)
+        }
     }
 
     handleTreeNodeCheckChange(data: TreeNode, checked) {
@@ -413,12 +444,16 @@ export default class New extends Vue {
 
     // 查询机构下的用户
     async queryUserByOrgCode(orgCode) {
+        this.getUserLoading = true
         const { data } = await userService.queryByOrgCode(orgCode)
+        this.getUserLoading = false
         this.setChooseUser(data)
     }
     // 查询机构下穿透的用户集合
     async queryAllUsersByOrgCode(orgCode) {
+        this.getUserLoading = true
         const { data } = await userService.queryByOrgCodeAllUsers(orgCode)
+        this.getUserLoading = false
         this.setChooseUser(data)
     }
 
@@ -442,7 +477,7 @@ export default class New extends Vue {
     }
 
     showDepartmentClick() {
-        //TODO:
+        this.queryUser(this.currentSelectOrg.orgCode, this.showDepartmentalUsers)
     }
 
     handleSelectUser(user: TreeNode) {
@@ -549,7 +584,6 @@ export default class New extends Vue {
 
         return data.map(org => {
             const node = this.convertOrgToTreeNode(org, !org.hasChildOrg)
-            node.data = org
             return node
         })
     }
@@ -562,7 +596,7 @@ export default class New extends Vue {
             type: 'org',
             leaf: leaf,
             checked: false,
-            data: undefined,
+            data: org,
             children: undefined
         }
     }

@@ -73,14 +73,15 @@ function getPicture(uid) {
  * @method searchUsers
  * @param {string} userUid
  * @param {string} userName
- * @param {*} callback
+ * @param {string} parentOrgCode 父级orgCode，限定在此机构下查找
  */
-function searchUsers(userUid, userName) {
+function searchUsers(userUid, userName, parentOrgCode?: string) {
     return request<User[]>(`${config.apiHost}/bua/user/searchUsers`, {
         method: 'POST',
         data: {
             userUid: userUid,
-            userName: userName
+            userName: userName,
+            orgCode: parentOrgCode
         }
     })
 }
