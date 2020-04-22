@@ -11,7 +11,8 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import { TinymceEditor } from '../../packages/tinymce'
+// import { TinymceEditor } from '../../packages/tinymce'
+import TinymceEditor from '../../packages/tinymce/Editor.vue'
 import { ElForm } from 'element-ui/types/form'
 import { Message } from 'element-ui'
 console.log(TinymceEditor)
