@@ -1,0 +1,23 @@
+{
+  "name": "@belvoly-vue-aioa/core",
+  "version": "0.1.5",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rollup -c",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-typescript2": "^0.27.0",
+    "rollup-plugin-vue": "^5.1.6"
+  },
+  "dependencies": {
+    "axios": "^0.19.2",
+    "element-ui": "^2.13.0"
+  },
+  "gitHead": "eb87dd3db1c6400b62f0656bbc13b25cb211542d"
+}
