@@ -33,6 +33,10 @@ export default class Index extends Vue {
         {
             name: 'choose',
             path: 'choose'
+        },
+        {
+            name: 'SubscriptionEvent',
+            path: 'SubscriptionEvent'
         }
     ]
 

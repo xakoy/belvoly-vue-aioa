@@ -22,6 +22,11 @@ const routes: RouteConfig[] = [
                 path: 'choose',
                 name: 'choose',
                 component: () => import('./views/Choose.vue')
+            },
+            {
+                path: 'subscription-event',
+                name: 'SubscriptionEvent',
+                component: () => import('./views/SubscriptionEvent.vue')
             }
         ]
     }
