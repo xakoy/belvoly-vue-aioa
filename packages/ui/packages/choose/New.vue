@@ -423,9 +423,15 @@ export default class New extends Vue {
 
     handleTreeNodeCheckChange(data: TreeNode, checked) {
         if (this.isSingleMode) {
-            this.selectedOrgs = []
             if (checked === true) {
-                this.selectedOrgs.push(data)
+                this.selectedOrgs = [data]
+                const tree = this.getCurrentTree()
+                tree.setCheckedKeys([data.id])
+            } else {
+                const index = this.selectedOrgs.findIndex(item => item.id === data.id)
+                if (index > -1) {
+                    this.selectedOrgs.splice(index, 1)
+                }
             }
         } else {
             if (checked) {
@@ -483,6 +489,14 @@ export default class New extends Vue {
     handleSelectUser(user: TreeNode) {
         if (!user.checked) {
             user.checked = true
+            if (this.isSingleMode) {
+                this.selectedUsers = []
+                this.canSelecteUsers
+                    .filter(u => u.checked && u !== user)
+                    .forEach(u => {
+                        u.checked = false
+                    })
+            }
             this.selectedUsers.push(user)
         }
     }
@@ -516,8 +530,14 @@ export default class New extends Vue {
             user.checked = isSelected
         })
     }
-    refreshTreeNodeSelectedStatus() {
+
+    getCurrentTree() {
         const tree: ElTree<any, any> = (this.tab.activeTabName === 'unit' ? this.$refs.tree : this.$refs.globaltree) as any
+        return tree
+    }
+
+    refreshTreeNodeSelectedStatus() {
+        const tree = this.getCurrentTree()
         tree.setCheckedKeys(this.selectedOrgs.map(org => org.id))
     }
 
