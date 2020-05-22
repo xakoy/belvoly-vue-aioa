@@ -4,6 +4,7 @@
         <choose-people-or-org
             v-if="opickerToToVisible"
             rootOrgCode="shhr"
+            selectionMode="single"
             mode="user"
             :isShowGlobal="true"
             :defaultUsers="item.users"

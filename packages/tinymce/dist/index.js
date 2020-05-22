@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('tinymce/tinymce'), require('tinymce/themes/silver/theme'), require('@tinymce/tinymce-vue'), require('tinymce/plugins/code'), require('tinymce/plugins/table'), require('tinymce/plugins/lists'), require('tinymce/plugins/wordcount'), require('tinymce/plugins/image'), require('tinymce/plugins/link'), require('tinymce/plugins/fullscreen'), require('tinymce/skins/ui/oxide/skin.min.css'), require('vue')) :
-    typeof define === 'function' && define.amd ? define(['exports', 'tinymce/tinymce', 'tinymce/themes/silver/theme', '@tinymce/tinymce-vue', 'tinymce/plugins/code', 'tinymce/plugins/table', 'tinymce/plugins/lists', 'tinymce/plugins/wordcount', 'tinymce/plugins/image', 'tinymce/plugins/link', 'tinymce/plugins/fullscreen', 'tinymce/skins/ui/oxide/skin.min.css', 'vue'], factory) :
-    (global = global || self, factory(global.tinymce = {}, global.tinymce$1, null, global.Editor, null, null, null, null, null, null, null, null, global.Vue));
-}(this, (function (exports, tinymce$1, theme, Editor, code, table, lists, wordcount, image, link, fullscreen, skin_min_css, Vue) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('tinymce/tinymce'), require('tinymce/themes/silver/theme'), require('@tinymce/tinymce-vue'), require('tinymce/plugins/code'), require('tinymce/plugins/table'), require('tinymce/plugins/lists'), require('tinymce/plugins/wordcount'), require('tinymce/plugins/image'), require('tinymce/plugins/link'), require('tinymce/plugins/fullscreen'), require('tinymce/plugins/preview'), require('tinymce/skins/ui/oxide/skin.min.css'), require('vue')) :
+    typeof define === 'function' && define.amd ? define(['exports', 'tinymce/tinymce', 'tinymce/themes/silver/theme', '@tinymce/tinymce-vue', 'tinymce/plugins/code', 'tinymce/plugins/table', 'tinymce/plugins/lists', 'tinymce/plugins/wordcount', 'tinymce/plugins/image', 'tinymce/plugins/link', 'tinymce/plugins/fullscreen', 'tinymce/plugins/preview', 'tinymce/skins/ui/oxide/skin.min.css', 'vue'], factory) :
+    (global = global || self, factory(global.tinymce = {}, global.tinymce$1, null, global.Editor, null, null, null, null, null, null, null, null, null, global.Vue));
+}(this, (function (exports, tinymce$1, theme, Editor, code, table, lists, wordcount, image, link, fullscreen, preview, skin_min_css, Vue) { 'use strict';
 
     tinymce$1 = tinymce$1 && Object.prototype.hasOwnProperty.call(tinymce$1, 'default') ? tinymce$1['default'] : tinymce$1;
     Editor = Editor && Object.prototype.hasOwnProperty.call(Editor, 'default') ? Editor['default'] : Editor;
@@ -445,20 +445,16 @@
                     language: 'zh_CN',
                     // skin_url: skin_url, //样式放入public在index.html里引用
                     height: 300,
-                    plugins: 'link lists image code table wordcount fullscreen',
+                    plugins: 'link lists image code table wordcount fullscreen preview',
+                    menu: {},
                     toolbar:
                         this.toolbar ||
-                        'fullscreen | newnote print preview | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent blockquote | undo redo | removeformat | link unlink image code',
+                        'fontselect fontsizeselect | forecolor | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent | removeformat | link unlink image | code fullscreen | newnote print preview',
                     branding: false,
                     convert_urls: false,
                     images_upload_url: this.imageUploadUrl,
-                    // images_upload_url:
-                    //     this.$config.get("sharedservice.baseURI") +
-                    //     "/tinymce/upload?" +
-                    //     URLUtils.serialize({
-                    //         refTableName: "TINYMCE_IMAGE_UPLOAD",
-                    //         creatorID: this.$store.state.identity.uid
-                    //     }),
+                    font_formats:
+                        "微软雅黑=微软雅黑,Microsoft YaHei;宋体='宋体';黑体='黑体';仿宋='仿宋';楷体='楷体';隶书='隶书';幼圆='幼圆';Andale Mono=andale mono,times;Arial=arial,helvetica,sans-serif;Arial Black=arial black,avant garde;Book Antiqua=book antiqua,palatino;Comic Sans MS=comic sans ms,sans-serif;Courier New=courier new,courier;Georgia=georgia,palatino;Helvetica=helvetica;Impact=impact,chicago;Symbol=symbol;Tahoma=tahoma,arial,helvetica,sans-serif;Terminal=terminal,monaco;Times New Roman=times new roman,times;Trebuchet MS=trebuchet ms,geneva;Verdana=verdana,geneva;Webdings=webdings;Wingdings=wingdings",
                     automatic_uploads: true,
                     file_picker_types: 'image'
                 },
