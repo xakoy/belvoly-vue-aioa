@@ -1,26 +1,24 @@
 {
-  "name": "@belvoly-vue-aioa/ui",
-  "version": "0.1.10",
-  "description": "智能办公ui组件",
+  "name": "@belvoly-vue-aioa/m-ui",
+  "version": "0.0.2",
+  "description": "智能办公移动ui组件",
   "main": "dist/index.js",
   "scripts": {
     "build": "rollup -c",
     "prepublish": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
+  "dependencies": {
+    "@belvoly-vue-aioa/bvant": "^0.1.1",
+    "vue-class-component": "^7.2.2",
+    "vue-property-decorator": "^8.3.0"
+  },
   "devDependencies": {
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-typescript2": "^0.27.0",
     "rollup-plugin-vue": "^5.1.6"
-  },
-  "dependencies": {
-    "@belvoly-vue-aioa/core": "^0.1.6",
-    "element-ui": "^2.13.0",
-    "vue-class-component": "^7.2.2",
-    "vue-property-decorator": "^8.3.0"
   },
   "gitHead": "184e9da0833a8bf8e96b0cdb1c833f862d3ba81a"
 }

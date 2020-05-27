@@ -1,6 +1,6 @@
 {
   "name": "@belvoly-vue-aioa/core",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -19,5 +19,5 @@
     "axios": "^0.19.2",
     "element-ui": "^2.13.0"
   },
-  "gitHead": "eb87dd3db1c6400b62f0656bbc13b25cb211542d"
+  "gitHead": "184e9da0833a8bf8e96b0cdb1c833f862d3ba81a"
 }
