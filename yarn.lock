@@ -670,6 +670,12 @@
     "@babel/types" "^7.4.4"
     esutils "^2.0.2"
 
+"@babel/runtime@7.x":
+  version "7.10.0"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.10.0.tgz#2cdcd6d7a391c24f7154235134c830cfb58ac0b1"
+  dependencies:
+    regenerator-runtime "^0.13.4"
+
 "@babel/runtime@^7.8.4":
   version "7.9.2"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.9.2.tgz#d90df0583a3a252f09aaa619665367bae518db06"
@@ -705,6 +711,28 @@
     "@babel/helper-validator-identifier" "^7.9.0"
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
+
+"@belvoly-vue-aioa/bvant-icons@^1.2.1":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@belvoly-vue-aioa/bvant-icons/-/bvant-icons-1.2.2.tgz#586b3f41411bf2df1f4a0457521d7298817ef7c1"
+
+"@belvoly-vue-aioa/bvant@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@belvoly-vue-aioa/bvant/-/bvant-0.1.0.tgz#c2c784ca7af46b1c9251ba453df378b3ca49dec0"
+  dependencies:
+    "@babel/runtime" "7.x"
+    "@vant/icons" "1.2.1"
+    "@vue/babel-helper-vue-jsx-merge-props" "^1.0.0"
+    vue-lazyload "1.2.3"
+
+"@belvoly-vue-aioa/bvant@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@belvoly-vue-aioa/bvant/-/bvant-0.1.1.tgz#41e4b712307bee3c26f623d6629ef50ffb1436fd"
+  dependencies:
+    "@babel/runtime" "7.x"
+    "@belvoly-vue-aioa/bvant-icons" "^1.2.1"
+    "@vue/babel-helper-vue-jsx-merge-props" "^1.0.0"
+    vue-lazyload "1.2.3"
 
 "@cnakazawa/watch@^1.0.3":
   version "1.0.4"
@@ -1872,6 +1900,10 @@
     lodash "^4.17.15"
     semver "^6.3.0"
     tsutils "^3.17.1"
+
+"@vant/icons@1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@vant/icons/-/icons-1.2.1.tgz#309fecb97a4989866f045ce676b545c454701c8f"
 
 "@vue/babel-helper-vue-jsx-merge-props@^1.0.0":
   version "1.0.0"
@@ -10908,6 +10940,10 @@ vue-jest@^3.0.5:
     source-map "^0.5.6"
     tsconfig "^7.0.0"
     vue-template-es2015-compiler "^1.6.0"
+
+vue-lazyload@1.2.3:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/vue-lazyload/-/vue-lazyload-1.2.3.tgz#901f9ec15c7e6ca78781a2bae4a343686bdedb2c"
 
 vue-loader@^15.8.3:
   version "15.9.1"

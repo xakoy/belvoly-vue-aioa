@@ -25,7 +25,7 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
 // import { Upload } from '../../packages/ui'
-import Upload from '../../packages/ui/packages/upload/Index.vue'
+import Upload from '../../../packages/ui/packages/upload/Index.vue'
 @Component({
     components: {
         Upload

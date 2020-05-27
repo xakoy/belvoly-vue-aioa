@@ -12,7 +12,7 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import { SubscriptionEvent } from '../../packages/ui/packages/load'
+import { SubscriptionEvent } from '../../../packages/ui/packages/load'
 
 @Component({
     components: {
