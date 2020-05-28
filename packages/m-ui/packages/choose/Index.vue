@@ -1,25 +1,16 @@
 <template>
-    <div v-if="visible" class="bvant-opicker">
+    <div v-if="visible" class="bvant-choose-people-or-org">
         <bvan-nav-bar title="选择参与人" :border="false" />
         <bvan-search shape="round" placeholder="搜索" />
-        <div class="bvant-opicker--content">
-            <tree
-                ref="tree"
-                :data="items"
-                :lazy="true"
-                :props="{ label: 'name', isLeaf: 'leaf' }"
-                :load="loadHandler"
-                @currentCheckChange="currentCheckChangeHandler"
-                @checkChange="checkChangeHandler"
-            />
+        <div class="bvant-choose-people-or-org--content">
+            <tree ref="tree" :lazy="true" :props="{ label: 'name', isLeaf: 'leaf' }" :load="loadHandler" @currentCheckChange="currentCheckChangeHandler" @checkChange="checkChangeHandler" />
         </div>
-        <!--  -->
-        <div class="bvant-opicker__selectedarea " :class="{ 'bvant-opicker__selectedarea--state-expand': selectedareaExpand }">
-            <div class="bvant-opicker__selectedarea--expandicon" @click="selectedareaExpand = !selectedareaExpand">
+        <div class="bvant-choose-people-or-org__selectedarea " :class="{ 'bvant-choose-people-or-org__selectedarea--state-expand': selectedareaExpand }">
+            <div class="bvant-choose-people-or-org__selectedarea--expandicon" @click="selectedareaExpand = !selectedareaExpand">
                 <bvan-icon v-if="!selectedareaExpand" name="arrow-up" />
                 <bvan-icon v-else name="arrow-down" />
             </div>
-            <div class="bvant-opicker__selectedarea--content">
+            <div class="bvant-choose-people-or-org__selectedarea--content">
                 <span v-for="(cItem, index) in checkItems" :key="index">
                     {{ cItem.name }}
                 </span>
@@ -33,7 +24,7 @@
 </template>
 
 <script lang="ts">
-import { services, globalConfig } from '@belvoly-vue-aioa/m-core'
+import { services } from '@belvoly-vue-aioa/m-core'
 const { orgService, userService } = services
 
 import { Vue, Component, Prop } from 'vue-property-decorator'
@@ -76,54 +67,6 @@ export default class Index extends Vue {
     @Prop() names: string
     @Prop() codes: string
 
-    items: Node[] = [
-        {
-            label: '互软集团',
-            id: '1',
-            check: true,
-            children: [
-                {
-                    label: '高级管理人员',
-                    id: '1-2',
-                    children: [
-                        {
-                            label: '谢建云',
-                            id: '1-2-1'
-                        }
-                    ]
-                },
-                {
-                    label: '研发中心',
-                    id: '1-1',
-                    children: [
-                        {
-                            label: '前端组',
-                            id: '1-1-3',
-                            children: [
-                                {
-                                    label: '狄传玲',
-                                    id: '1-1-3-1'
-                                }
-                            ]
-                        },
-                        {
-                            label: '罗龙',
-                            id: '1-1-1'
-                        },
-                        {
-                            label: '储俊',
-                            id: '1-1-2'
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            label: '互软科技',
-            id: '2'
-        }
-    ]
-
     selectedareaExpand = false
     checkItems: TreeNode[] = []
 
@@ -148,9 +91,7 @@ export default class Index extends Vue {
         this.$el.parentNode.removeChild(this.$el)
     }
 
-    checkChangeHandler(items: Node[]) {
-        // this.checkItems = items
-    }
+    checkChangeHandler(items: Node[]) {}
 
     currentCheckChangeHandler(checked: boolean, item: Node) {
         if (checked) {
@@ -218,7 +159,6 @@ export default class Index extends Vue {
                 resolve([...nodeData, ...userData])
             }
         }
-        // this.refreshTreeNodeSelectedStatus()
     }
 
     convertOrgsToTreeNodeData(data: any[]) {
@@ -320,7 +260,7 @@ export default class Index extends Vue {
 </script>
 
 <style lang="less">
-.bvant-opicker {
+.bvant-choose-people-or-org {
     position: absolute;
     top: 0;
     left: 0;
@@ -355,7 +295,8 @@ export default class Index extends Vue {
         }
 
         &--avatar {
-            > span {
+            > span,
+            > img {
                 display: inline-block;
                 width: 30px;
                 height: 30px;

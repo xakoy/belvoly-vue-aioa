@@ -19,7 +19,7 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import { ChoosePeopleOrOrg } from '../../../packages/m-ui/packages/choose'
+import { ChoosePeopleOrOrg } from '../../../packages/m-ui'
 @Component({
     components: {
         ChoosePeopleOrOrg

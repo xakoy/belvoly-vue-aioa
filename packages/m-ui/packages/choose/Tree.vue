@@ -21,7 +21,7 @@ interface TreeProps {
         TreeNode
     }
 })
-export default class Index extends Vue {
+export default class Tree extends Vue {
     @Prop() data: Node[]
     @Prop({ default: false }) lazy: boolean
     @Prop() load: Function
