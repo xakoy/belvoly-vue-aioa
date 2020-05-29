@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-input v-model="item.names" readonly @click.native="inputClickHandler" />
+        <bvan-field label="收件人" is-link v-model="item.names" readonly @click="inputClickHandler" />
         <choose-people-or-org
             v-if="opickerToToVisible"
             rootOrgCode="shhr"
@@ -28,8 +28,8 @@ import { ChoosePeopleOrOrg } from '../../../packages/m-ui'
 export default class ChoosePeopeleOrOrg extends Vue {
     opickerToToVisible = false
     item = {
-        codes: '',
-        names: '',
+        codes: 'luolong',
+        names: '罗龙',
         users: [
             {
                 name: '罗龙',
