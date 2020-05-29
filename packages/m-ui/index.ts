@@ -1,4 +1,4 @@
-// import { Upload } from './packages/upload/index'
+import { Upload } from './packages/upload'
 import { ChoosePeopleOrOrg } from './packages/choose'
 
-export { ChoosePeopleOrOrg }
+export { ChoosePeopleOrOrg, Upload }

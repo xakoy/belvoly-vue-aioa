@@ -11,7 +11,8 @@ export const routeNames = {
         subscriptionEvent: 'pc-SubscriptionEvent'
     },
     mobile: {
-        choose: 'm-choose'
+        choose: 'm-choose',
+        upload: 'm-upload'
     }
 }
 
@@ -54,6 +55,11 @@ const routes: RouteConfig[] = [
                 path: 'choose',
                 name: routeNames.mobile.choose,
                 component: () => import('./views/mobile/Choose.vue')
+            },
+            {
+                path: 'upload',
+                name: routeNames.mobile.upload,
+                component: () => import('./views/mobile/Upload.vue')
             }
         ]
     }
