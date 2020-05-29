@@ -1,3 +1,2 @@
-## v 0.1.4
-[新增]
-1. userService搜索用户接口增加parentOrgCode，只查询父机构下的用户
+## 说明
+移动前端核心库，包含 `request`, `配置`
