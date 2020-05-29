@@ -1,6 +1,6 @@
 <template>
     <div v-if="visible" class="bvant-choose-people-or-org">
-        <bvan-nav-bar title="选择参与人" :border="false" />
+        <bvan-nav-bar :title="title" :border="false" />
         <bvan-search shape="round" placeholder="搜索" />
         <div class="bvant-choose-people-or-org--content">
             <tree ref="tree" :lazy="true" :props="{ label: 'name', isLeaf: 'leaf' }" :load="loadHandler" @currentCheckChange="currentCheckChangeHandler" @checkChange="checkChangeHandler" />
