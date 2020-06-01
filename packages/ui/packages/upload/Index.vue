@@ -336,16 +336,13 @@ export default class Index extends Vue {
     /**
      * 更新关联业务表记录ID
      */
-    async updateRelevance(refTableID) {
+    updateRelevance(refTableID) {
         const blobRelevance = {
             ids: this.uploadFiles.map(file => file.id),
             refTableName: this.refTableName,
             refTableID: refTableID
         }
-        const { success, data } = await attachmentService.updateRelevance(blobRelevance)
-        if (success) {
-            return data
-        }
+        return attachmentService.updateRelevance(blobRelevance)
     }
 }
 </script>
