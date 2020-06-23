@@ -1,17 +1,19 @@
 <template>
     <div class="bvan-mui-upload margin-small-top">
-        <bvan-cell :title="label" :border="false">
+        <bvan-cell :title="label" :border="false" v-if="!isReadonly">
             <template #right-icon>
                 <bvan-uploader v-if="!isReadonly && !isDisabled" :before-read="beforeReadHandler" :after-read="afterReadHandler" multiple="multiple">
                     <bvan-icon name="attachment" class-prefix="fc" color="#999" style="line-height: inherit;" />
                 </bvan-uploader>
             </template>
         </bvan-cell>
-        <bvan-cell-group class="margin-small-bottom" v-if="files.length > 0">
+        <bvan-cell-group class="bvan-mui-upload__group" v-if="files.length > 0" :class="{ 'bvan-hairline--top': !isReadonly }" :border="false">
+            <template #title v-if="isReadonly"> {{ label }} </template>
             <div class="bvan-mui-upload__items">
                 <dl v-for="(item, index) in files" :key="index" class="bvan-mui-upload__item">
                     <dt>
-                        <span style="background: green;">X</span>
+                        <item :name="item.file.name" />
+                        <!-- <span style="background: green;">X</span> -->
                         <strong>
                             <span>{{ item.file.name }}</span>
                         </strong>
@@ -122,6 +124,7 @@
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import { Notify, Dialog } from '@belvoly-vue-aioa/bvant'
 import { utils, globalConfig, services } from '@belvoly-vue-aioa/m-core'
+import Item from './Item.vue'
 const { attachmentService } = services
 const { request } = utils
 
@@ -146,7 +149,11 @@ interface BeforeUpload {
     (file: any): Promise<boolean>
 }
 
-@Component
+@Component({
+    components: {
+        Item
+    }
+})
 export default class Index extends Vue {
     @Prop({ default: '附件' }) label: string
     @Prop({ default: `${config.api.baseURI}/sharedservice/blob/upload` }) action: string
@@ -161,7 +168,7 @@ export default class Index extends Vue {
     @Prop({ required: true }) refTableName: string
     @Prop({ required: true }) typeCode: string
     @Prop() userUid: string
-    @Prop({ default: false }) readonly: boolean
+    @Prop({ default: false, type: Boolean }) readonly: boolean
 
     /**
      * 文字提示
@@ -415,6 +422,8 @@ export default class Index extends Vue {
 
 <style lang="less">
 .bvan-mui-upload {
+    // &__group {
+    // }
     &__items {
         padding: 16px;
     }

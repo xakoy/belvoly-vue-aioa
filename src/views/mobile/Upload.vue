@@ -14,6 +14,8 @@
 
         <upload ref="upload" :action="actionUrl" :limit="4" :fileList="fileList" :typeCode="typeCode" :refTableName="refTableName" :isEditFile="true" @change="changeHandler" />
 
+        <upload ref="upload2" :action="actionUrl" :limit="4" :fileList="fileList" :typeCode="typeCode" :refTableName="refTableName" readonly @change="changeHandler" />
+
         <bvan-button @click="saveHandler" :loading="loading">
             保存
         </bvan-button>
@@ -38,7 +40,7 @@ export default class UploadIndex extends Vue {
             id: '30cfe4ac-6635-4bff-8bae-721c3247605a',
             refTableID: '302df60ca8a94cfe8d7cc1f7b64c0d45',
             refTableName: 'CALENDAR_MYCALENDAR',
-            displayName: '155058843.jpg',
+            displayName: '155058843.docx',
             persistentType: 0,
             contentType: 'image/jpeg',
             name: '155058843',
@@ -62,7 +64,7 @@ export default class UploadIndex extends Vue {
             id: 'f3880c0f-e022-4523-98c8-535fe84beb4e',
             refTableID: '302df60ca8a94cfe8d7cc1f7b64c0d45',
             refTableName: 'CALENDAR_MYCALENDAR',
-            displayName: '155058843.jpg',
+            displayName: '155058843.xls',
             persistentType: 0,
             contentType: 'image/jpeg',
             name: '155058843',
