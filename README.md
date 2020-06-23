@@ -12,6 +12,11 @@ npm install
 npm run serve
 ```
 
+### 开发
+1. 安装 lerna `npm install --global lerna`
+2. 初始化 lerna `lerna bootstrap`
+
+
 ## core
 `@belvoly-vue-aioa/core`  
 核心组件库，包含了 全局配置，request, buaService, attachService
