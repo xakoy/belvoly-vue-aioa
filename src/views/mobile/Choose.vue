@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div style="padding-top: 900px">
         <bvan-field label="收件人" is-link v-model="item.names" readonly @click="inputClickHandler" />
         <choose-people-or-org
             v-if="opickerToToVisible"

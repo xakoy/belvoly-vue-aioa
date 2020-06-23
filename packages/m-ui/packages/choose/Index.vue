@@ -261,7 +261,7 @@ export default class Index extends Vue {
 
 <style lang="less">
 .bvant-choose-people-or-org {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
