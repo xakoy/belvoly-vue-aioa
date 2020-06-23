@@ -716,15 +716,6 @@
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@belvoly-vue-aioa/bvant-icons/-/bvant-icons-1.2.2.tgz#586b3f41411bf2df1f4a0457521d7298817ef7c1"
 
-"@belvoly-vue-aioa/bvant@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@belvoly-vue-aioa/bvant/-/bvant-0.1.0.tgz#c2c784ca7af46b1c9251ba453df378b3ca49dec0"
-  dependencies:
-    "@babel/runtime" "7.x"
-    "@vant/icons" "1.2.1"
-    "@vue/babel-helper-vue-jsx-merge-props" "^1.0.0"
-    vue-lazyload "1.2.3"
-
 "@belvoly-vue-aioa/bvant@^0.1.1":
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/@belvoly-vue-aioa/bvant/-/bvant-0.1.1.tgz#41e4b712307bee3c26f623d6629ef50ffb1436fd"
@@ -1900,10 +1891,6 @@
     lodash "^4.17.15"
     semver "^6.3.0"
     tsutils "^3.17.1"
-
-"@vant/icons@1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@vant/icons/-/icons-1.2.1.tgz#309fecb97a4989866f045ce676b545c454701c8f"
 
 "@vue/babel-helper-vue-jsx-merge-props@^1.0.0":
   version "1.0.0"
