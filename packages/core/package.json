@@ -3,6 +3,7 @@
   "version": "0.1.8",
   "description": "",
   "main": "dist/index.js",
+  "module": "dist/index.es.js",
   "scripts": {
     "build": "rollup -c",
     "prepublish": "npm run build",

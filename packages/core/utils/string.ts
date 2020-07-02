@@ -23,5 +23,5 @@ export function format(str, obj) {
 }
 
 export default {
-    isNullOrEmpty: isNullOrEmpty
+    isNullOrEmpty
 }

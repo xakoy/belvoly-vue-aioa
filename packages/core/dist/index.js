@@ -6,6 +6,32 @@
 
     axios = axios && Object.prototype.hasOwnProperty.call(axios, 'default') ? axios['default'] : axios;
 
+    /*! *****************************************************************************
+    Copyright (c) Microsoft Corporation. All rights reserved.
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+    this file except in compliance with the License. You may obtain a copy of the
+    License at http://www.apache.org/licenses/LICENSE-2.0
+
+    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+    WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+    MERCHANTABLITY OR NON-INFRINGEMENT.
+
+    See the Apache Version 2.0 License for specific language governing permissions
+    and limitations under the License.
+    ***************************************************************************** */
+
+    var __assign = function() {
+        __assign = Object.assign || function __assign(t) {
+            for (var s, i = 1, n = arguments.length; i < n; i++) {
+                s = arguments[i];
+                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+            }
+            return t;
+        };
+        return __assign.apply(this, arguments);
+    };
+
     /**
      * 字符串是否为null或者空
      * @param {String} value 输入字符串
@@ -18,7 +44,7 @@
         isNullOrEmpty: isNullOrEmpty
     };
 
-    const gloablConfig = {
+    var gloablConfig = {
         apiHost: '',
         token: ''
     };
@@ -27,7 +53,7 @@
         gloablConfig.token = config.token;
     }
 
-    const axiosInstance = axios.create({});
+    var axiosInstance = axios.create({});
     var Method;
     (function (Method) {
         Method["Post"] = "POST";
@@ -35,7 +61,7 @@
         Method["Put"] = "PUT";
         Method["Delete"] = "DELETE";
     })(Method || (Method = {}));
-    const codeMessage = {
+    var codeMessage = {
         200: '操作成功',
         201: '新建或修改数据成功',
         202: '一个请求已经进入后台排队（异步任务）',
@@ -55,38 +81,38 @@
     };
     function errorShow(errorText) {
         elementUi.Notification.error({
-            title: `请求错误:`,
+            title: "\u8BF7\u6C42\u9519\u8BEF:",
             message: errorText || '请刷新重试、重新登录或联系管理员'
         });
     }
     function request(url, options) {
-        const config = Object.assign({ method: 'GET', headers: {} }, options);
+        var config = __assign({ method: 'GET', headers: {} }, options);
         config.url = url;
-        const type = config.method;
+        var type = config.method;
         if (type === 'GET' && config.data) {
-            const str = Object.keys(config.data)
-                .map(key => {
-                return `${key}=${encodeURIComponent(config.data[key])}`;
+            var str = Object.keys(config.data)
+                .map(function (key) {
+                return key + "=" + encodeURIComponent(config.data[key]);
             })
                 .join('&');
-            config.url = `${config.url}${url.indexOf('?') > -1 ? '&' : '?'}_=${new Date().getTime()}&${str}`;
+            config.url = "" + config.url + (url.indexOf('?') > -1 ? '&' : '?') + "_=" + new Date().getTime() + "&" + str;
         }
-        const token = gloablConfig.token;
+        var token = gloablConfig.token;
         if (token) {
-            config.headers['Authorization'] = `Bearer ${token}`;
+            config.headers['Authorization'] = "Bearer " + token;
         }
-        const contentType = config.headers['Content-Type'];
+        var contentType = config.headers['Content-Type'];
         if (contentType === 'application/x-www-form-urlencoded') {
             config.data = convertToAxiosData(config.data);
         }
         if (!contentType && (type === 'POST' || type === 'DELETE' || type === 'PUT')) {
-            config.headers = Object.assign({ Accept: 'application/json', 'Content-Type': 'application/json; charset=utf-8' }, config.headers);
+            config.headers = __assign({ Accept: 'application/json', 'Content-Type': 'application/json; charset=utf-8' }, config.headers);
         }
-        return new Promise(resolve => {
+        return new Promise(function (resolve) {
             axiosInstance
                 .request(config)
-                .then(response => {
-                return new Promise((interResolve, interReject) => {
+                .then(function (response) {
+                return new Promise(function (interResolve, interReject) {
                     if (response.status >= 200 && response.status < 300) {
                         if (response.data.flag === 0) {
                             interResolve(response);
@@ -100,17 +126,17 @@
                     }
                 });
             })
-                .then(response => {
+                .then(function (response) {
                 resolve({
                     data: response.data.data,
                     response: response,
                     success: true
                 });
             })
-                .catch(e => {
-                const status = getValue(e, 'response.status');
-                const flag = getValue(e, 'data.flag');
-                let errorText = '';
+                .catch(function (e) {
+                var status = getValue(e, 'response.status');
+                var flag = getValue(e, 'data.flag');
+                var errorText = '';
                 if (flag && flag > 0) {
                     errorText = getValue(e, 'data.message', getValue(codeMessage, status, getValue(e, 'statusText', '')));
                 }
@@ -126,9 +152,9 @@
         });
     }
     function getValue(target, key, defaultValue) {
-        const paths = typeof key === 'string' ? key.split('.') : [key];
+        var paths = typeof key === 'string' ? key.split('.') : [key];
         try {
-            return paths.reduce((prev, path) => {
+            return paths.reduce(function (prev, path) {
                 return prev[path];
             }, target);
         }
@@ -137,17 +163,17 @@
         }
     }
     function convertToAxiosData(data) {
-        const result = new URLSearchParams();
+        var result = new URLSearchParams();
         if (!data) {
             return result;
         }
-        Object.keys(data).forEach(key => {
+        Object.keys(data).forEach(function (key) {
             result.set(key, data[key]);
         });
         return result;
     }
     var request$1 = {
-        request
+        request: request
     };
 
     // export { request } from './request'
@@ -159,7 +185,7 @@
     });
 
     function upload(uploadData) {
-        return request(`${gloablConfig.apiHost}/sharedservice/blob/upload`, {
+        return request(gloablConfig.apiHost + "/sharedservice/blob/upload", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -173,13 +199,13 @@
      *
      */
     function updateRelevance(updateRelevanceData) {
-        return request(`${gloablConfig.apiHost}/sharedservice/blob/updateRelevance`, {
+        return request(gloablConfig.apiHost + "/sharedservice/blob/updateRelevance", {
             method: 'POST',
             data: updateRelevanceData
         });
     }
     function remove(id) {
-        return request(`${gloablConfig.apiHost}/sharedservice/blob/delete/${id}`, {
+        return request(gloablConfig.apiHost + "/sharedservice/blob/delete/" + id, {
             method: 'POST'
         });
     }
@@ -187,8 +213,8 @@
      * 删除业务数据关联附件
      * @method deleteRelevance
      */
-    const removeRelevance = function (deleteRelevanceData) {
-        return request(`${gloablConfig.apiHost}/sharedservice/blob/delete?refTableId=${deleteRelevanceData.refTableId}&refTableName=${deleteRelevanceData.refTableName}`, {
+    var removeRelevance = function (deleteRelevanceData) {
+        return request(gloablConfig.apiHost + "/sharedservice/blob/delete?refTableId=" + deleteRelevanceData.refTableId + "&refTableName=" + deleteRelevanceData.refTableName, {
             method: 'POST'
         });
     };
@@ -197,18 +223,18 @@
      * @method query
      *
      */
-    const query = function (queryData) {
-        return request(`${gloablConfig.apiHost}/sharedservice/blob/query`, {
+    var query = function (queryData) {
+        return request(gloablConfig.apiHost + "/sharedservice/blob/query", {
             method: 'GET',
             data: queryData
         });
     };
     var attachmentService = {
-        upload,
-        remove,
-        updateRelevance,
-        removeRelevance,
-        query
+        upload: upload,
+        remove: remove,
+        updateRelevance: updateRelevance,
+        removeRelevance: removeRelevance,
+        query: query
     };
 
     /**
@@ -217,7 +243,7 @@
      * @param {*} callback
      */
     function queryChild(code) {
-        request(`${gloablConfig.apiHost}/bua/dic/queryChild`, {
+        request(gloablConfig.apiHost + "/bua/dic/queryChild", {
             method: 'GET',
             data: {
                 code: code
@@ -225,7 +251,7 @@
         });
     }
     var dictService = {
-        queryChild
+        queryChild: queryChild
     };
 
     /**
@@ -234,7 +260,7 @@
      * @param {string} orgCode 父组织机构代号
      */
     function queryOrgTree(orgCode) {
-        return request(`${gloablConfig.apiHost}/bua/org/descendants`, {
+        return request(gloablConfig.apiHost + "/bua/org/descendants", {
             method: 'GET',
             data: {
                 orgCode: orgCode
@@ -246,7 +272,7 @@
      * @method getOrgRoot
      */
     function getOrgRoot() {
-        return request(`${gloablConfig.apiHost}/bua/org/root`);
+        return request(gloablConfig.apiHost + "/bua/org/root");
     }
     /**
      * 查询当前机构代号对应该机构的祖先列表
@@ -254,7 +280,7 @@
      * @param {string} orgCode 机构代号
      */
     function queryOrgAncestor(orgCode) {
-        return request(`${gloablConfig.apiHost}/bua/org/ancestor`, {
+        return request(gloablConfig.apiHost + "/bua/org/ancestor", {
             method: 'GET',
             data: {
                 orgCode: orgCode
@@ -267,7 +293,7 @@
      * @param {string} userUid 用户账号
      */
     function getUnitInfo(userUid) {
-        return request(`${gloablConfig.apiHost}/bua/user/unit`, {
+        return request(gloablConfig.apiHost + "/bua/user/unit", {
             method: 'GET',
             data: {
                 userUid: userUid
@@ -280,7 +306,7 @@
      * @param {string} orgCode 机构标识
      */
     function queryChildren(orgCode) {
-        return request(`${gloablConfig.apiHost}/bua/org/queryChildren`, {
+        return request(gloablConfig.apiHost + "/bua/org/queryChildren", {
             method: 'GET',
             data: {
                 orgCode: orgCode
@@ -293,15 +319,15 @@
      * @param {string} orgCode 机构标识
      */
     function getOrgInfo(orgCode) {
-        return request(`${gloablConfig.apiHost}/bua/org/${orgCode}`);
+        return request(gloablConfig.apiHost + "/bua/org/" + orgCode);
     }
     var orgService = {
-        queryOrgTree,
-        getOrgRoot,
-        queryOrgAncestor,
-        getUnitInfo,
-        queryChildren,
-        getOrgInfo
+        queryOrgTree: queryOrgTree,
+        getOrgRoot: getOrgRoot,
+        queryOrgAncestor: queryOrgAncestor,
+        getUnitInfo: getUnitInfo,
+        queryChildren: queryChildren,
+        getOrgInfo: getOrgInfo
     };
 
     /**
@@ -310,7 +336,7 @@
      * @param {string} userUid 用户账号
      */
     function queryMySubordinates(userUid) {
-        return request(`${gloablConfig.apiHost}/bua/org/MySubordinates`, {
+        return request(gloablConfig.apiHost + "/bua/org/MySubordinates", {
             method: 'GET',
             data: {
                 userUid: userUid
@@ -322,8 +348,8 @@
      * @method getUserBaseInfo
      * @param {string} uid
      */
-    const getUserBaseInfo = function (uid) {
-        return request(`${gloablConfig.apiHost}/bua/user/getUser`, {
+    var getUserBaseInfo = function (uid) {
+        return request(gloablConfig.apiHost + "/bua/user/getUser", {
             method: 'GET',
             data: {
                 userUid: uid
@@ -335,7 +361,7 @@
      * @method getCurrentUserInfo
      */
     function getCurrentUserInfo() {
-        return request(`${gloablConfig.apiHost}/private/bua/user/getUserForMultiUnit`);
+        return request(gloablConfig.apiHost + "/private/bua/user/getUserForMultiUnit");
     }
     /**
      * 查询用户头像
@@ -343,7 +369,7 @@
      * @param {string} uid
      */
     function getPicture(uid) {
-        return request(`${gloablConfig.apiHost}/bua/user/getPicture`, {
+        return request(gloablConfig.apiHost + "/bua/user/getPicture", {
             method: 'GET',
             data: {
                 userUid: uid
@@ -358,7 +384,7 @@
      * @param {string} parentOrgCode 父级orgCode，限定在此机构下查找
      */
     function searchUsers(userUid, userName, parentOrgCode) {
-        return request(`${gloablConfig.apiHost}/bua/user/searchUsers`, {
+        return request(gloablConfig.apiHost + "/bua/user/searchUsers", {
             method: 'POST',
             data: {
                 userUid: userUid,
@@ -374,7 +400,7 @@
      * @param {*} callback
      */
     function queryByOrgCodeAllUsers(orgCode) {
-        return request(`${gloablConfig.apiHost}/bua/user/queryByOrgCodeAllUsers`, {
+        return request(gloablConfig.apiHost + "/bua/user/queryByOrgCodeAllUsers", {
             method: 'GET',
             data: {
                 orgCode: orgCode,
@@ -386,7 +412,7 @@
      * 获取用户所属的单位信息
      */
     function getUserUnits() {
-        return request(`${gloablConfig.apiHost}/private/bua/user/units`);
+        return request(gloablConfig.apiHost + "/private/bua/user/units");
     }
     /**
      * 查询机构下面的所有用户
@@ -394,8 +420,8 @@
      * @param {string} orgCode
      * @param {*} callback
      */
-    const queryByOrgCode = function (orgCode) {
-        return request(`${gloablConfig.apiHost}/bua/user/queryByOrgCode`, {
+    var queryByOrgCode = function (orgCode) {
+        return request(gloablConfig.apiHost + "/bua/user/queryByOrgCode", {
             method: 'GET',
             data: {
                 orgCode: orgCode
@@ -403,14 +429,14 @@
         });
     };
     var userService = {
-        queryMySubordinates,
-        getUserUnits,
-        getUserBaseInfo,
-        getCurrentUserInfo,
-        getPicture,
-        searchUsers,
-        queryByOrgCodeAllUsers,
-        queryByOrgCode
+        queryMySubordinates: queryMySubordinates,
+        getUserUnits: getUserUnits,
+        getUserBaseInfo: getUserBaseInfo,
+        getCurrentUserInfo: getCurrentUserInfo,
+        getPicture: getPicture,
+        searchUsers: searchUsers,
+        queryByOrgCodeAllUsers: queryByOrgCodeAllUsers,
+        queryByOrgCode: queryByOrgCode
     };
 
     var index$1 = /*#__PURE__*/Object.freeze({
