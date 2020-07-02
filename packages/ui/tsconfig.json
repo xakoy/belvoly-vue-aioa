@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "ES5",
     "module": "esnext",
+    "declaration": false,
     "strict": false,
     "jsx": "preserve",
     "importHelpers": true,
@@ -11,7 +12,6 @@
     "allowSyntheticDefaultImports": true,
     "skipLibCheck":true,
     "sourceMap": true,
-    "baseUrl": ".",
     "lib": [
       "esnext",
       "dom",

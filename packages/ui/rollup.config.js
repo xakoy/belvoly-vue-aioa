@@ -5,11 +5,17 @@ import tsconfig from './tsconfig.json'
 
 export default {
     input: 'index.ts',
-    output: {
-        file: 'dist/index.js',
-        format: 'umd',
-        name: 'ui'
-    },
-    plugins: [typescript(tsconfig), commonjs(), VuePlugin()],
+    output: [
+        {
+            file: 'dist/index.js',
+            format: 'umd',
+            name: 'ui'
+        },
+        {
+            file: 'dist/index.es.js',
+            format: 'es'
+        }
+    ],
+    plugins: [typescript(tsconfig), commonjs(), VuePlugin({})],
     external: ['@belvoly-vue-aioa/core']
 }

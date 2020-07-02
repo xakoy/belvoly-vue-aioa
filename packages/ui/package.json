@@ -3,6 +3,7 @@
   "version": "0.1.15",
   "description": "智能办公ui组件",
   "main": "dist/index.js",
+  "module": "dist/index.es.js",
   "scripts": {
     "build": "rollup -c",
     "prepublish": "npm run build",
