@@ -11,11 +11,11 @@
      * @param {String} value 输入字符串
      * @returns {Boolean} 判断结果
      */
-    const isNullOrEmpty = function (value) {
+    function isNullOrEmpty(value) {
         return !value || value.length === 0;
-    };
+    }
     var string = {
-        isNullOrEmpty
+        isNullOrEmpty: isNullOrEmpty
     };
 
     const gloablConfig = {
@@ -60,11 +60,7 @@
         });
     }
     function request(url, options) {
-        const config = {
-            method: 'GET',
-            headers: {},
-            ...options
-        };
+        const config = Object.assign({ method: 'GET', headers: {} }, options);
         config.url = url;
         const type = config.method;
         if (type === 'GET' && config.data) {
@@ -84,11 +80,7 @@
             config.data = convertToAxiosData(config.data);
         }
         if (!contentType && (type === 'POST' || type === 'DELETE' || type === 'PUT')) {
-            config.headers = {
-                Accept: 'application/json',
-                'Content-Type': 'application/json; charset=utf-8',
-                ...config.headers
-            };
+            config.headers = Object.assign({ Accept: 'application/json', 'Content-Type': 'application/json; charset=utf-8' }, config.headers);
         }
         return new Promise(resolve => {
             axiosInstance

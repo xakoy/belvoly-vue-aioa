@@ -3,7 +3,7 @@
  * @param {String} value 输入字符串
  * @returns {Boolean} 判断结果
  */
-const isNullOrEmpty = function(value) {
+function isNullOrEmpty(value) {
     return !value || value.length === 0
 }
 
@@ -23,5 +23,5 @@ export function format(str, obj) {
 }
 
 export default {
-    isNullOrEmpty
+    isNullOrEmpty: isNullOrEmpty
 }
