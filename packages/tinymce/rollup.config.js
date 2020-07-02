@@ -1,6 +1,7 @@
 import commonjs from 'rollup-plugin-commonjs'
 import VuePlugin from 'rollup-plugin-vue'
 import typescript from 'rollup-plugin-typescript2'
+import tsconfig from './tsconfig.json'
 
 export default {
     input: 'index.js',
@@ -9,5 +10,11 @@ export default {
         format: 'umd',
         name: 'tinymce'
     },
-    plugins: [commonjs(), VuePlugin(), typescript()]
+    plugins: [
+        typescript(tsconfig),
+        commonjs(),
+        VuePlugin({
+            styleInjector: '~' + 'vue-runtime-helpers/dist/inject-style/browser.js'
+        })
+    ]
 }

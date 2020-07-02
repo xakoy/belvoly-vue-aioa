@@ -419,7 +419,7 @@
             }
         },
         components: {
-            Editor
+            Editor: Editor
         },
         watch: {
             value: {
