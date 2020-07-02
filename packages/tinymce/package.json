@@ -1,6 +1,6 @@
 {
   "name": "@belvoly-vue-aioa/tinymce",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "智能办公前端Vue组件库-tinymce",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
