@@ -16,6 +16,12 @@ export default {
             format: 'es'
         }
     ],
-    plugins: [typescript(tsconfig), commonjs(), VuePlugin({})],
+    plugins: [
+        typescript(tsconfig),
+        commonjs(),
+        VuePlugin({
+            styleInjector: '~' + 'vue-runtime-helpers/dist/inject-style/browser.js'
+        })
+    ],
     external: ['@belvoly-vue-aioa/core']
 }
