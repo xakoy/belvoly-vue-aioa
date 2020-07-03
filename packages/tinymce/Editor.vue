@@ -41,21 +41,21 @@ export default Vue.extend({
     },
     watch: {
         value: {
-            handler(val) {
+            handler: function(val) {
                 this.setEditorHtml(val)
             },
             immediate: true,
             deep: true
         },
         editorHtml: {
-            handler(val) {
+            handler: function(val) {
                 this.handleEditorHtml(val)
             },
             immediate: true,
             deep: true
         }
     },
-    data() {
+    data: function() {
         return {
             editorInit: {
                 selector: 'textarea',
@@ -79,11 +79,11 @@ export default Vue.extend({
             editorHtml: this.tinymceHtml
         }
     },
-    mounted() {
+    mounted: function() {
         tinymce.init({})
     },
     methods: {
-        getCleanText() {
+        getCleanText: function() {
             const $editor = this.$refs.editor
             let text = this.editorHtml
             if ($editor) {
@@ -93,7 +93,7 @@ export default Vue.extend({
             }
             return text
         },
-        cleanHtml(data) {
+        cleanHtml: function(data) {
             let text = data
             if (text) {
                 text = text.replace(/(\n)/g, '')
@@ -106,10 +106,10 @@ export default Vue.extend({
                 return ''
             }
         },
-        setEditorHtml(val) {
+        setEditorHtml: function(val) {
             this.editorHtml = val
         },
-        handleEditorHtml(val) {
+        handleEditorHtml: function(val) {
             const text = this.getCleanText()
             this.$emit('update:text', text)
             this.$emit('input', val)
@@ -118,7 +118,7 @@ export default Vue.extend({
                 this.dispatch('ElFormItem', 'el.form.change', [val])
             }
         },
-        dispatch(componentName, eventName, params) {
+        dispatch: function(componentName, eventName, params) {
             let parent = this.$parent || this.$root
             let name = parent.$options.componentName
 
