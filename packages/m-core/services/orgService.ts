@@ -98,7 +98,7 @@ function queryChildren(orgCode) {
  * @param {string} orgCode 机构标识
  */
 function getOrgInfo(orgCode) {
-    return request(`${config.apiHost}/bua/org/${orgCode}`)
+    return request<Org>(`${config.apiHost}/bua/org/${orgCode}`)
 }
 
 export default {

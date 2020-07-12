@@ -1,6 +1,6 @@
 <template>
     <div>
-        <tree-node v-for="(item, index) in rootNode.children" :key="index" :lazy="lazy" :data="item" :zindex="10" :load-node="loadNode" @checkChange="childCheckChangeHandler" />
+        <tree-node v-for="(item, index) in rootNode.children" :key="index" :lazy="lazy" :data="item" :zindex="10" :load-node="loadNode" @checkChange="childCheckChangeHandler" expand />
     </div>
 </template>
 

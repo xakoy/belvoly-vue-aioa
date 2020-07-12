@@ -1,5 +1,5 @@
 <template>
-    <div style="padding-top: 900px">
+    <div>
         <bvan-field label="收件人" is-link v-model="item.names" readonly @click="inputClickHandler" />
         <choose-people-or-org
             v-if="opickerToToVisible"
@@ -20,6 +20,7 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
 import { ChoosePeopleOrOrg } from '../../../packages/m-ui'
+// import { ChoosePeopleOrOrg } from '../../../packages/m-ui/packages/choose'
 @Component({
     components: {
         ChoosePeopleOrOrg

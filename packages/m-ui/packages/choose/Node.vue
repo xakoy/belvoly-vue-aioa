@@ -21,26 +21,37 @@
                 :load-node="loadNode"
                 @checkChange="childCheckChangeHandler"
             />
-            <div v-show="isExpand" v-else :key="index" class="bvant-choose-people-or-org__item--warp bvant-choose-people-or-org__item-nochild " :style="{ 'padding-left': `${zindex + 22}px` }">
-                <div class="bvant-choose-people-or-org__item" :class="{ 'van-hairline--bottom': index < children.length - 1 }">
+            <node-user
+                :border="index < children.length - 1"
+                :style="{ 'padding-left': `${zindex + 22}px` }"
+                v-show="isExpand"
+                v-else
+                :key="index"
+                :icon="getUserIcon(child)"
+                :label="child.label"
+                :cancheck="child.cancheck"
+                v-model="child.check"
+                @change="checkChange($event, child)"
+            ></node-user>
+            <!-- <div class="bvant-choose-people-or-org__item--warp bvant-choose-people-or-org__item-nochild " >
+                <div class="bvant-choose-people-or-org__item" :class="{ 'van-hairline--bottom':  }">
                     <div class="bvant-choose-people-or-org__item--avatar">
-                        <!-- <span>罗</span> -->
                         <img :src="getUserIcon(child)" />
                     </div>
                     <div class="bvant-choose-people-or-org__item--label">{{ child.label }}</div>
                     <div v-if="child.cancheck" class="bvant-choose-people-or-org__item--checkbox">
-                        <bvan-checkbox v-model="child.check" shape="square" @change="checkChange($event, child)" />
+                        <bvan-checkbox v-model="child.check" shape="square"  />
                     </div>
                 </div>
-            </div>
+            </div> -->
         </template>
     </div>
 </template>
 
 <script lang="ts">
 import { globalConfig } from '@belvoly-vue-aioa/m-core'
-
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
+import NodeUser from './NodeUser.vue'
 import { Node } from './interface'
 const config = {
     api: {
@@ -49,7 +60,10 @@ const config = {
 }
 
 @Component({
-    name: 'BVantMuiTreeNode'
+    name: 'BVantMuiTreeNode',
+    components: {
+        NodeUser
+    }
 })
 export default class TreeNode extends Vue {
     @Prop() data: Node
@@ -58,13 +72,20 @@ export default class TreeNode extends Vue {
     @Prop() zindex: number
     @Prop() loadNode: Function
 
-    isExpand = false
+    @Prop({ default: false, type: Boolean }) expand: boolean
+
+    isExpand = true
     // item: Node = null
     children: Node[] = []
 
     mounted() {
-        //
+        this.watchExpand()
         this.watchDataChange()
+    }
+
+    @Watch('expand')
+    watchExpand() {
+        this.isExpand = this.expand
     }
 
     @Watch('data', { deep: true })

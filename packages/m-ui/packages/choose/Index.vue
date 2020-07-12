@@ -1,9 +1,10 @@
 <template>
     <div v-if="visible" class="bvant-choose-people-or-org">
         <bvan-nav-bar :title="title" :border="false" />
-        <bvan-search shape="round" placeholder="搜索" />
+        <bvan-search v-model="searchText" shape="round" :show-action="searchVisible" placeholder="搜索" @search="searchHandler" @cancel="cancelSearchHandler" />
         <div class="bvant-choose-people-or-org--content">
-            <tree ref="tree" :lazy="true" :props="{ label: 'name', isLeaf: 'leaf' }" :load="loadHandler" @currentCheckChange="currentCheckChangeHandler" @checkChange="checkChangeHandler" />
+            <tree v-show="!searchVisible" ref="tree" :lazy="true" :props="{ label: 'name', isLeaf: 'leaf' }" :load="loadHandler" @currentCheckChange="treeCurrentCheckChangeHandler" />
+            <search :loading="searchLoading" :isSingleMode="this.isSingleMode" v-if="searchVisible" :data="searchData" @currentCheckChange="searchCurrentCheckChangeHandler"></search>
         </div>
         <div class="bvant-choose-people-or-org__selectedarea " :class="{ 'bvant-choose-people-or-org__selectedarea--state-expand': selectedareaExpand }">
             <div class="bvant-choose-people-or-org__selectedarea--expandicon" @click="selectedareaExpand = !selectedareaExpand">
@@ -29,7 +30,9 @@ const { orgService, userService } = services
 
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import Tree from './Tree.vue'
+import Search from './Search.vue'
 import { Node } from './interface'
+import { Org } from '@belvoly-vue-aioa/core/services/orgService'
 
 type TreeNodeType = 'org' | 'user'
 
@@ -52,7 +55,8 @@ interface NameValue {
 
 @Component({
     components: {
-        Tree
+        Tree,
+        Search
     }
 })
 export default class Index extends Vue {
@@ -91,9 +95,13 @@ export default class Index extends Vue {
         this.$el.parentNode.removeChild(this.$el)
     }
 
-    checkChangeHandler(items: Node[]) {}
+    searchCurrentCheckChangeHandler(checked: boolean, item: Node) {
+        const tree: any = this.$refs.tree
+        tree.setCheck(item.id, checked)
+        this.treeCurrentCheckChangeHandler(checked, item)
+    }
 
-    currentCheckChangeHandler(checked: boolean, item: Node) {
+    treeCurrentCheckChangeHandler(checked: boolean, item: Node) {
         if (checked) {
             if (this.isSingleMode) {
                 this.checkItems
@@ -116,9 +124,22 @@ export default class Index extends Vue {
         }
     }
 
+    rootOrg: Org = null
+
+    async getRoot() {
+        if (this.isShowGlobal) {
+            const { data: rootOrg } = await orgService.getOrgRoot()
+            this.rootOrg = rootOrg
+        } else {
+            const { data: rootOrg } = await orgService.getOrgInfo(this.rootOrgCode)
+            this.rootOrg = rootOrg
+        }
+        return this.rootOrg
+    }
+
     async loadHandler(node, resolve) {
         if (node.level === 0) {
-            const { data: rootOrg } = await orgService.getOrgRoot()
+            const rootOrg = await this.getRoot()
             if (rootOrg) {
                 await this.queryChildren(rootOrg.orgCode, resolve, rootOrg)
             }
@@ -126,6 +147,33 @@ export default class Index extends Vue {
             const orgCode = node.data.value
             await this.loadSubNode(orgCode, resolve, true)
         }
+    }
+
+    cancelSearchHandler() {
+        this.searchData = null
+    }
+
+    searchHandler(value) {
+        this.searchUser(value, this.isShowGlobal ? null : this.rootOrgCode)
+    }
+
+    searchData: Node[] = null
+    searchLoading = false
+    searchText = ''
+
+    get searchVisible() {
+        return this.searchLoading || !!this.searchData
+    }
+    async searchUser(text: string, parentCode?: string) {
+        this.searchLoading = true
+        const { data, success } = await userService.searchUsers(text, text, parentCode)
+        if (success) {
+            const userData = this.convertUsersToTreeNodeData(data)
+            this.searchData = userData
+        } else {
+            this.searchData = []
+        }
+        this.searchLoading = false
     }
 
     async loadSubNode(orgCode, resolve, isOnlyChild: boolean) {
