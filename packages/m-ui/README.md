@@ -5,7 +5,10 @@ belvoly vue 移动APP专用组件库
 1. `ChoosePeopleOrOrg` 选人组件
 2. `Upload` 上传组件
 
-### 更新
+## 更新
+### NEW
+1. `ChoosePeopleOrOrg` 组件的`model`属性可以设置为`org`，用于选择机构
+
 ### v 0.1.5
 1. `ChoosePeopleOrOrg` 组件增加搜索功能
 2. `ChoosePeopleOrOrg` 组件可以正确识别`isShowGlobal`属性

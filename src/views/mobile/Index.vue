@@ -48,7 +48,6 @@ export default class Index extends Vue {
     mounted() {
         const { name } = this.$route
         this.active = name
-        console.log(this.$route)
     }
 
     get title() {

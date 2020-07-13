@@ -1,7 +1,7 @@
 <template>
     <div v-if="visible" class="bvant-choose-people-or-org">
         <bvan-nav-bar :title="title" :border="false" />
-        <bvan-search v-model="searchText" shape="round" :show-action="searchVisible" placeholder="搜索" @search="searchHandler" @cancel="cancelSearchHandler" />
+        <bvan-search v-if="searchInputVisible" v-model="searchText" shape="round" :show-action="searchVisible" placeholder="搜索" @search="searchHandler" @cancel="cancelSearchHandler" />
         <div class="bvant-choose-people-or-org--content">
             <tree v-show="!searchVisible" ref="tree" :lazy="true" :props="{ label: 'name', isLeaf: 'leaf' }" :load="loadHandler" @currentCheckChange="treeCurrentCheckChangeHandler" />
             <search :loading="searchLoading" :isSingleMode="this.isSingleMode" v-if="searchVisible" :data="searchData" @currentCheckChange="searchCurrentCheckChangeHandler"></search>
@@ -53,6 +53,9 @@ interface NameValue {
     data?: any
 }
 
+type Mode = 'user' | 'orgAndUser' | 'org'
+type SelectionMode = 'multiple' | 'single'
+
 @Component({
     components: {
         Tree,
@@ -61,8 +64,8 @@ interface NameValue {
 })
 export default class Index extends Vue {
     @Prop({ default: '选择人员' }) title: string
-    @Prop({ default: 'multiple' }) selectionMode: string
-    @Prop({ default: 'orgAndUser' }) mode: string
+    @Prop({ default: 'multiple' }) selectionMode: SelectionMode
+    @Prop({ default: 'orgAndUser' }) mode: Mode
     @Prop() rootOrgCode: string
     @Prop({ default: false }) visible: boolean
     @Prop({ default: false }) isShowGlobal: boolean
@@ -71,11 +74,19 @@ export default class Index extends Vue {
     @Prop() names: string
     @Prop() codes: string
 
+    get searchInputVisible() {
+        return !this.isOnlyChooseOrg
+    }
+
     selectedareaExpand = false
     checkItems: TreeNode[] = []
 
+    get isOnlyChooseOrg() {
+        return this.mode === 'org'
+    }
+
     get isOnlyChooseUser() {
-        return this.mode !== 'orgAndUser'
+        return this.mode === 'user'
     }
 
     get isSingleMode() {
@@ -154,7 +165,11 @@ export default class Index extends Vue {
     }
 
     searchHandler(value) {
-        this.searchUser(value, this.isShowGlobal ? null : this.rootOrgCode)
+        if (!this.isOnlyChooseOrg) {
+            this.searchUser(value, this.isShowGlobal ? null : this.rootOrgCode)
+        } else {
+            this.searchOrg(value, this.isShowGlobal ? null : this.rootOrgCode)
+        }
     }
 
     searchData: Node[] = null
@@ -164,7 +179,20 @@ export default class Index extends Vue {
     get searchVisible() {
         return this.searchLoading || !!this.searchData
     }
+
     async searchUser(text: string, parentCode?: string) {
+        this.searchLoading = true
+        const { data, success } = await userService.searchUsers(text, text, parentCode)
+        if (success) {
+            const userData = this.convertUsersToTreeNodeData(data)
+            this.searchData = userData
+        } else {
+            this.searchData = []
+        }
+        this.searchLoading = false
+    }
+
+    async searchOrg(text: string, parentCode?: string) {
         this.searchLoading = true
         const { data, success } = await userService.searchUsers(text, text, parentCode)
         if (success) {
@@ -191,20 +219,30 @@ export default class Index extends Vue {
     // 查询机构下一层子机构
     async queryChildren(orgCode, resolve, parentOrg) {
         const { data } = await orgService.queryChildren(orgCode)
-        const { data: users } = await userService.queryByOrgCode(orgCode)
         if (data) {
             const nodeData = this.convertOrgsToTreeNodeData(data)
-            const userData = this.convertUsersToTreeNodeData(users)
+            let userData
+            if (!this.isOnlyChooseOrg) {
+                const { data: users } = await userService.queryByOrgCode(orgCode)
+                userData = this.convertUsersToTreeNodeData(users)
+            }
             if (parentOrg) {
                 // this.defaultExpandedKeysId = orgCode
                 // 默认展开第一个节点
                 // this.defaultExpandedKeys = [orgCode]
                 const parentNode = this.convertOrgToTreeNode(parentOrg, false)
-                parentNode.children = [...nodeData, ...userData]
+                parentNode.children = [...nodeData]
+                if (!this.isOnlyChooseOrg) {
+                    parentNode.children.push(...userData)
+                }
                 const convertData = [parentNode]
                 resolve(convertData)
             } else {
-                resolve([...nodeData, ...userData])
+                const children = [...nodeData]
+                if (!this.isOnlyChooseOrg) {
+                    children.push(...userData)
+                }
+                resolve(children)
             }
         }
     }
