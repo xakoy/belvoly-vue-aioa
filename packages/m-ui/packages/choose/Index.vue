@@ -32,7 +32,6 @@ import { Vue, Component, Prop } from 'vue-property-decorator'
 import Tree from './Tree.vue'
 import Search from './Search.vue'
 import { Node } from './interface'
-import { Org } from '@belvoly-vue-aioa/core/services/orgService'
 
 type TreeNodeType = 'org' | 'user'
 
@@ -135,7 +134,7 @@ export default class Index extends Vue {
         }
     }
 
-    rootOrg: Org = null
+    rootOrg = null
 
     async getRoot() {
         if (this.isShowGlobal) {
