@@ -11,7 +11,7 @@
             </div>
         </div>
         <template v-for="(child, index) in children">
-            <b-vant-mui-tree-node
+            <b-vant-mui-choose-tree-node
                 v-show="isExpand"
                 v-if="isParentNode(child)"
                 :key="index"
@@ -60,7 +60,7 @@ const config = {
 }
 
 @Component({
-    name: 'BVantMuiTreeNode',
+    name: 'BVantMuiChooseTreeNode',
     components: {
         NodeUser
     }

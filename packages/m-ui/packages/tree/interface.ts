@@ -1,6 +1,7 @@
 export interface Node {
     level?: number
     label?: string
+    value: string
     id: string
     children?: Node[]
     check?: boolean

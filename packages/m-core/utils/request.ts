@@ -14,6 +14,11 @@ export interface RequestOption {
     data?: any
 }
 
+export interface ResponseOption<T> {
+    isSuccess?: (response: AxiosResponse) => boolean
+    getData?: (response: AxiosResponse) => T
+}
+
 export enum Method {
     Post = 'POST',
     Get = 'GET',
@@ -49,7 +54,7 @@ function errorShow(errorText) {
     })
 }
 
-export function request<T>(url: string, options?: RequestOption): Promise<{ data?: T; error?: any; response?: any; success: boolean }> {
+export function request<T>(url: string, options?: RequestOption, resOption?: ResponseOption<T>): Promise<{ data?: T; error?: any; response?: any; success: boolean }> {
     const config = {
         method: <Method>'GET',
         headers: {},
@@ -86,17 +91,23 @@ export function request<T>(url: string, options?: RequestOption): Promise<{ data
         }
     }
 
+    const responsedOption: ResponseOption<T> = {
+        isSuccess: response => {
+            return response.status >= 200 && response.status < 300 && response.data.flag === 0
+        },
+        getData: response => {
+            return response.data.data
+        },
+        ...resOption
+    }
+
     return new Promise(resolve => {
         axiosInstance
             .request(config)
             .then(response => {
                 return new Promise<AxiosResponse<any>>((interResolve, interReject) => {
-                    if (response.status >= 200 && response.status < 300) {
-                        if (response.data.flag === 0) {
-                            interResolve(response)
-                        } else {
-                            interReject(response)
-                        }
+                    if (responsedOption.isSuccess(response)) {
+                        interResolve(response)
                     } else {
                         interReject(response)
                     }
@@ -104,7 +115,7 @@ export function request<T>(url: string, options?: RequestOption): Promise<{ data
             })
             .then(response => {
                 resolve({
-                    data: response.data.data,
+                    data: responsedOption.getData(response),
                     response: response,
                     success: true
                 })

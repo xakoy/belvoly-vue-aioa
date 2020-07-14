@@ -40,6 +40,10 @@ export default class Index extends Vue {
         {
             name: 'upload',
             path: routeNames.mobile.upload
+        },
+        {
+            name: 'opicker',
+            path: routeNames.mobile.opicker
         }
     ]
 

@@ -12,6 +12,7 @@ export const routeNames = {
     },
     mobile: {
         choose: 'm-choose',
+        opicker: 'opicker',
         upload: 'm-upload'
     }
 }
@@ -60,6 +61,11 @@ const routes: RouteConfig[] = [
                 path: 'upload',
                 name: routeNames.mobile.upload,
                 component: () => import('./views/mobile/Upload.vue')
+            },
+            {
+                path: 'opicker',
+                name: routeNames.mobile.opicker,
+                component: () => import('./views/mobile/opicker/Index.vue')
             }
         ]
     }

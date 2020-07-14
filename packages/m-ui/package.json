@@ -4,6 +4,7 @@
   "description": "智能办公移动ui组件",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
+  "typings": "types/index.d.ts",
   "scripts": {
     "build": "rollup -c",
     "prepublish": "npm run build",

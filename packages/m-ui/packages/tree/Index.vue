@@ -1,6 +1,6 @@
 <template>
     <div>
-        <tree-node v-for="(item, index) in rootNode.children" :key="index" :lazy="lazy" :data="item" :zindex="10" :load-node="loadNode" @checkChange="childCheckChangeHandler" expand />
+        <tree-node v-for="(item, index) in rootNode.children" :key="index" :lazy="lazy" :data="item" :zindex="10" :load-node="loadNode" @checkChange="childCheckChangeHandler" />
     </div>
 </template>
 
@@ -42,6 +42,7 @@ export default class Tree extends Vue {
         id: '0',
         level: 0,
         label: '',
+        value: null,
         isLeaf: true,
         loading: false,
         loaded: false,
@@ -74,7 +75,7 @@ export default class Tree extends Vue {
     parseChildren(parent: Node, children: Node[]) {
         if (children) {
             parent.children = children.map(c => {
-                const rc: Node = { id: c.id }
+                const rc: Node = { id: c.id, value: c.value }
                 rc.label = this.getLabel(c)
                 rc.parent = parent
                 rc.level = parent.level + 1

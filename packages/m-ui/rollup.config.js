@@ -30,5 +30,5 @@ export default {
             // typescript: tsconfig
         })
     ],
-    external: ['@belvoly-vue-aioa/m-core']
+    external: ['@belvoly-vue-aioa/m-core', '@belvoly-vue-aioa/bvant']
 }
