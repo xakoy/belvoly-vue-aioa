@@ -1,4 +1,4 @@
-import axios, { Method as AxiosMethod, AxiosResponse } from 'axios'
+import axios, { Method as AxiosMethod, AxiosResponse, AxiosRequestConfig, CancelTokenSource } from 'axios'
 // import store from '@/store'
 import { format } from './string'
 import gloablConfig from '../config'
@@ -54,11 +54,92 @@ function errorShow(errorText) {
     })
 }
 
-export function request<T>(url: string, options?: RequestOption, resOption?: ResponseOption<T>): Promise<{ data?: T; error?: any; response?: any; success: boolean }> {
-    const config = {
+/**
+ * 请求一个WEBAPI地址，request的一个变体，返回取消和promise
+ * @param url 请求的地址
+ * @param options 请求选项
+ * @param resOption 结果的选项
+ *
+ * @example
+ *       const { promise, abort } = requestVariant('/x')
+ *
+ *       setTimeout(abort, 1000)
+ *
+ *       const { data, success, isCancel } = await promise
+ *       if (success) {
+ *           //data
+ *       } else if (isCancel) {
+ *          //被取消的
+ *       }
+ *
+ */
+export function requestVariant<T>(
+    url: string,
+    options?: RequestOption,
+    resOption?: ResponseOption<T>
+): {
+    /**
+     * 取消的方法
+     */
+    abort: () => void
+    /**
+     * 执行的promise
+     */
+    promise: Promise<{
+        data?: T
+        error?: any
+        response?: any
+        success: boolean
+        isCancel?: boolean
+    }>
+} {
+    let cancel
+    const cancelDelegate = c => {
+        cancel = c
+    }
+    const { ...ops } = options
+    const newOptions = {
+        ...ops,
+        cancel: cancelDelegate
+    }
+    return {
+        promise: request<T>(url, newOptions, resOption),
+        abort: cancel
+    }
+}
+/**
+ * 请求一个WEBAPI地址
+ * @param url 请求的地址
+ * @param options 请求的选项
+ * @param resOption 结果的选项
+ */
+export function request<T>(
+    url: string,
+    options?: RequestOption & {
+        /**
+         * 取消回调函数
+         * @example
+         *
+         * let cancel
+         *
+         * const { data, success } = await request('/xxx',
+         *     {
+         *         cancel: (c) => {
+         *              cancel = c
+         *         }
+         *     })
+         *
+         * cancel
+         */
+        cancel?: (cancel: () => void) => void
+    },
+    resOption?: ResponseOption<T>
+): Promise<{ data?: T; error?: any; response?: any; success: boolean; isCancel?: boolean }> {
+    const { cancel, ...ops } = options
+    const config: AxiosRequestConfig = {
         method: <Method>'GET',
         headers: {},
-        ...options
+        ...ops
     }
     config.url = url
 
@@ -101,6 +182,10 @@ export function request<T>(url: string, options?: RequestOption, resOption?: Res
         ...resOption
     }
 
+    if (cancel) {
+        config.cancelToken = new axios.CancelToken(cancel)
+    }
+
     return new Promise(resolve => {
         axiosInstance
             .request(config)
@@ -129,10 +214,12 @@ export function request<T>(url: string, options?: RequestOption, resOption?: Res
                 } else {
                     errorText = '请刷新重试、重新登录或联系管理员'
                 }
-
-                errorShow(errorText)
-
+                const isCancel = axios.isCancel(e)
+                if (!isCancel) {
+                    errorShow(errorText)
+                }
                 resolve({
+                    isCancel: isCancel,
                     error: e,
                     success: false
                 })
@@ -180,5 +267,6 @@ export function get<T>(url: string, options: RequestOption = {}) {
 }
 
 export default {
-    request
+    request,
+    requestVariant
 }
