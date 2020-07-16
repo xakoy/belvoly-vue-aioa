@@ -52,6 +52,9 @@ if (success) {
 }
 ```
 ## 版本记录
+### v 0.1.6
+1. `request`修复options为`null`BUG
+
 ### v 0.1.5
 1. `request`增加`cancel`取消的选项，返回值增加`isCancen`判断是否主动取消的
 2. 增加`requestVariant`，是`request`的变体，返回 { promise, abort }

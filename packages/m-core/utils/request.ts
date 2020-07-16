@@ -115,7 +115,7 @@ export function requestVariant<T>(
  */
 export function request<T>(
     url: string,
-    options?: RequestOption & {
+    options: RequestOption & {
         /**
          * 取消回调函数
          * @example
@@ -132,7 +132,7 @@ export function request<T>(
          * cancel
          */
         cancel?: (cancel: () => void) => void
-    },
+    } = {},
     resOption?: ResponseOption<T>
 ): Promise<{ data?: T; error?: any; response?: any; success: boolean; isCancel?: boolean }> {
     const { cancel, ...ops } = options
