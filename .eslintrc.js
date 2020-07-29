@@ -37,5 +37,8 @@ module.exports = {
         "@typescript-eslint/camelcase": "off",
         "@typescript-eslint/no-this-alias": "off",
         'prefer-rest-params': 'off'
+    },
+    globals: {
+        BM: true
     }
 }

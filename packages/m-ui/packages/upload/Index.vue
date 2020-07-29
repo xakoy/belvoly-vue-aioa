@@ -2,9 +2,12 @@
     <div class="bvan-mui-upload margin-small-top">
         <bvan-cell :title="label" :border="false" v-if="!isReadonly">
             <template #right-icon>
-                <bvan-uploader v-if="!isReadonly && !isDisabled" :before-read="beforeReadHandler" :after-read="afterReadHandler" multiple="multiple">
-                    <bvan-icon name="attachment" class-prefix="fc" color="#999" style="line-height: inherit;" />
-                </bvan-uploader>
+                <template v-if="!isReadonly && !isDisabled">
+                    <bvan-uploader v-if="!inApp" :before-read="beforeReadHandler" :after-read="afterReadHandler" multiple="multiple">
+                        <bvan-icon name="attachment" class-prefix="fc" color="#999" style="line-height: inherit;" />
+                    </bvan-uploader>
+                    <bvan-icon v-else name="attachment" class-prefix="fc" color="#999" style="line-height: inherit;" @click="appUploadClickHandler" />
+                </template>
             </template>
         </bvan-cell>
         <bvan-cell-group class="bvan-mui-upload__group" v-if="files.length > 0" :class="{ 'bvan-hairline--top': !isReadonly }" :border="false">
@@ -124,6 +127,7 @@
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import { Notify, Dialog } from '@belvoly-vue-aioa/bvant'
 import { utils, globalConfig, services } from '@belvoly-vue-aioa/m-core'
+import { isInApp } from '../utils/environment'
 import Item from './Item.vue'
 const { attachmentService } = services
 const { request } = utils
@@ -149,6 +153,36 @@ interface BeforeUpload {
     (file: any): Promise<boolean>
 }
 
+function makeFileId() {
+    return new Date().getTime().toString()
+}
+
+function getFileName(path) {
+    const pathArray = path.splitRemoveEmptys(/\/|\\\\/g)
+    return pathArray[pathArray.length - 1]
+}
+
+interface HtmlFile {
+    name: string
+    size: number
+    response?: {
+        data: UploadFile
+    }
+}
+
+interface UploadFile {
+    name?: string
+    id?: string
+    displayName?: string
+}
+
+type UploadFileStatus = 'success' | 'failed' | 'uploading'
+
+interface ExisitFile {
+    status: UploadFileStatus
+    file: HtmlFile
+}
+
 @Component({
     components: {
         Item
@@ -163,7 +197,7 @@ export default class Index extends Vue {
             return []
         }
     })
-    fileList: Array<any>
+    fileList: Array<UploadFile>
 
     @Prop({ required: true }) refTableName: string
     @Prop({ required: true }) typeCode: string
@@ -187,16 +221,19 @@ export default class Index extends Vue {
 
     @Prop({ default: 9999 }) limit: number
 
-    uploadFiles: any[] = []
-    files: any[] = []
+    inApp = false
+
+    uploadFiles: UploadFile[] = []
+
+    files: ExisitFile[] = []
 
     get getFileList() {
-        const files = this.fileList.map((c: any) => {
+        const files = this.fileList.map(c => {
             if (c.displayName) {
                 c.name = c.displayName
             }
 
-            return {
+            return <ExisitFile>{
                 status: 'success',
                 file: c
             }
@@ -226,13 +263,98 @@ export default class Index extends Vue {
     }
 
     mounted() {
+        this.init()
         this.watchFileList(this.fileList)
+    }
+
+    async init() {
+        this.inApp = await isInApp()
     }
 
     @Watch('fileList')
     watchFileList(newValue) {
         this.files = this.getFileList
         this.uploadFiles = [...newValue]
+    }
+
+    appUploadClickHandler() {
+        const maxTotal = this.multiple ? this.limit : 1
+
+        BM.appointment.file.getFiles(maxTotal, data => {
+            if (Array.isArray(data)) {
+                for (let i = 0; i < data.length; i++) {
+                    const item = data[i]
+                    if (item.fileURI) {
+                        const file: HtmlFile = {
+                            name: getFileName(item.fileURI),
+                            size: item.fileSize || 0
+                        }
+                        this.clientUploadFile(item.fileURI, file, BM.appointment.file.uploadFile)
+                    }
+                }
+            } else {
+                alert('服务器未响应预期数据')
+            }
+        })
+    }
+
+    async clientUploadFile(url: string, file: HtmlFile, uploadFileFunction) {
+        if (url && file) {
+            // uploadFileQueued(options, $itemscontainer, file)
+            let isSuccess = false
+            try {
+                await this.beforeReadHandler(file)
+                isSuccess = true
+            } catch {
+                isSuccess = false
+            }
+            if (!isSuccess) {
+                return
+            }
+            const item: ExisitFile = {
+                status: 'uploading',
+                file: file
+            }
+            this.files.push(item)
+
+            uploadFileFunction(url, this.uploadAction, data => {
+                switch (data.state) {
+                    case 0: //准备
+                        break
+                    case 1: //上传中
+                        // uploadProgress(options, file, data.progressPercentage)
+                        break
+                    case 2: //成功
+                        if (!data.result || data.result == '') {
+                            // uploadError(options, file, '服务器没有返回预期返回值')
+                            break
+                        }
+                        // eslint-disable-next-line no-case-declarations
+                        let result = data.result
+                        if (typeof result === 'string') {
+                            result = JSON.parse(result)
+                        }
+                        result = result.data
+                        file.response = { data: result }
+                        item.status = 'success'
+                        this.handleUploadSuccess(result, file, this.files)
+                        // uploadSuccess(options, file, result)
+                        break
+                    case 3: //失败
+                        // data.state = UPLOAD_ERROR_TYPE.ERROR
+                        // uploadError(options, file, '上传失败')
+                        item.status = 'failed'
+                        break
+                    case 4: //超时
+                        item.status = 'failed'
+                        // data.state = UPLOAD_ERROR_TYPE.TIMEOUT
+                        // uploadError(options, file, '上传超时')
+                        break
+                    default:
+                        break
+                }
+            })
+        }
     }
 
     async beforeReadHandler(file) {
@@ -275,8 +397,11 @@ export default class Index extends Vue {
     }
 
     async uploadFile(file) {
-        const item = {
-            file: file,
+        const item: ExisitFile = {
+            file: {
+                name: file.name,
+                size: file.size
+            },
             status: 'uploading'
         }
         this.files.push(item)
@@ -293,40 +418,52 @@ export default class Index extends Vue {
             data: data
         })
         if (success) {
-            file.response = { data: result }
+            item.file.response = { data: result }
 
             item.status = 'success'
             this.handleUploadSuccess(result, file, this.files)
         } else {
             item.status = 'failed'
         }
-        console.log(this.files)
     }
 
     handlePreview(file) {
         if (file.id) {
             this.handlePreviewCore(file)
         } else {
-            window.open(file.response.data.url)
+            if (this.inApp) {
+                BM.appointment.file.download(window.open(file.response.data.url), file.name, '')
+            } else {
+                window.open(file.response.data.url)
+            }
         }
     }
-    handlePreviewCore(file) {
+    async handlePreviewCore(file) {
         const preivewEnabled = config.o365.enabled
 
         if (preivewEnabled) {
             this.handleO365Preview(file)
         } else {
-            window.open(file.url)
+            if (this.inApp) {
+                BM.appointment.file.download(`${config.api.baseURI}/sharedservice/blob/${file.id}`, file.name, '')
+            } else {
+                window.open(file.url)
+            }
         }
     }
-    handleO365Preview(file) {
+
+    async handleO365Preview(file) {
         let url = file.url
 
         if (file.extension && this.checkO365PreviewSupproted(file.extension)) {
             url = `${config.o365.baseURI}${config.o365.blobURI}/${file.id}`
         }
 
-        window.open(url)
+        if (this.inApp) {
+            BM.appointment.file.download(url, file.name, '')
+        } else {
+            window.open(url)
+        }
     }
     checkO365PreviewSupproted(extension) {
         const supportFileTypes = config.o365.supportFileTypes
@@ -375,7 +512,7 @@ export default class Index extends Vue {
         return await Dialog.confirm({ title: `确定移除 ${file.name}？` })
     }
 
-    handleUploadSuccess(responseData, file, fileList) {
+    handleUploadSuccess(responseData: UploadFile, file, fileList) {
         this.uploadFiles.push(responseData)
         const successFiles = fileList.find(file => file.status === 'success')
 
@@ -384,7 +521,7 @@ export default class Index extends Vue {
         }
 
         const uploadInfo = {
-            ids: this.uploadFiles.map(file => file.id || file.response.data.id),
+            ids: this.uploadFiles.map(file => file.id),
             refTableId: '',
             refTableName: this.refTableName,
             file: file,

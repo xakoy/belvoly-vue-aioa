@@ -6,6 +6,9 @@ belvoly vue 移动APP专用组件库
 2. `Upload` 上传组件
 
 ## 更新
+### v 0.1.8 组件
+1. `Upload`组件支持在APP中上传和预览
+
 ### v 0.1.7
 1. 增加`OPicker` 组件
 

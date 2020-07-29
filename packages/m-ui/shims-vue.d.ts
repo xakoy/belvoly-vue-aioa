@@ -4,6 +4,7 @@ declare module '*.vue' {
 }
 
 declare let BM
+
 interface Window {
     BM: any
 }
