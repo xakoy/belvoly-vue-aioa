@@ -329,6 +329,8 @@ export default class Index extends Vue {
                             // uploadError(options, file, '服务器没有返回预期返回值')
                             break
                         }
+                        alert(1)
+
                         // eslint-disable-next-line no-case-declarations
                         let result = data.result
                         if (typeof result === 'string') {
@@ -337,6 +339,7 @@ export default class Index extends Vue {
                         result = result.data
                         file.response = { data: result }
                         item.status = 'success'
+                        alert(JSON.stringify(result))
                         this.handleUploadSuccess(result, file, this.files)
                         // uploadSuccess(options, file, result)
                         break
@@ -428,11 +431,13 @@ export default class Index extends Vue {
     }
 
     handlePreview(file) {
+        debugger
+        alert(JSON.stringify(file))
         if (file.id) {
             this.handlePreviewCore(file)
         } else {
             if (this.inApp) {
-                BM.appointment.file.download(window.open(file.response.data.url), file.name, '')
+                BM.appointment.file.download(file.response.data.url, file.name, '')
             } else {
                 window.open(file.response.data.url)
             }
