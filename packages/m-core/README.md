@@ -52,6 +52,8 @@ if (success) {
 }
 ```
 ## 版本记录
+###
+1. `request` 增加 isShowError选项，是否默认显示错误信息
 ### v 0.1.6
 1. `request`修复options为`null`BUG
 

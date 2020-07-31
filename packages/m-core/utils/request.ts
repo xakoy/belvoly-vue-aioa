@@ -15,6 +15,7 @@ export interface RequestOption {
 }
 
 export interface ResponseOption<T> {
+    isShowError?: ((response: AxiosResponse) => boolean) | boolean
     isSuccess?: (response: AxiosResponse) => boolean
     getData?: (response: AxiosResponse) => T
 }
@@ -173,6 +174,7 @@ export function request<T>(
     }
 
     const responsedOption: ResponseOption<T> = {
+        isShowError: true,
         isSuccess: response => {
             return response.status >= 200 && response.status < 300 && response.data.flag === 0
         },
@@ -206,6 +208,7 @@ export function request<T>(
                 })
             })
             .catch(e => {
+                const isShowError = typeof responsedOption.isShowError === 'boolean' ? responsedOption.isShowError : responsedOption.isShowError(e.response)
                 const status = getValue(e, 'response.status')
                 const flag = getValue(e, 'data.flag')
                 let errorText = ''
@@ -215,7 +218,7 @@ export function request<T>(
                     errorText = '请刷新重试、重新登录或联系管理员'
                 }
                 const isCancel = axios.isCancel(e)
-                if (!isCancel) {
+                if (!isCancel && isShowError) {
                     errorShow(errorText)
                 }
                 resolve({
