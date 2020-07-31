@@ -1,26 +1,28 @@
 <template>
     <div v-if="visible" class="bvant-choose-people-or-org">
-        <bvan-nav-bar :title="title" :border="false" />
-        <bvan-search v-if="searchInputVisible" v-model="searchText" shape="round" :show-action="searchVisible" placeholder="搜索" @search="searchHandler" @cancel="cancelSearchHandler" />
-        <div class="bvant-choose-people-or-org--content">
-            <tree v-show="!searchVisible" ref="tree" :lazy="true" :props="{ label: 'name', isLeaf: 'leaf' }" :load="loadHandler" @currentCheckChange="treeCurrentCheckChangeHandler" />
-            <search :loading="searchLoading" :isSingleMode="this.isSingleMode" v-if="searchVisible" :data="searchData" @currentCheckChange="searchCurrentCheckChangeHandler"></search>
-        </div>
-        <div class="bvant-choose-people-or-org__selectedarea " :class="{ 'bvant-choose-people-or-org__selectedarea--state-expand': selectedareaExpand }">
-            <div class="bvant-choose-people-or-org__selectedarea--expandicon" @click="selectedareaExpand = !selectedareaExpand">
-                <bvan-icon v-if="!selectedareaExpand" name="arrow-up" />
-                <bvan-icon v-else name="arrow-down" />
+        <div class="bvant-choose-people-or-org__container">
+            <bvan-nav-bar :title="title" :border="false" />
+            <bvan-search v-if="searchInputVisible" v-model="searchText" shape="round" :show-action="searchVisible" placeholder="搜索" @search="searchHandler" @cancel="cancelSearchHandler" />
+            <div class="bvant-choose-people-or-org--content">
+                <tree v-show="!searchVisible" ref="tree" :lazy="true" :props="{ label: 'name', isLeaf: 'leaf' }" :load="loadHandler" @currentCheckChange="treeCurrentCheckChangeHandler" />
+                <search :loading="searchLoading" :isSingleMode="this.isSingleMode" v-if="searchVisible" :data="searchData" @currentCheckChange="searchCurrentCheckChangeHandler"></search>
             </div>
-            <div class="bvant-choose-people-or-org__selectedarea--content">
-                <span v-for="(cItem, index) in checkItems" :key="index">
-                    {{ cItem.name }}
-                </span>
+            <div class="bvant-choose-people-or-org__selectedarea " :class="{ 'bvant-choose-people-or-org__selectedarea--state-expand': selectedareaExpand }">
+                <div class="bvant-choose-people-or-org__selectedarea--expandicon" @click="selectedareaExpand = !selectedareaExpand">
+                    <bvan-icon v-if="!selectedareaExpand" name="arrow-up" />
+                    <bvan-icon v-else name="arrow-down" />
+                </div>
+                <div class="bvant-choose-people-or-org__selectedarea--content">
+                    <span v-for="(cItem, index) in checkItems" :key="index">
+                        {{ cItem.name }}
+                    </span>
+                </div>
             </div>
+            <bvan-button-group>
+                <bvan-button square block @click="cancelHandler">取消</bvan-button>
+                <bvan-button square block type="info" @click="confirmHandler">确定</bvan-button>
+            </bvan-button-group>
         </div>
-        <bvan-button-group>
-            <bvan-button square block @click="cancelHandler">取消</bvan-button>
-            <bvan-button square block type="info" @click="confirmHandler">确定</bvan-button>
-        </bvan-button-group>
     </div>
 </template>
 
@@ -353,8 +355,15 @@ export default class Index extends Vue {
     height: 100%;
     z-index: 1000;
     background: #ffffff;
-    display: flex;
-    flex-direction: column;
+    padding-bottom: constant(safe-area-inset-bottom);
+    padding-bottom: env(safe-area-inset-bottom);
+    box-sizing: border-box;
+    &__container {
+        height: 100%;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+    }
     &--content {
         height: 100px;
         flex: 1;

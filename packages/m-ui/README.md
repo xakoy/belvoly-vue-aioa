@@ -6,8 +6,10 @@ belvoly vue 移动APP专用组件库
 2. `Upload` 上传组件
 
 ## 更新
+### v 0.1.9
+1. `OPicker`和`ChoosePeopleOrOrg`修复在iOS 11底部安全区域显示正常
 
-### v 0.1.8 组件
+### v 0.1.8
 1. `Upload`组件支持在APP中上传和预览
 
 ### v 0.1.7

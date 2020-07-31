@@ -25,8 +25,8 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-// import { OPicker } from '../../../../packages/m-ui/packages/opicker'
-import { OPicker } from '../../../../packages/m-ui'
+import { OPicker } from '../../../../packages/m-ui/packages/opicker'
+// import { OPicker } from '../../../../packages/m-ui'
 import './objectives'
 
 @Component({

@@ -1,26 +1,28 @@
 <template>
     <div v-if="visible" class="bvant-mui-opicker">
-        <bvan-nav-bar :title="title" :border="false" />
-        <bvan-search v-if="searchInputVisible" v-model="searchText" shape="round" :show-action="searchVisible" placeholder="搜索" @search="searchHandler" @cancel="cancelSearchHandler" />
-        <div class="bvant-mui-opicker__content">
-            <tree></tree>
-            <tree ref="tree" :lazy="true" :props="{ label: 'name', isLeaf: 'leaf' }" :load="loadHandler" @currentCheckChange="treeCurrentCheckChangeHandler" />
-        </div>
-        <div class="bvant-mui-opicker__selectedarea " :class="{ 'bvant-mui-opicker__selectedarea--state-expand': selectedareaExpand }">
-            <div class="bvant-mui-opicker__selectedarea--expandicon" @click="selectedareaExpand = !selectedareaExpand">
-                <bvan-icon v-if="!selectedareaExpand" name="arrow-up" />
-                <bvan-icon v-else name="arrow-down" />
+        <div class="bvant-mui-opicker__container">
+            <bvan-nav-bar :title="title" :border="false" />
+            <bvan-search v-if="searchInputVisible" v-model="searchText" shape="round" :show-action="searchVisible" placeholder="搜索" @search="searchHandler" @cancel="cancelSearchHandler" />
+            <div class="bvant-mui-opicker__content">
+                <tree></tree>
+                <tree ref="tree" :lazy="true" :props="{ label: 'name', isLeaf: 'leaf' }" :load="loadHandler" @currentCheckChange="treeCurrentCheckChangeHandler" />
             </div>
-            <div class="bvant-mui-opicker__selectedarea--content">
-                <span v-for="(cItem, index) in checkItems" :key="index">
-                    {{ cItem.name }}
-                </span>
+            <div class="bvant-mui-opicker__selectedarea " :class="{ 'bvant-mui-opicker__selectedarea--state-expand': selectedareaExpand }">
+                <div class="bvant-mui-opicker__selectedarea--expandicon" @click="selectedareaExpand = !selectedareaExpand">
+                    <bvan-icon v-if="!selectedareaExpand" name="arrow-up" />
+                    <bvan-icon v-else name="arrow-down" />
+                </div>
+                <div class="bvant-mui-opicker__selectedarea--content">
+                    <span v-for="(cItem, index) in checkItems" :key="index">
+                        {{ cItem.name }}
+                    </span>
+                </div>
             </div>
+            <bvan-button-group>
+                <bvan-button square block @click="cancelHandler">取消</bvan-button>
+                <bvan-button square block type="info" @click="confirmHandler">确定</bvan-button>
+            </bvan-button-group>
         </div>
-        <bvan-button-group>
-            <bvan-button square block @click="cancelHandler">取消</bvan-button>
-            <bvan-button square block type="info" @click="confirmHandler">确定</bvan-button>
-        </bvan-button-group>
     </div>
 </template>
 
@@ -299,8 +301,15 @@ export default class OpickerIndex extends Vue {
     height: 100%;
     z-index: 1000;
     background: #ffffff;
-    display: flex;
-    flex-direction: column;
+    padding-bottom: constant(safe-area-inset-bottom);
+    padding-bottom: env(safe-area-inset-bottom);
+    box-sizing: border-box;
+    &__container {
+        height: 100%;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+    }
     &__content {
         height: 100px;
         flex: 1;
