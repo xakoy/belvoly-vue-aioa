@@ -54,6 +54,8 @@ if (success) {
 ## 版本记录
 ###
 1. `request` 增加 isShowError选项，是否默认显示错误信息
+2. `request` Get 方式过滤null和undifine选项
+
 ### v 0.1.6
 1. `request`修复options为`null`BUG
 

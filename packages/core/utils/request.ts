@@ -59,6 +59,7 @@ export function request<T>(url: string, options?: RequestOption): Promise<{ data
 
     if (type === 'GET' && config.data) {
         const str = Object.keys(config.data)
+            .filter(key => config.data[key] !== undefined && config.data[key] !== null)
             .map(key => {
                 return `${key}=${encodeURIComponent(config.data[key])}`
             })

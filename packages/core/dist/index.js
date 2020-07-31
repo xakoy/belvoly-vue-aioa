@@ -91,6 +91,7 @@
         var type = config.method;
         if (type === 'GET' && config.data) {
             var str = Object.keys(config.data)
+                .filter(function (key) { return config.data[key] !== undefined && config.data[key] !== null; })
                 .map(function (key) {
                 return key + "=" + encodeURIComponent(config.data[key]);
             })
