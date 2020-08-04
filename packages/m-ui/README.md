@@ -6,6 +6,10 @@ belvoly vue 移动APP专用组件库
 2. `Upload` 上传组件
 
 ## 更新
+###
+1. `Upload`组件增加属性`simple`，简易模式，不包含任意界面
+2. `Upload`组件增加`uploading`、`error`事件
+
 ### v 0.1.9
 1. `OPicker`和`ChoosePeopleOrOrg`修复在iOS 11底部安全区域显示正常
 

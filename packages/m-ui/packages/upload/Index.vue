@@ -1,5 +1,5 @@
 <template>
-    <div class="bvan-mui-upload margin-small-top">
+    <div class="bvan-mui-upload margin-small-top" v-if="!simple">
         <bvan-cell :title="label" :border="false" v-if="!isReadonly">
             <template #right-icon>
                 <template v-if="!isReadonly && !isDisabled">
@@ -121,6 +121,12 @@
             </div>
         </bvan-cell-group>
     </div>
+    <span class="bvan-mui-upload__simple" v-else>
+        <bvan-uploader v-if="!inApp" :before-read="beforeReadHandler" :after-read="afterReadHandler" multiple="multiple">
+            <slot name="simple" />
+        </bvan-uploader>
+        <slot v-else name="simple" @click="appUploadClickHandler" />
+    </span>
 </template>
 
 <script lang="ts">
@@ -199,10 +205,11 @@ export default class Index extends Vue {
     })
     fileList: Array<UploadFile>
 
-    @Prop({ required: true }) refTableName: string
-    @Prop({ required: true }) typeCode: string
+    @Prop({}) refTableName: string
+    @Prop({}) typeCode: string
     @Prop() userUid: string
     @Prop({ default: false, type: Boolean }) readonly: boolean
+    @Prop({ default: false, type: Boolean }) simple: boolean
 
     /**
      * 文字提示
@@ -259,7 +266,17 @@ export default class Index extends Vue {
     }
 
     get uploadAction() {
-        return `${this.action}?refTableName=${this.refTableName}&typeCode=${this.typeCode}&creatorID=${this.userUid}`
+        let param = ''
+        if (this.refTableName) {
+            param += `&refTableName=${this.refTableName}`
+        }
+        if (this.typeCode) {
+            param += `&typeCode=${this.typeCode}`
+        }
+        if (this.userUid) {
+            param += `&creatorID=${this.userUid}`
+        }
+        return `${this.action}${this.action.indexOf('?') === -1 ? '?' : ''}${param}`
     }
 
     mounted() {
@@ -323,6 +340,7 @@ export default class Index extends Vue {
                         break
                     case 1: //上传中
                         // uploadProgress(options, file, data.progressPercentage)
+                        this.uploading()
                         break
                     case 2: //成功
                         if (!data.result || data.result == '') {
@@ -344,9 +362,11 @@ export default class Index extends Vue {
                         // data.state = UPLOAD_ERROR_TYPE.ERROR
                         // uploadError(options, file, '上传失败')
                         item.status = 'failed'
+                        this.error()
                         break
                     case 4: //超时
                         item.status = 'failed'
+                        this.error()
                         // data.state = UPLOAD_ERROR_TYPE.TIMEOUT
                         // uploadError(options, file, '上传超时')
                         break
@@ -407,7 +427,7 @@ export default class Index extends Vue {
         this.files.push(item)
         const data = new FormData()
         data.append(`file`, file)
-
+        this.uploading()
         //192.168.101.135:2001/api/sharedservice/blob/5f94345a-009f-46ab-8c48-dabcc68b9841
         const { data: result, success } = await request.request(this.uploadAction, {
             headers: {
@@ -424,7 +444,14 @@ export default class Index extends Vue {
             this.handleUploadSuccess(result, file, this.files)
         } else {
             item.status = 'failed'
+            this.error()
         }
+    }
+    error() {
+        this.$emit('error')
+    }
+    uploading() {
+        this.$emit('uploading')
     }
 
     handlePreview(file) {
@@ -528,7 +555,7 @@ export default class Index extends Vue {
             fileList: fileList
         }
 
-        this.$emit('on-success', uploadInfo)
+        this.$emit('success', uploadInfo, responseData)
         this.change()
         // this.$bus.emit('uploadInfo', uploadInfo)
     }
@@ -546,10 +573,10 @@ export default class Index extends Vue {
     /**
      * 更新关联业务表记录ID
      */
-    updateRelevance(refTableID) {
+    updateRelevance(refTableID, refTableName) {
         const blobRelevance = {
             ids: this.uploadFiles.map(file => file.id),
-            refTableName: this.refTableName,
+            refTableName: refTableName || this.refTableName,
             refTableID: refTableID
         }
         return attachmentService.updateRelevance(blobRelevance)

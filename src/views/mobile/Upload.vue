@@ -16,6 +16,13 @@
 
         <upload ref="upload2" :action="actionUrl" :limit="4" :fileList="fileList" :typeCode="typeCode" :refTableName="refTableName" readonly @change="changeHandler" />
 
+        <bvan-cell-group title="简易模式">
+            <upload simple @success="simpleSuccessHandler">
+                <template #simple>
+                    上传中
+                </template>
+            </upload>
+        </bvan-cell-group>
         <bvan-button @click="saveHandler" :loading="loading">
             保存
         </bvan-button>
@@ -124,6 +131,11 @@ export default class UploadIndex extends Vue {
         this.loading = true
         await upload.updateRelevance(id)
         this.loading = false
+    }
+
+    async simpleSuccessHandler(a, b) {
+        console.log(a, b, 'simple success')
+        alert('上传成功')
     }
 }
 </script>
