@@ -50,7 +50,7 @@ interface BeforeUpload {
 
 @Component
 export default class Index extends Vue {
-    @Prop({ default: `${config.api.baseURI}/sharedservice/blob/upload` }) action: string
+    @Prop() action: string
     @Prop({ default: 50 }) maxSize: number
     @Prop({ default: true }) multiple: boolean
     @Prop({ default: [] }) fileList: Array<any>
@@ -75,7 +75,21 @@ export default class Index extends Vue {
     uploadFiles: any[] = []
 
     get uploadAction() {
-        return `${this.action}?refTableName=${this.refTableName}&typeCode=${this.typeCode}&creatorID=${this.userUid}`
+        let param = ''
+        if (this.refTableName) {
+            param += `&refTableName=${this.refTableName}`
+        }
+        if (this.typeCode) {
+            param += `&typeCode=${this.typeCode}`
+        }
+        if (this.userUid) {
+            param += `&creatorID=${this.userUid}`
+        }
+        return `${this.actionUrl}${this.actionUrl.indexOf('?') === -1 ? '?' : ''}${param}`
+    }
+
+    get actionUrl() {
+        return this.action || `${config.api.baseURI}/sharedservice/blob/upload`
     }
 
     get getFileList() {
