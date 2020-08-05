@@ -123,7 +123,7 @@ export default class Index extends Vue {
             enabled: false,
             baseURI: '',
             blobURI: '',
-            supportFileTypes: '',
+            supportFileTypes: [],
             ...globalConfig.o365
         }
     }

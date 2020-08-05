@@ -8,7 +8,7 @@ interface O365Config {
     enabled: boolean
     baseURI: string
     blobURI: string
-    supportFileExtensions: string
+    supportFileExtensions: string[]
 }
 
 const gloablConfig: GloablConfigType = {
