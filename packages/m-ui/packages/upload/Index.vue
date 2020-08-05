@@ -500,7 +500,9 @@ export default class Index extends Vue {
     }
 
     handleUploadSuccess(responseData: UploadFile, file, fileList) {
-        this.uploadFiles.push(responseData)
+        if (responseData) {
+            this.uploadFiles.push(responseData)
+        }
         const successFiles = fileList.find(file => file.status === 'success')
 
         if (successFiles.length < fileList.length) {

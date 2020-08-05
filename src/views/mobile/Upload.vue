@@ -17,7 +17,7 @@
         <upload ref="upload2" :action="actionUrl" :limit="4" :fileList="fileList" :typeCode="typeCode" :refTableName="refTableName" readonly @change="changeHandler" />
 
         <bvan-cell-group title="简易模式">
-            <upload simple @success="simpleSuccessHandler">
+            <upload simple @success="simpleSuccessHandler" action="http://192.168.101.135:2001/api/bua/avatar/uploadHeadPhoto?userUid=luolong">
                 <template #simple>
                     上传中
                 </template>
