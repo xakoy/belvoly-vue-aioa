@@ -57,7 +57,9 @@
         <bvan-uploader v-if="!inApp" :before-read="beforeReadHandler" :after-read="afterReadHandler" multiple="multiple">
             <slot name="simple" />
         </bvan-uploader>
-        <slot v-else name="simple" @click="appUploadClickHandler" />
+        <span v-else @click="appUploadClickHandler">
+            <slot name="simple" />
+        </span>
     </span>
 </template>
 
