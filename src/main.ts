@@ -10,7 +10,7 @@ import { setGloablConfig } from '../packages/core'
 import { setGloablConfig as setMobileGloablConfig } from '../packages/m-core'
 
 setGloablConfig({ apiHost: 'http://192.168.101.135:2001/api/' })
-setMobileGloablConfig({ apiHost: 'http://192.168.101.135:2001/api/' })
+setMobileGloablConfig({ apiHost: 'http://192.168.101.135:2001/api/', o365: { enabled: true, baseURI: '', blobURI: '', supportFileExtensions: '' } })
 
 Vue.use(BVant)
 Vue.use(ElementUI)

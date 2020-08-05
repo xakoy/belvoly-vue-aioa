@@ -16,11 +16,9 @@
                 <dl v-for="(item, index) in files" :key="index" class="bvan-mui-upload__item">
                     <dt>
                         <item :name="item.file.name" />
-                        <!-- <span style="background: green;">X</span> -->
                         <strong>
                             <span>{{ item.file.name }}</span>
                         </strong>
-                        <!-- <em>测试.xlxs</em> -->
                     </dt>
                     <dd>
                         <bvan-loading v-if="item.status === 'uploading'" size="14px">上传中...</bvan-loading>
@@ -32,7 +30,7 @@
                             </span>
                         </template>
                         <template v-else>
-                            <span class="bvan-mui-upload__button" @click="handlePreview(item.file)">
+                            <span v-if="isO365Enabled" class="bvan-mui-upload__button" @click="handlePreview(item.file)">
                                 <bvan-icon name="eyes-open" class-prefix="fc" style="line-height: inherit;" />
                                 查看
                             </span>
@@ -40,10 +38,11 @@
                                 <bvan-icon name="delete" class-prefix="fc" style="line-height: inherit;" />
                                 删除
                             </span>
-                            <!-- <span class="bvan-mui-upload__button">
+                            <span class="bvan-mui-upload__button" @click="handleDownload(item.file)">
                                 <bvan-icon name="cloud-download" class-prefix="fc" style="line-height: inherit;" />
                                 下载
                             </span>
+                            <!-- 
                             <span class="bvan-mui-upload__button">
                                 <bvan-icon name="write-mail" class-prefix="fc" style="line-height: inherit;" />
                                 编辑
@@ -51,73 +50,6 @@
                         </template>
                     </dd>
                 </dl>
-                <!-- <dl class="bvan-mui-upload__item">
-                    <dt>
-                        <span style="background: green;">X</span>
-                        <strong>
-                            <span>
-                                软件测试软件测试软件测试软件测试软件测试软件
-                            </span>
-                        </strong>
-                        <em>测试.xlxs</em>
-                    </dt>
-                    <dd>
-                        <span class="bvan-mui-upload__button">
-                            <bvan-icon name="eyes-open" class-prefix="fc" style="line-height: inherit;" />
-                            查看
-                        </span>
-                        <span class="bvan-mui-upload__button">
-                            <bvan-icon name="cloud-download" class-prefix="fc" style="line-height: inherit;" />
-                            下载
-                        </span>
-                        <span class="bvan-mui-upload__button">
-                            <bvan-icon name="write-mail" class-prefix="fc" style="line-height: inherit;" />
-                            编辑
-                        </span>
-                    </dd>
-                </dl>
-                <dl class="bvan-mui-upload__item">
-                    <dt>
-                        <span>W</span>
-                        <strong>软件测试软件测试软件测试软件测试软件测试软件</strong>
-                        <em>测试.docx</em>
-                    </dt>
-                    <dd>
-                        <span class="bvan-mui-upload__button">
-                            <bvan-icon name="eyes-open" class-prefix="fc" style="line-height: inherit;" />
-                            查看
-                        </span>
-                        <span class="bvan-mui-upload__button">
-                            <bvan-icon name="cloud-download" class-prefix="fc" style="line-height: inherit;" />
-                            下载
-                        </span>
-                        <span class="bvan-mui-upload__button">
-                            <bvan-icon name="write-mail" class-prefix="fc" style="line-height: inherit;" />
-                            编辑
-                        </span>
-                    </dd>
-                </dl>
-                <dl class="bvan-mui-upload__item">
-                    <dt>
-                        <span style="background: orange;">P</span>
-                        <strong>软件测试软件测试软件测试软件测试软件测试软件</strong>
-                        <em>测试.pptx</em>
-                    </dt>
-                    <dd>
-                        <span class="bvan-mui-upload__button">
-                            <bvan-icon name="eyes-open" class-prefix="fc" style="line-height: inherit;" />
-                            查看
-                        </span>
-                        <span class="bvan-mui-upload__button">
-                            <bvan-icon name="cloud-download" class-prefix="fc" style="line-height: inherit;" />
-                            下载
-                        </span>
-                        <span class="bvan-mui-upload__button">
-                            <bvan-icon name="write-mail" class-prefix="fc" style="line-height: inherit;" />
-                            编辑
-                        </span>
-                    </dd>
-                </dl> -->
             </div>
         </bvan-cell-group>
     </div>
@@ -137,23 +69,6 @@ import { isInApp } from '../utils/environment'
 import Item from './Item.vue'
 const { attachmentService } = services
 const { request } = utils
-
-const config = {
-    sharedservice: {
-        assets: {
-            baseURI: `${globalConfig.apiHost}/sharedservice/assets`
-        }
-    },
-    api: {
-        baseURI: globalConfig.apiHost
-    },
-    o365: {
-        enabled: false,
-        baseURI: '',
-        blobURI: '',
-        supportFileTypes: ''
-    }
-}
 
 interface BeforeUpload {
     (file: any): Promise<boolean>
@@ -195,8 +110,26 @@ interface ExisitFile {
     }
 })
 export default class Index extends Vue {
+    config = {
+        sharedservice: {
+            assets: {
+                baseURI: `${globalConfig.apiHost}/sharedservice/assets`
+            }
+        },
+        api: {
+            baseURI: globalConfig.apiHost
+        },
+        o365: {
+            enabled: false,
+            baseURI: '',
+            blobURI: '',
+            supportFileTypes: '',
+            ...globalConfig.o365
+        }
+    }
+
     @Prop({ default: '附件' }) label: string
-    @Prop({ default: `${config.api.baseURI}/sharedservice/blob/upload` }) action: string
+    @Prop() action: string
     @Prop({ default: true }) multiple: boolean
     @Prop({
         default: function() {
@@ -233,6 +166,10 @@ export default class Index extends Vue {
     uploadFiles: UploadFile[] = []
 
     files: ExisitFile[] = []
+
+    get isO365Enabled() {
+        return this.config.o365.enabled
+    }
 
     get getFileList() {
         const files = this.fileList.map(c => {
@@ -276,10 +213,16 @@ export default class Index extends Vue {
         if (this.userUid) {
             param += `&creatorID=${this.userUid}`
         }
-        return `${this.action}${this.action.indexOf('?') === -1 ? '?' : ''}${param}`
+        return `${this.actionUrl}${this.actionUrl.indexOf('?') === -1 ? '?' : ''}${param}`
+    }
+
+    get actionUrl() {
+        return this.action || `${this.config.api.baseURI}/sharedservice/blob/upload`
     }
 
     mounted() {
+        console.log(this.config, globalConfig)
+
         this.init()
         this.watchFileList(this.fileList)
     }
@@ -465,14 +408,31 @@ export default class Index extends Vue {
             }
         }
     }
+
+    handleDownload(file) {
+        if (file.id) {
+            if (this.inApp) {
+                BM.appointment.file.download(file.url, file.name, '')
+            } else {
+                window.open(file.url)
+            }
+        } else {
+            if (this.inApp) {
+                BM.appointment.file.download(file.response.data.url, file.name, '')
+            } else {
+                window.open(file.response.data.url)
+            }
+        }
+    }
+
     async handlePreviewCore(file) {
-        const preivewEnabled = config.o365.enabled
+        const preivewEnabled = this.config.o365.enabled
 
         if (preivewEnabled) {
             this.handleO365Preview(file)
         } else {
             if (this.inApp) {
-                BM.appointment.file.download(`${config.api.baseURI}/sharedservice/blob/${file.id}`, file.name, '')
+                BM.appointment.file.download(`${this.config.api.baseURI}/sharedservice/blob/${file.id}`, file.name, '')
             } else {
                 window.open(file.url)
             }
@@ -483,7 +443,7 @@ export default class Index extends Vue {
         let url = file.url
 
         if (file.extension && this.checkO365PreviewSupproted(file.extension)) {
-            url = `${config.o365.baseURI}${config.o365.blobURI}/${file.id}`
+            url = `${this.config.o365.baseURI}${this.config.o365.blobURI}/${file.id}`
         }
 
         if (this.inApp) {
@@ -493,7 +453,7 @@ export default class Index extends Vue {
         }
     }
     checkO365PreviewSupproted(extension) {
-        const supportFileTypes = config.o365.supportFileTypes
+        const supportFileTypes = this.config.o365.supportFileTypes
 
         return supportFileTypes.includes(extension)
     }
