@@ -14,7 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "@tinymce/tinymce-vue": "3.2.0",
-    "tinymce": "5.2.2"
+    "tinymce": "5.4.0"
   },
   "devDependencies": {
     "rollup-plugin-commonjs": "^10.1.0",
