@@ -1,5 +1,5 @@
 <template>
-    <div class="bv-upload">
+    <div class="bv-upload" v-if="!simple">
         <el-upload
             :action="uploadAction"
             :on-preview="handlePreview"
@@ -11,6 +11,8 @@
             multiple="multiple"
             :file-list="getFileList"
             :on-success="handleUploadSuccess"
+            :on-error="handleUploadError"
+            :on-progress="handleUploadProgress"
             v-if="isEditFile"
         >
             <el-button size="mini" type="primary" :disabled="isDisabled">上传附件</el-button>
@@ -18,6 +20,26 @@
         </el-upload>
         <!-- 查看附件 -->
         <el-upload class="upload-detail" :action="uploadAction" :on-preview="handlePreview" :file-list="getFileList" v-else></el-upload>
+    </div>
+    <div class="bv-upload bv-upload__simple" v-else>
+        <el-upload
+            :action="uploadAction"
+            :on-preview="handlePreview"
+            :on-remove="handleRemove"
+            :before-remove="beforeRemove"
+            :before-upload="beforeUploadHandler"
+            :accept="accept"
+            :limit="limit"
+            :show-file-list="false"
+            multiple="multiple"
+            :file-list="getFileList"
+            :on-success="handleUploadSuccess"
+            :on-error="handleUploadError"
+            :on-progress="handleUploadProgress"
+            v-if="isEditFile"
+        >
+            <slot name="simple" />
+        </el-upload>
     </div>
 </template>
 
@@ -48,14 +70,25 @@ interface BeforeUpload {
     (file: any): Promise<boolean>
 }
 
+interface UploadFile {
+    name?: string
+    id?: string
+    displayName?: string
+}
+
 @Component
 export default class Index extends Vue {
     @Prop() action: string
     @Prop({ default: 50 }) maxSize: number
     @Prop({ default: true }) multiple: boolean
-    @Prop({ default: [] }) fileList: Array<any>
-    @Prop({ required: true }) refTableName: string
-    @Prop({ required: true }) typeCode: string
+    @Prop({
+        default: function() {
+            return []
+        }
+    })
+    fileList: Array<any>
+    @Prop({}) refTableName: string
+    @Prop({}) typeCode: string
     @Prop() userUid: string
     @Prop({ default: true }) isEditFile: boolean
     @Prop({ default: 9999 }) limit: number
@@ -63,6 +96,8 @@ export default class Index extends Vue {
      * 是否只允许图面
      */
     @Prop({ default: false }) isOnlyImage: boolean
+
+    @Prop({ default: false, type: Boolean }) simple: boolean
     /**
      * 文字提示
      */
@@ -187,15 +222,20 @@ export default class Index extends Vue {
     }
 
     handleUploadSuccess(response, file, fileList) {
+        const responseData: UploadFile = response.data
+
         const successFiles = fileList.find(file => file.status === 'success')
-        this.uploadFiles.push(response.data)
+
+        if (responseData) {
+            this.uploadFiles.push(responseData)
+        }
 
         if (successFiles.length < fileList.length) {
             return
         }
 
         const uploadInfo = {
-            ids: fileList.map(file => file.id || file.response.data.id),
+            ids: fileList.map(file => file.id || file.response.data?.id),
             refTableId: '',
             refTableName: this.refTableName,
             file: file,
@@ -203,8 +243,16 @@ export default class Index extends Vue {
         }
 
         this.$emit('on-success', uploadInfo)
+        this.$emit('success', uploadInfo, responseData)
         this.change()
-        // this.$bus.emit('uploadInfo', uploadInfo)
+    }
+
+    handleUploadError(err, file) {
+        this.$emit('error', err, file)
+    }
+
+    handleUploadProgress(event, file) {
+        this.$emit('uploading', event, file)
     }
 
     change() {
@@ -364,6 +412,10 @@ export default class Index extends Vue {
 .bv-upload {
     &__tip {
         margin-left: 10px;
+        display: inline-block;
+    }
+
+    &__simple {
         display: inline-block;
     }
 }
