@@ -686,6 +686,7 @@ interface NameValue {
     left: 50%;
     top: 45%;
     //width: 660px;
+    min-width: 700px;
     width: 60%;
     transform: translate(-50%, -50%);
     background-color: #fff;
@@ -766,6 +767,7 @@ interface NameValue {
     }
 
     &_selectbox {
+        flex: 1;
         height: 100%;
         display: flex;
         flex-direction: column;
@@ -779,7 +781,7 @@ interface NameValue {
     }
 
     &_canselect {
-        width: 50%;
+        width: 40%;
         border: 0 solid #d8d8d8;
         padding: 16px;
         overflow: auto;
