@@ -1,6 +1,6 @@
 <template>
     <div class="bvant-choose-people-or-org__item--warp bvant-choose-people-or-org__item-nochild ">
-        <div class="bvant-choose-people-or-org__item" :class="{ 'van-hairline--bottom': border }">
+        <div class="bvant-choose-people-or-org__item" :class="{ 'van-hairline--bottom': border }" @click="itemClickHandler">
             <div class="bvant-choose-people-or-org__item--avatar">
                 <img :src="icon" v-show="icon" />
             </div>
@@ -26,6 +26,10 @@ export default class NodeUser extends Vue {
     inputHandler(value) {
         this.$emit('input', value)
         this.$emit('change', value)
+    }
+
+    itemClickHandler() {
+        this.inputHandler(!this.value)
     }
 
     changeHandler(value) {

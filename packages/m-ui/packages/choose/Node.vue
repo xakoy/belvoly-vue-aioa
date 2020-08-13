@@ -5,7 +5,7 @@
                 <bvan-icon v-if="isExpand" name="arrow-down" />
                 <bvan-icon v-else v-model="item.check" name="arrow" />
             </div>
-            <div class="bvant-choose-people-or-org__item--label">{{ item.label }}</div>
+            <div class="bvant-choose-people-or-org__item--label" @click="itemLabelClickHandler">{{ item.label }}</div>
             <div v-if="item.cancheck" class="bvant-choose-people-or-org__item--checkbox">
                 <bvan-checkbox v-model="item.check" shape="square" @change="checkChange($event, item)" />
             </div>
@@ -118,6 +118,12 @@ export default class TreeNode extends Vue {
         this.isExpand = !this.isExpand
         if (!this.data.isLeaf && !this.data.loaded) {
             this.loadNode(this.data)
+        }
+    }
+
+    itemLabelClickHandler() {
+        if (this.item.cancheck) {
+            this.item.check = !this.item.check
         }
     }
 

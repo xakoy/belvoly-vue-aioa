@@ -6,7 +6,11 @@ belvoly vue 移动APP专用组件库
 2. `Upload` 上传组件
 
 ## 更新
-###
+### 
+1. `ChoosePeopleOrOrg` 点击label可以选中
+2. `ChoosePeopleOrOrg` 点击下方已经选中的元素，可以快速删除
+
+### 0.1.17
 1. `Upload`组件增加属性`simple`，简易模式，不包含任意界面
 2. `Upload`组件增加`uploading`、`error`事件
 
