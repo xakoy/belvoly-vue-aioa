@@ -1,10 +1,10 @@
 <template>
     <div class="bvant-choose-people-or-org__item--warp bvant-choose-people-or-org__item-nochild ">
-        <div class="bvant-choose-people-or-org__item" :class="{ 'van-hairline--bottom': border }" @click="itemClickHandler">
-            <div class="bvant-choose-people-or-org__item--avatar">
+        <div class="bvant-choose-people-or-org__item" :class="{ 'van-hairline--bottom': border }">
+            <div class="bvant-choose-people-or-org__item--avatar" @click="itemClickHandler">
                 <img :src="icon" v-show="icon" />
             </div>
-            <div class="bvant-choose-people-or-org__item--label">{{ label }}</div>
+            <div class="bvant-choose-people-or-org__item--label" @click="itemClickHandler">{{ label }}</div>
             <div v-if="cancheck" class="bvant-choose-people-or-org__item--checkbox">
                 <bvan-checkbox :value="value" @input="inputHandler" shape="square" @change="changeHandler" />
             </div>

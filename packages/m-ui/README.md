@@ -6,7 +6,10 @@ belvoly vue 移动APP专用组件库
 2. `Upload` 上传组件
 
 ## 更新
-### 
+### 0.1.19
+1. `ChoosePeopleOrOrg` 修复点击选人，出现2次数据
+
+### 0.1.18
 1. `ChoosePeopleOrOrg` 点击label可以选中
 2. `ChoosePeopleOrOrg` 点击下方已经选中的元素，可以快速删除
 
