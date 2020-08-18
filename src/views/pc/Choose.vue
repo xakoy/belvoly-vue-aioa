@@ -1,9 +1,9 @@
 <template>
     <div>
         <el-form>
-            <el-input v-model="item.names" readonly @click.native="inputClickHandler" />
+            <el-input v-model="item.names" readonly @click.native="singleOickerToToVisible = true" />
             <choose-people-or-org
-                v-if="opickerToToVisible"
+                v-if="singleOickerToToVisible"
                 rootOrgCode="shhr"
                 selectionMode="single"
                 mode="user"
@@ -12,7 +12,7 @@
                 :defaultOrgs="item.orgs"
                 :codes.sync="item.codes"
                 :names.sync="item.names"
-                :visible.sync="opickerToToVisible"
+                :visible.sync="singleOickerToToVisible"
                 @selected="selectedHandler"
             />
             <el-form-item label="多选">
@@ -21,7 +21,7 @@
                     v-if="opickerToToVisible"
                     rootOrgCode="shhr"
                     selectionMode="multiple"
-                    mode="user"
+                    mode="orgAndUser"
                     :isShowGlobal="true"
                     :defaultUsers="item.users"
                     :defaultOrgs="item.orgs"
@@ -44,6 +44,7 @@ import { ChoosePeopleOrOrg } from '../../../packages/ui/packages/choose'
     }
 })
 export default class ChoosePeopeleOrOrg extends Vue {
+    singleOickerToToVisible = false
     opickerToToVisible = false
     item = {
         codes: '',

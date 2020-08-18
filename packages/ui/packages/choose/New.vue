@@ -178,33 +178,35 @@
                         </div>
                     </template>
                     <template v-else>
-                        <div class="bv-choose-people_selectbox">
-                            <div class="bv-choose-people_canselect_title">
-                                <span class="bv-choose-people_canselect_title_left">
-                                    已选用户：
-                                    <span class="bv-choose-people_canselect_title_primary">{{ selectNumber }} 名</span>
-                                </span>
-                                <span class="bv-choose-people_canselect_title_right" style="padding-right: 10px;">
-                                    <span class="bv-choose-people_canselect_clear" @click="handleClearSelectedUsers">清空</span>
-                                </span>
-                            </div>
-                            <div class="bv-choose-people_selectbox_content">
-                                <ul>
-                                    <li class="bv-choose-people_select_item" v-for="(item, index) in selectedUsers" :key="index">
-                                        <span class="bv-choose-people_select_item_avatar">
-                                            <span class="bv-choose-people_select_item_avatar_close" @click="handleRemoveSelectedUser(item, index)" title="删除">
-                                                x
+                        <div class="bv-choose-people_select">
+                            <div class="bv-choose-people_selectbox">
+                                <div class="bv-choose-people_canselect_title">
+                                    <span class="bv-choose-people_canselect_title_left">
+                                        已选用户：
+                                        <span class="bv-choose-people_canselect_title_primary">{{ selectNumber }} 名</span>
+                                    </span>
+                                    <span class="bv-choose-people_canselect_title_right" style="padding-right: 10px;">
+                                        <span class="bv-choose-people_canselect_clear" @click="handleClearSelectedUsers">清空</span>
+                                    </span>
+                                </div>
+                                <div class="bv-choose-people_selectbox_content">
+                                    <ul>
+                                        <li class="bv-choose-people_select_item" v-for="(item, index) in selectedUsers" :key="index">
+                                            <span class="bv-choose-people_select_item_avatar">
+                                                <span class="bv-choose-people_select_item_avatar_close" @click="handleRemoveSelectedUser(item, index)" title="删除">
+                                                    x
+                                                </span>
+                                                <span class="bv-choose-people_select_item_avatar_name">
+                                                    <img :src="getUserIcon(item)" />
+                                                </span>
                                             </span>
-                                            <span class="bv-choose-people_select_item_avatar_name">
-                                                <img :src="getUserIcon(item)" />
+                                            <span class="bv-choose-people_select_item_name" @click="handleClick(index)">
+                                                <b>{{ item.name }}</b>
+                                                <i>{{ item.orgName }}</i>
                                             </span>
-                                        </span>
-                                        <span class="bv-choose-people_select_item_name" @click="handleClick(index)">
-                                            <b>{{ item.name }}</b>
-                                            <i>{{ item.orgName }}</i>
-                                        </span>
-                                    </li>
-                                </ul>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </template>
@@ -723,8 +725,8 @@ interface NameValue {
         height: 400px;
     }
     &_tree {
-        width: 30%;
-        min-width: 200px;
+        flex: 1;
+        overflow: hidden;
         .el-tabs {
             height: 100%;
             display: flex;
@@ -769,6 +771,8 @@ interface NameValue {
     &_selectbox {
         flex: 1;
         height: 100%;
+        box-sizing: border-box;
+        padding: 8px;
         display: flex;
         flex-direction: column;
 
@@ -777,15 +781,24 @@ interface NameValue {
             overflow: auto;
             padding: 5px 0;
             box-sizing: border-box;
+
+            > ul {
+                display: flex;
+                flex-wrap: wrap;
+                // .bv-choose-people_select_item {
+                //     width: 100%;
+                // }
+            }
         }
     }
 
     &_canselect {
-        width: 40%;
+        width: 35%;
         border: 0 solid #d8d8d8;
-        padding: 16px;
+        padding: 8px;
         overflow: auto;
         border-width: 0 1px;
+        box-sizing: border-box;
 
         &_clear {
             color: red;
@@ -793,6 +806,7 @@ interface NameValue {
         }
         &_title {
             overflow: hidden;
+            padding-bottom: 8px;
             &_primary {
                 color: #409eff;
             }
@@ -812,28 +826,34 @@ interface NameValue {
                 }
             }
         }
+
+        &_list {
+            display: flex;
+            flex-wrap: wrap;
+        }
     }
     &_select_item {
-        display: inline-block;
+        display: flex;
         margin-right: 20px;
         margin-bottom: 10px;
+        width: 50%;
         cursor: pointer;
 
         &_avatar {
             vertical-align: middle;
-            display: inline-block;
-            width: 30px;
-            height: 30px;
+            width: 36px;
+            height: 36px;
             background: #409eff;
             color: #fff;
             border-radius: 50%;
             font-size: 12px;
             text-align: center;
-            line-height: 30px;
+            line-height: 36px;
             margin-right: 10px;
+            margin-top: 2px;
             img {
-                height: 30px;
-                width: 30px;
+                height: 100%;
+                width: 100%;
                 border-radius: 50%;
             }
 
@@ -851,8 +871,11 @@ interface NameValue {
             }
         }
         &_name {
-            display: inline-block;
+            flex: 1;
+            overflow: hidden;
             vertical-align: middle;
+            line-height: 1;
+            padding: 5px 0;
             b,
             i {
                 display: block;
@@ -860,20 +883,20 @@ interface NameValue {
                 font-weight: normal;
             }
             i {
+                padding-top: 5px;
                 font-size: 12px;
-                margin-top: -5px;
                 color: #999;
             }
         }
     }
 
     &_select {
-        width: 50%;
         margin-left: -1px;
-        padding: 16px;
         overflow-y: auto;
         position: relative;
         padding-left: 5px;
+        box-sizing: border-box;
+        width: 35%;
     }
 
     &_foot {
@@ -885,17 +908,17 @@ interface NameValue {
 }
 
 .bv-choose-people_select_item_checked {
-    display: inline-block;
+    vertical-align: middle;
+    width: 36px;
+    height: 36px;
     margin-right: 20px;
-    // margin-bottom: 10px;
     cursor: pointer;
-    width: 30px;
-    height: 30px;
     border-radius: 50%;
     font-size: 12px;
     text-align: center;
-    line-height: 30px;
+    line-height: 36px;
     margin-right: 10px;
+    margin-top: 2px;
     position: relative;
     background-color: #1f64a3;
     color: #1f64a3;
