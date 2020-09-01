@@ -13,7 +13,7 @@
                 />
             </el-form-item>
             <el-form-item label="附件">
-                <upload ref="upload" :action="actionUrl" :limit="3" :fileList="fileList" :typeCode="typeCode" :refTableName="refTableName" :isEditFile="true" @change="changeHandler" />
+                <upload ref="upload" :action="actionUrl" :limit="3" :fileList="fileList" :typeCode="typeCode" :refTableName="refTableName" :isEditFile="false" @change="changeHandler" />
             </el-form-item>
         </el-form>
         <div>

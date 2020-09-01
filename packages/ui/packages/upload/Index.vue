@@ -19,7 +19,7 @@
             <div slot="tip" class="bv-upload__tip el-upload__tip">({{ uploadTip }})</div>
         </el-upload>
         <!-- 查看附件 -->
-        <el-upload class="upload-detail" :action="uploadAction" :on-preview="handlePreview" :file-list="getFileList" v-else></el-upload>
+        <el-upload class="bv-upload__detail" :action="uploadAction" :on-preview="handlePreview" :file-list="getFileList" v-else></el-upload>
     </div>
     <div class="bv-upload bv-upload__simple" v-else>
         <el-upload
@@ -350,17 +350,14 @@ export default class Index extends Vue {
         }
 
         const downloadElement = document.createElement('span')
+        downloadElement.className = 'bv-upload-list__item-download'
         downloadElement.title = '下载'
         downloadElement.addEventListener('click', function() {
             window.open(url)
         })
-        downloadElement.style.cursor = 'pointer'
-        downloadElement.style.position = 'absolute'
-        downloadElement.style.right = '1px'
-        downloadElement.style.top = '0'
 
         const iNode = document.createElement('i')
-        iNode.className = 'fc fc-down-o'
+        iNode.className = 'fc fc-next-one'
         downloadElement.prepend(iNode)
         el.parentNode.insertBefore(downloadElement, el)
     }
@@ -418,13 +415,51 @@ export default class Index extends Vue {
     &__simple {
         display: inline-block;
     }
+    .el-upload-list__item {
+        .el-upload-list__item-name {
+            display: inline-block;
+            vertical-align: middle;
+            color: #333;
+            margin-right: 20px;
+
+            width: auto;
+
+            .el-upload-file-icon {
+                width: 26px;
+                height: 26px;
+                vertical-align: middle;
+                margin-right: 7px;
+            }
+        }
+        .el-upload-list__item-status-label {
+            display: inline-block;
+        }
+        .bv-upload-list__item-download,
+        .el-upload-list__item-status-label,
+        .el-icon-close {
+            position: static;
+            vertical-align: middle;
+            margin-right: 7px;
+            color: #999;
+        }
+
+        &:hover {
+            background-color: transparent;
+            .el-icon-close {
+                display: inline-block;
+            }
+        }
+    }
 }
-.upload-detail {
+.bv-upload__detail {
+    clear: both;
     .el-upload--text {
         display: none !important;
     }
     .el-upload-list__item {
+        line-height: 26px;
         &:hover {
+            background-color: transparent;
             .el-icon-close,
             .el-icon-close-tip {
                 display: none;
@@ -435,13 +470,30 @@ export default class Index extends Vue {
         }
 
         .el-upload-list__item-name {
+            display: inline-block;
+            vertical-align: middle;
+            color: #333;
+            margin-right: 20px;
+
+            width: auto;
+
             .el-upload-file-icon {
-                width: 16px;
-                height: 16px;
-                vertical-align: text-bottom;
+                width: 26px;
+                height: 26px;
+                vertical-align: middle;
                 margin-right: 7px;
             }
         }
     }
+}
+
+.bv-upload-list__item-download {
+    // position: absolute;
+    // right: 1px;
+    top: 0;
+    cursor: pointer;
+
+    display: inline-block;
+    vertical-align: middle;
 }
 </style>
