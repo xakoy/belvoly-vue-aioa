@@ -1,3 +1,6 @@
+## v 0.1.22
+1. 调整`Upload`样式
+
 ## v 0.1.21
 1. `Upload`组件增加属性`simple`，简易模式，不包含任意界面
 2. `Upload`组件增加`uploading`、`error`事件
