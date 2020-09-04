@@ -140,7 +140,7 @@ export default class UploadIndex extends Vue {
         alert('上传成功')
     }
 
-    async simpleErrorHandler(err) {
+    async simpleErrorHandler() {
         alert('上传失败')
     }
 }

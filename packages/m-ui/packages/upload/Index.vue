@@ -20,7 +20,8 @@
                             <span>{{ item.file.name }}</span>
                         </strong>
                     </dt>
-                    <dd>
+                    <dd v-if="$scopedSlots.buttons"><slot name="buttons" :item="item" /></dd>
+                    <dd v-else>
                         <bvan-loading v-if="item.status === 'uploading'" size="14px">上传中...</bvan-loading>
                         <template v-else-if="item.status === 'failed'">
                             <bvan-tag type="danger">上传失败</bvan-tag>
@@ -74,10 +75,6 @@ const { request } = utils
 
 interface BeforeUpload {
     (file: any): Promise<boolean>
-}
-
-function makeFileId() {
-    return new Date().getTime().toString()
 }
 
 function getFileName(path) {
@@ -140,16 +137,16 @@ export default class Index extends Vue {
     })
     fileList: Array<UploadFile>
 
-    @Prop({}) refTableName: string
-    @Prop({}) typeCode: string
-    @Prop() userUid: string
+    @Prop({ required: false }) refTableName: string
+    @Prop({ required: false }) typeCode: string
+    @Prop({ required: false }) userUid: string
     @Prop({ default: false, type: Boolean }) readonly: boolean
     @Prop({ default: false, type: Boolean }) simple: boolean
 
     /**
      * 文字提示
      */
-    @Prop() tip: string
+    @Prop({ required: false }) tip: string
 
     @Prop({ default: 50 }) maxSize: number
     /**
@@ -159,7 +156,7 @@ export default class Index extends Vue {
     /**
      * 上传前验证
      */
-    @Prop() beforeUpload: BeforeUpload
+    @Prop({ required: false }) beforeUpload: BeforeUpload
 
     @Prop({ default: 9999 }) limit: number
 
@@ -223,8 +220,6 @@ export default class Index extends Vue {
     }
 
     mounted() {
-        console.log(this.config, globalConfig)
-
         this.init()
         this.watchFileList(this.fileList)
     }
@@ -353,7 +348,7 @@ export default class Index extends Vue {
     async afterReadHandler(file) {
         //
         if (file instanceof Array) {
-            file.forEach((item, index) => {
+            file.forEach(item => {
                 this.uploadFile(item.file)
             })
         } else {
