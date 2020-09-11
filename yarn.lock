@@ -712,9 +712,10 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@belvoly-vue-aioa/bvant-icons@^1.2.1":
+"@belvoly-vue-aioa/bvant-icons@^1.2.1", "@belvoly-vue-aioa/bvant-icons@^1.2.2":
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@belvoly-vue-aioa/bvant-icons/-/bvant-icons-1.2.2.tgz#586b3f41411bf2df1f4a0457521d7298817ef7c1"
+  integrity sha512-bWxsLXd7DTXqPmo6ic7vm15A3MiZcXI7uibdrjGjU1SUCKpMCe5fuIF/q8WBxC1W2GxwCPEUhQABw1Qof5Hkvw==
 
 "@belvoly-vue-aioa/bvant@^0.1.1":
   version "0.1.1"
@@ -722,6 +723,16 @@
   dependencies:
     "@babel/runtime" "7.x"
     "@belvoly-vue-aioa/bvant-icons" "^1.2.1"
+    "@vue/babel-helper-vue-jsx-merge-props" "^1.0.0"
+    vue-lazyload "1.2.3"
+
+"@belvoly-vue-aioa/bvant@^0.1.12", "@belvoly-vue-aioa/bvant@^0.1.7":
+  version "0.1.12"
+  resolved "https://registry.yarnpkg.com/@belvoly-vue-aioa/bvant/-/bvant-0.1.12.tgz#0ebb97693bd29b581d289ecaf93318a9c098c842"
+  integrity sha512-NnO1newabSRwJ5GbLV7aY9AGK96FczTqWBvnBY5qGVXxDHCfWjJxPgkns0osa52UO2njLVGtJ3dlrNSqaKki+A==
+  dependencies:
+    "@babel/runtime" "7.x"
+    "@belvoly-vue-aioa/bvant-icons" "^1.2.2"
     "@vue/babel-helper-vue-jsx-merge-props" "^1.0.0"
     vue-lazyload "1.2.3"
 
@@ -1717,7 +1728,7 @@
     error-stack-parser "^2.0.0"
     string-width "^2.0.0"
 
-"@tinymce/tinymce-vue@^3.2.0":
+"@tinymce/tinymce-vue@3.2.0", "@tinymce/tinymce-vue@^3.2.0":
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/@tinymce/tinymce-vue/-/tinymce-vue-3.2.0.tgz#abadab7fd6e143688e756df779fc3b81e586427a"
 
@@ -10419,7 +10430,7 @@ timsort@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/timsort/-/timsort-0.3.0.tgz#405411a8e7e6339fe64db9a234de11dc31e02bd4"
 
-tinymce@^5.2.1:
+tinymce@5.2.2, tinymce@^5.2.1:
   version "5.2.2"
   resolved "https://registry.yarnpkg.com/tinymce/-/tinymce-5.2.2.tgz#1ac77cce1565b54932b4e612d2fd9c07b687f238"
 

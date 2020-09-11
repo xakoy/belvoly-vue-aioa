@@ -1,6 +1,6 @@
 <template>
     <div class="bvan-mui-upload margin-small-top" v-if="!simple">
-        <bvan-cell :title="label" :border="false" v-if="!isReadonly">
+        <bvan-cell form :title="label" :border="true" v-if="!isReadonly">
             <template #right-icon>
                 <template v-if="!isReadonly && !isDisabled">
                     <bvan-uploader v-if="!inApp" :before-read="beforeReadHandler" :after-read="afterReadHandler" multiple="multiple">
@@ -10,7 +10,7 @@
                 </template>
             </template>
         </bvan-cell>
-        <bvan-cell-group class="bvan-mui-upload__group" v-if="files.length > 0" :class="{ 'bvan-hairline--top': !isReadonly }" :border="false">
+        <bvan-cell-group class="bvan-mui-upload__group" v-if="files.length > 0" :border="false">
             <template #title v-if="isReadonly"> {{ label }} </template>
             <div class="bvan-mui-upload__items">
                 <dl v-for="(item, index) in files" :key="index" class="bvan-mui-upload__item">

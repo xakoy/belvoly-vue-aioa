@@ -6,6 +6,9 @@ belvoly vue 移动APP专用组件库
 2. `Upload` 上传组件
 
 ## 更新
+### 0.1.21
+1. `Upload` 样式调整
+
 ### 0.1.20
 1. `Upload` 组件增加 `buttons`的slot
 
