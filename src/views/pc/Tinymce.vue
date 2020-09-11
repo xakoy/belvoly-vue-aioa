@@ -3,6 +3,9 @@
         <el-form-item label="文本：" prop="html">
             <tinymce-editor ref="textEditor" v-model="item.html" :text.sync="text" :imageUploadUrl="tinymceImageUploadUrl" />
         </el-form-item>
+        <el-form-item label="文本2：" prop="html">
+            <tinymce-editor ref="textEditor2" v-model="item.html2" :imageUploadUrl="tinymceImageUploadUrl" />
+        </el-form-item>
         <el-button @click="saveHandler">
             保存
         </el-button>
@@ -11,11 +14,10 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import { TinymceEditor } from '../../../packages/tinymce'
-// import TinymceEditor from '../../../packages/tinymce/Editor.vue'
+// import { TinymceEditor } from '../../../packages/tinymce'
+import TinymceEditor from '../../../packages/tinymce/Editor.vue'
 import { ElForm } from 'element-ui/types/form'
 import { Message } from 'element-ui'
-console.log(TinymceEditor)
 
 @Component({
     components: {
@@ -39,7 +41,8 @@ export default class HelloWorld extends Vue {
         ]
     }
     item = {
-        html: '<p>测试</p>'
+        html: '<p>测试</p>',
+        html2: 'ddd'
     }
 
     // 本地图片上传地址

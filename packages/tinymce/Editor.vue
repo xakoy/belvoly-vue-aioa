@@ -17,6 +17,8 @@ import 'tinymce/plugins/image'
 import 'tinymce/plugins/link'
 import 'tinymce/plugins/fullscreen'
 import 'tinymce/plugins/preview'
+import './plugins/indent2em'
+import './plugins/lineheight'
 import 'tinymce/skins/ui/oxide/skin.min.css'
 
 import Vue from 'vue'
@@ -63,11 +65,11 @@ export default Vue.extend({
                 language: 'zh_CN',
                 // skin_url: skin_url, //样式放入public在index.html里引用
                 height: 300,
-                plugins: 'link lists image code table wordcount fullscreen preview',
+                plugins: 'link lists image code table wordcount fullscreen preview indent2em lineheight',
                 menu: {},
                 toolbar:
                     this.toolbar ||
-                    'fontselect fontsizeselect | forecolor | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent | removeformat | link unlink image | code fullscreen | newnote print preview',
+                    'fontselect fontsizeselect lineheight | forecolor | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent indent2em | removeformat | link unlink image | code fullscreen | newnote print preview',
                 branding: false,
                 convert_urls: false,
                 images_upload_url: this.imageUploadUrl,
