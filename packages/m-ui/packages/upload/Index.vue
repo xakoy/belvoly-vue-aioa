@@ -237,22 +237,34 @@ export default class Index extends Vue {
     appUploadClickHandler() {
         const maxTotal = this.multiple ? this.limit : 1
 
-        BM.appointment.file.getFiles(maxTotal, data => {
-            if (Array.isArray(data)) {
-                for (let i = 0; i < data.length; i++) {
-                    const item = data[i]
-                    if (item.fileURI) {
-                        const file: HtmlFile = {
-                            name: getFileName(item.fileURI),
-                            size: item.fileSize || 0
-                        }
-                        this.clientUploadFile(item.fileURI, file, BM.appointment.file.uploadFile)
+        if (this.isOnlyImage) {
+            BM.appointment.camera.getPicture(data => {
+                if (data.imgURI) {
+                    const file: HtmlFile = {
+                        name: getFileName(data.imgURI),
+                        size: data.fileSize || 0
                     }
+                    this.clientUploadFile(data.imgURI, file, BM.appointment.file.uploadFile)
                 }
-            } else {
-                alert('服务器未响应预期数据')
-            }
-        })
+            })
+        } else {
+            BM.appointment.file.getFiles(maxTotal, data => {
+                if (Array.isArray(data)) {
+                    for (let i = 0; i < data.length; i++) {
+                        const item = data[i]
+                        if (item.fileURI) {
+                            const file: HtmlFile = {
+                                name: getFileName(item.fileURI),
+                                size: item.fileSize || 0
+                            }
+                            this.clientUploadFile(item.fileURI, file, BM.appointment.file.uploadFile)
+                        }
+                    }
+                } else {
+                    alert('服务器未响应预期数据')
+                }
+            })
+        }
     }
 
     async clientUploadFile(url: string, file: HtmlFile, uploadFileFunction) {
