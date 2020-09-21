@@ -244,7 +244,7 @@ export default class Index extends Vue {
                         name: getFileName(data.imgURI),
                         size: data.fileSize || 0
                     }
-                    this.clientUploadFile(data.imgURI, file, BM.appointment.file.uploadFile)
+                    this.clientUploadFile(data.imgURI, file, BM.appointment.camera.uploadPicture)
                 }
             })
         } else {
@@ -348,6 +348,9 @@ export default class Index extends Vue {
         }
     }
     async beforeUploadImage(file) {
+        if (this.inApp) {
+            return true
+        }
         const allowTypes = ['image/bmp', 'image/jpeg', 'image/png']
 
         if (allowTypes.some(c => c === file.type)) {
