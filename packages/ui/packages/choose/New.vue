@@ -140,9 +140,13 @@
                                                     <img :src="getUserIcon(item)" />
                                                 </span>
                                             </span>
-                                            <span class="bv-choose-people_select_item_name" @click="handleClick(index)">
+                                            <span
+                                                class="bv-choose-people_select_item_name"
+                                                :class="{ 'bv-choose-people_select_item_name__nodescript': !(item.data && item.data.orgName) }"
+                                                @click="handleClick(index)"
+                                            >
                                                 <b>{{ item.name }}</b>
-                                                <i>{{ item.orgName }}</i>
+                                                <i>{{ item.data ? item.data.orgName : '' }}</i>
                                             </span>
                                         </li>
                                     </ul>
@@ -167,9 +171,9 @@
                                                 </span>
                                                 <span class="bv-choose-people_select_item_avatar_name">{{ getOrgIcon(item.name) }}</span>
                                             </span>
-                                            <span class="bv-choose-people_select_item_name" @click="handleClick(index)">
+                                            <span class="bv-choose-people_select_item_name bv-choose-people_select_item_name__nodescript" @click="handleClick(index)">
                                                 <b>{{ item.name }}</b>
-                                                <i>{{ item.orgName }}</i>
+                                                <!-- <i>{{ item.orgName }}</i> -->
                                             </span>
                                         </li>
                                     </ul>
@@ -200,9 +204,13 @@
                                                     <img :src="getUserIcon(item)" />
                                                 </span>
                                             </span>
-                                            <span class="bv-choose-people_select_item_name" @click="handleClick(index)">
+                                            <span
+                                                class="bv-choose-people_select_item_name"
+                                                :class="{ 'bv-choose-people_select_item_name__nodescript': !(item.data && item.data.orgName) }"
+                                                @click="handleClick(index)"
+                                            >
                                                 <b>{{ item.name }}</b>
-                                                <i>{{ item.orgName }}</i>
+                                                <i>{{ item.data ? item.data.orgName : '' }}</i>
                                             </span>
                                         </li>
                                     </ul>
@@ -666,6 +674,7 @@ interface NameValue {
 
 <style lang="less">
 .bv-choose-people {
+    font-size: 14px;
     &_wrapper {
         width: 100%;
         height: 100%;
@@ -688,8 +697,10 @@ interface NameValue {
     left: 50%;
     top: 45%;
     //width: 660px;
-    min-width: 700px;
-    width: 60%;
+    // min-width: 700px;
+    width: 900px;
+    // width: 60%;
+    max-width: 90%;
     transform: translate(-50%, -50%);
     background-color: #fff;
     overflow: hidden;
@@ -801,22 +812,27 @@ interface NameValue {
         box-sizing: border-box;
 
         &_clear {
-            color: red;
+            color: #e65454;
             cursor: pointer;
         }
         &_title {
             overflow: hidden;
-            padding-bottom: 8px;
+            padding-bottom: 15px;
+            &_left {
+                color: #999;
+                float: left;
+            }
             &_primary {
                 color: #409eff;
             }
-            &_left {
-                float: left;
-            }
             &_right {
+                color: #999;
                 float: right;
+
                 .el-checkbox {
                     margin-right: 10px;
+                    color: #999;
+                    font-weight: normal;
                     &:last-child {
                         margin-right: 0;
                     }
@@ -834,8 +850,8 @@ interface NameValue {
     }
     &_select_item {
         display: flex;
-        margin-right: 20px;
-        margin-bottom: 10px;
+        // margin-right: 20px;
+        margin-bottom: 20px !important;
         width: 50%;
         cursor: pointer;
 
@@ -882,10 +898,23 @@ interface NameValue {
                 font-style: normal;
                 font-weight: normal;
             }
+            b {
+                color: #333;
+                font-size: 14px;
+            }
             i {
                 padding-top: 5px;
                 font-size: 12px;
                 color: #999;
+            }
+
+            &__nodescript {
+                b {
+                    margin-top: 7px;
+                }
+                i {
+                    display: none;
+                }
             }
         }
     }

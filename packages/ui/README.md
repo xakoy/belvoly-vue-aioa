@@ -1,3 +1,6 @@
+## v0.1.24
+1. 调整`ChoosePeopleOrOrg`组件样式
+
 ## v 0.1.22
 1. 调整`Upload`样式
 
