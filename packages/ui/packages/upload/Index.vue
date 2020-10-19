@@ -13,6 +13,7 @@
             :on-success="handleUploadSuccess"
             :on-error="handleUploadError"
             :on-progress="handleUploadProgress"
+            :on-exceed="handleExceed"
             v-if="isEditFile"
         >
             <el-button size="mini" type="primary" :disabled="isDisabled">上传附件</el-button>
@@ -36,6 +37,7 @@
             :on-success="handleUploadSuccess"
             :on-error="handleUploadError"
             :on-progress="handleUploadProgress"
+            :on-exceed="handleExceed"
             v-if="isEditFile"
         >
             <slot name="simple" />
@@ -193,6 +195,11 @@ export default class Index extends Vue {
 
         return supportFileTypes.includes(extension)
     }
+
+    async handleExceed(files, fileList) {
+        Message.warning(`当前限制选择 ${this.limit} 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
+    }
+
     async handleRemove(file) {
         if (!(file.id || file.response)) {
             return true
