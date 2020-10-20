@@ -428,6 +428,8 @@ export default class New extends Vue {
     }
 
     async handleTreeNodeClick(data: TreeNode) {
+        this.checkAll = false
+
         this.currentSelectOrg = data.data
         this.queryUser(this.currentSelectOrg.orgCode, this.showDepartmentalUsers)
     }
@@ -545,6 +547,7 @@ export default class New extends Vue {
     }
 
     handleClearSelectedUsers() {
+        this.checkAll = false
         this.selectedUsers = []
         this.refreshCanSelectUserStatus()
     }
