@@ -99,7 +99,7 @@
                             <span class="bv-choose-people_canselect_title_left bv-choose-people_canselect_title_primary">{{ currentSelectOrg ? currentSelectOrg.orgName : '' }}</span>
                             <span class="bv-choose-people_canselect_title_right">
                                 <el-checkbox @change="showDepartmentClick" v-if="currentSelectOrg" v-model="showDepartmentalUsers">显示子部门用户</el-checkbox>
-                                <!-- <el-checkbox v-model="checkAll" :disabled="checkAllDisabled">全选</el-checkbox> -->
+                                <el-checkbox @change="checkAllChangeHandler" v-model="checkAll" v-if="currentSelectOrg" :disabled="checkAllDisabled">全选</el-checkbox>
                             </span>
                         </div>
                         <div>
@@ -299,6 +299,11 @@ export default class New extends Vue {
      */
     getUserLoading = false
 
+    /**
+     * 全选
+     */
+    checkAll = false
+
     get isShowCheckBox() {
         return !this.isOnlyChooseUser
     }
@@ -317,6 +322,10 @@ export default class New extends Vue {
 
     get selectNumberOrg() {
         return this.selectedOrgs.length
+    }
+
+    get checkAllDisabled() {
+        return this.canSelecteUsers.length <= 0 || this.isSingleMode
     }
 
     mounted() {
@@ -494,6 +503,18 @@ export default class New extends Vue {
 
     showDepartmentClick() {
         this.queryUser(this.currentSelectOrg.orgCode, this.showDepartmentalUsers)
+    }
+
+    checkAllChangeHandler(isCheckAll) {
+        if (isCheckAll) {
+            this.canSelecteUsers.forEach(item => {
+                this.handleSelectUser(item)
+            })
+        } else {
+            this.canSelecteUsers.forEach(item => {
+                this.handleRemoveSelectedUser(item)
+            })
+        }
     }
 
     handleSelectUser(user: TreeNode) {
