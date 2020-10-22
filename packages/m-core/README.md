@@ -52,7 +52,10 @@ if (success) {
 }
 ```
 ## 版本记录
-###
+### v 0.1.11
+1. `request` 增加异常处理`handleCatch` 参数。 修复异常时 没有返回正确的response
+
+### v 0.1.10
 1. `request` 增加 isShowError选项，是否默认显示错误信息
 2. `request` Get 方式过滤null和undifine选项
 

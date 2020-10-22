@@ -15,9 +15,25 @@ export interface RequestOption {
 }
 
 export interface ResponseOption<T> {
-    isShowError?: ((response: AxiosResponse) => boolean) | boolean
+    isShowError?: ((response: AxiosResponse, error: any) => boolean) | boolean
     isSuccess?: (response: AxiosResponse) => boolean
     getData?: (response: AxiosResponse) => T
+    handleCatch?: (
+        e: any
+    ) => Promise<{
+        /**
+         * 返回是否处理完成，true：则后续不处理，false：则还继续处理
+         */
+        handle: boolean
+        /**
+         * 当handle: true, 返回接口当数据
+         */
+        result?: any
+        /**
+         * 当handle: false，返回的错误信息
+         */
+        errorText?: string
+    }>
 }
 
 export enum Method {
@@ -197,7 +213,7 @@ export function request<T>(
                     if (responsedOption.isSuccess(response)) {
                         interResolve(response)
                     } else {
-                        interReject(response)
+                        interReject({ response: response })
                     }
                 })
             })
@@ -208,23 +224,46 @@ export function request<T>(
                     success: true
                 })
             })
-            .catch(e => {
-                const isShowError = typeof responsedOption.isShowError === 'boolean' ? responsedOption.isShowError : responsedOption.isShowError(e.response)
-                const status = getValue(e, 'response.status')
-                const flag = getValue(e, 'data.flag')
+            .catch(async e => {
                 let errorText = ''
-                if (flag && flag > 0) {
-                    errorText = getValue(e, 'data.message', getValue(codeMessage, status, getValue(e, 'statusText', '')))
-                } else {
-                    errorText = '请刷新重试、重新登录或联系管理员'
+
+                const { handleCatch } = responsedOption
+
+                if (handleCatch) {
+                    const { handle, errorText: handleErrorText, result: handleResult } = await handleCatch(e)
+                    if (handle) {
+                        if (handleResult) {
+                            resolve(handleResult)
+                        }
+                        return
+                    } else {
+                        errorText = handleErrorText
+                    }
                 }
+
                 const isCancel = axios.isCancel(e)
-                if (!isCancel && isShowError) {
+
+                if (errorText) {
                     errorShow(errorText)
+                } else {
+                    const isShowError = typeof responsedOption.isShowError === 'boolean' ? responsedOption.isShowError : responsedOption.isShowError(e.response, e)
+                    const status = getValue(e, 'response.status')
+                    const flag = getValue(e, 'response.data.flag')
+
+                    if (flag && flag > 0) {
+                        errorText = getValue(e, 'response.data.message', getValue(codeMessage, status, getValue(e, 'response.statusText', '')))
+                    } else {
+                        errorText = '请刷新重试、重新登录或联系管理员'
+                    }
+
+                    if (!isCancel && isShowError) {
+                        errorShow(errorText)
+                    }
                 }
                 resolve({
                     isCancel: isCancel,
                     error: e,
+                    response: e.response,
                     success: false
                 })
             })
