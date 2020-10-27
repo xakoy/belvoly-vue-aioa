@@ -122,7 +122,7 @@ export default class Index extends Vue {
             enabled: false,
             baseURI: '',
             blobURI: '',
-            supportFileTypes: [],
+            supportFileExtensions: [],
             ...globalConfig.o365
         }
     }
@@ -480,21 +480,27 @@ export default class Index extends Vue {
 
     async handleO365Preview(file: { id: string; name: string; length?: number; size?: number; url: string; extension?: string }) {
         let url = file.url
+        let isSupport = false
 
         if (file.extension && this.checkO365PreviewSupproted(file.extension)) {
+            isSupport = true
             url = `${this.config.o365.baseURI}${this.config.o365.blobURI}/${file.id}`
         }
 
         if (this.inApp) {
-            BM.appointment.webview.open(url)
+            if (isSupport) {
+                BM.appointment.webview.open(url)
+            } else {
+                BM.appointment.file.download(url, file.name, '')
+            }
         } else {
             window.open(url)
         }
     }
     checkO365PreviewSupproted(extension) {
-        const supportFileTypes = this.config.o365.supportFileTypes
+        const supportFileExtensions = this.config.o365.supportFileExtensions
 
-        return supportFileTypes.includes(extension)
+        return supportFileExtensions.includes(extension)
     }
 
     async removeHandler(file) {
