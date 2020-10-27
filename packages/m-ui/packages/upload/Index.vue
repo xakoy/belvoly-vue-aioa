@@ -3,7 +3,7 @@
         <bvan-cell form :title="label" :border="true" v-if="!isReadonly">
             <template #right-icon>
                 <template v-if="!isReadonly && !isDisabled">
-                    <bvan-uploader v-if="!inApp" :before-read="beforeReadHandler" :after-read="afterReadHandler" multiple="multiple">
+                    <bvan-uploader v-if="!inApp" :before-read="beforeReadHandler" :accept="accept" :after-read="afterReadHandler" multiple="multiple">
                         <bvan-icon name="attachment" class-prefix="fc" color="#999" style="line-height: inherit;" />
                     </bvan-uploader>
                     <bvan-icon v-else name="attachment" class-prefix="fc" color="#999" style="line-height: inherit;" @click="appUploadClickHandler" />
@@ -31,7 +31,7 @@
                             </span>
                         </template>
                         <template v-else>
-                            <span v-if="isO365Enabled" class="bvan-mui-upload__button" @click="handlePreview(item.file)">
+                            <span v-if="isShowViewBtn" class="bvan-mui-upload__button" @click="handlePreview(item.file)">
                                 <bvan-icon name="eyes-open" class-prefix="fc" style="line-height: inherit;" />
                                 查看
                             </span>
@@ -67,7 +67,7 @@
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import { Notify, Dialog } from '@belvoly-vue-aioa/bvant'
-import { utils, globalConfig, services } from '@belvoly-vue-aioa/m-core'
+import { utils, globalConfig, services, wxwork } from '@belvoly-vue-aioa/m-core'
 import { isInApp } from '../utils/environment'
 import Item from './Item.vue'
 const { attachmentService } = services
@@ -161,6 +161,8 @@ export default class Index extends Vue {
     @Prop({ default: 9999 }) limit: number
 
     inApp = false
+    inWxWork = false
+    enabledWxwork = false
 
     uploadFiles: UploadFile[] = []
 
@@ -168,6 +170,17 @@ export default class Index extends Vue {
 
     get isO365Enabled() {
         return this.config.o365.enabled
+    }
+
+    /**
+     * 当前是否可以企业微信环境
+     */
+    get isWxworkReady() {
+        return this.inWxWork && this.enabledWxwork
+    }
+
+    get isShowViewBtn() {
+        return this.isO365Enabled && !this.inWxWork
     }
 
     get getFileList() {
@@ -187,7 +200,7 @@ export default class Index extends Vue {
         if (this.isOnlyImage) {
             return '.jpg,.jpeg,.png,.bmp'
         }
-        return ''
+        return '*'
     }
     get uploadTip() {
         return this.tip || this.isOnlyImage ? `最多允许上传${this.maxSize}MB的内容，格式仅支持${this.accept}` : `最多允许上传${this.maxSize}MB的内容`
@@ -226,6 +239,13 @@ export default class Index extends Vue {
 
     async init() {
         this.inApp = await isInApp()
+        this.inWxWork = utils.environment.isInWeChatWork()
+        if (this.inWxWork) {
+            this.enabledWxwork = wxwork.isEnabled()
+            if (this.enabledWxwork) {
+                wxwork.initJsSDK({ jsApiList: ['previewFile', 'previewImage'] })
+            }
+        }
     }
 
     @Watch('fileList')
@@ -383,7 +403,6 @@ export default class Index extends Vue {
         const data = new FormData()
         data.append(`file`, file)
         this.uploading()
-        //192.168.101.135:2001/api/sharedservice/blob/5f94345a-009f-46ab-8c48-dabcc68b9841
         const { data: result, success } = await request.request(this.uploadAction, {
             headers: {
                 //添加请求头
@@ -413,23 +432,31 @@ export default class Index extends Vue {
         if (file.id) {
             this.handlePreviewCore(file)
         } else {
-            if (this.inApp) {
-                BM.appointment.file.download(file.response.data.url, file.name, '')
-            } else {
-                window.open(file.response.data.url)
-            }
+            this.handlePreviewCore(file.response.data)
         }
     }
 
     handleDownload(file) {
         if (file.id) {
-            if (this.inApp) {
+            if (this.isWxworkReady) {
+                wxwork.wx.previewFile({
+                    url: file.url,
+                    name: file.name,
+                    size: file.length || file.size
+                })
+            } else if (this.inApp) {
                 BM.appointment.file.download(file.url, file.name, '')
             } else {
                 window.open(file.url)
             }
         } else {
-            if (this.inApp) {
+            if (this.isWxworkReady) {
+                wxwork.wx.previewFile({
+                    url: file.response.data.url,
+                    name: file.name,
+                    size: file.length || file.size
+                })
+            } else if (this.inApp) {
                 BM.appointment.file.download(file.response.data.url, file.name, '')
             } else {
                 window.open(file.response.data.url)
@@ -437,7 +464,7 @@ export default class Index extends Vue {
         }
     }
 
-    async handlePreviewCore(file) {
+    async handlePreviewCore(file: { id: string; name: string; length?: number; size?: number; url: string; extension?: string }) {
         const preivewEnabled = this.config.o365.enabled
 
         if (preivewEnabled) {
@@ -451,7 +478,7 @@ export default class Index extends Vue {
         }
     }
 
-    async handleO365Preview(file) {
+    async handleO365Preview(file: { id: string; name: string; length?: number; size?: number; url: string; extension?: string }) {
         let url = file.url
 
         if (file.extension && this.checkO365PreviewSupproted(file.extension)) {
@@ -459,7 +486,7 @@ export default class Index extends Vue {
         }
 
         if (this.inApp) {
-            BM.appointment.file.download(url, file.name, '')
+            BM.appointment.webview.open(url)
         } else {
             window.open(url)
         }

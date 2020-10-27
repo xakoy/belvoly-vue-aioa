@@ -9,8 +9,12 @@ import '@belvoly-vue-aioa/bvant/lib/index.css'
 import { setGloablConfig } from '../packages/core'
 import { setGloablConfig as setMobileGloablConfig } from '../packages/m-core'
 
-setGloablConfig({ apiHost: 'http://192.168.101.135:2001/api/' })
-setMobileGloablConfig({ apiHost: 'http://192.168.101.135:2001/api/', o365: { enabled: true, baseURI: '', blobURI: '', supportFileExtensions: [] } })
+setGloablConfig({ apiHost: 'http://192.168.101.135:2001/api' })
+setMobileGloablConfig({
+    apiHost: 'http://192.168.101.135:2001/api',
+    o365: { enabled: true, baseURI: '', blobURI: '', supportFileExtensions: [] },
+    wxwork: { enabled: true, debug: true, appId: 'wwc11ee87e20b78040', getJssdkTicketApiUrl: 'http://192.168.101.135:2001/sso/wework/jsapi/signature' }
+})
 
 Vue.use(BVant)
 Vue.use(ElementUI)

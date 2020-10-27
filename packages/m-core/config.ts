@@ -1,7 +1,9 @@
+import { WxworkConfig, setConfig as setWxworkConfig } from './wxwork/config'
 interface GloablConfigType {
     apiHost?: string
     token?: string
     o365?: O365Config
+    wxwork?: WxworkConfig
 }
 
 interface O365Config {
@@ -14,7 +16,8 @@ interface O365Config {
 const gloablConfig: GloablConfigType = {
     apiHost: '',
     token: '',
-    o365: null
+    o365: null,
+    wxwork: null
 }
 
 export function setGloablConfig(config: typeof gloablConfig) {
@@ -26,6 +29,9 @@ export function setGloablConfig(config: typeof gloablConfig) {
     }
     if (config.o365) {
         gloablConfig.o365 = config.o365
+    }
+    if (config.wxwork) {
+        gloablConfig.wxwork = setWxworkConfig(config.wxwork)
     }
 }
 

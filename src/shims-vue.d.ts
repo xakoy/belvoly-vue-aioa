@@ -4,6 +4,8 @@ declare module '*.vue' {
 }
 
 declare let BM
+declare let wx
 interface Window {
     BM: any
+    wx: any
 }

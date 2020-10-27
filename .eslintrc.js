@@ -39,6 +39,7 @@ module.exports = {
         'prefer-rest-params': 'off'
     },
     globals: {
-        BM: true
+        BM: true,
+        // wx: true
     }
 }
