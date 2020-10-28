@@ -1,6 +1,6 @@
 {
   "name": "@belvoly-vue-aioa/m-ui",
-  "version": "0.1.25",
+  "version": "0.1.26",
   "description": "智能办公移动ui组件",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
