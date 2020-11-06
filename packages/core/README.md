@@ -1,4 +1,13 @@
 ## 版本记录
+
+### v 0.1.11
+1. `request` 增加异常处理`handleCatch` 参数。 修复异常时 没有返回正确的response
+2. `request` 增加 isShowError选项，是否默认显示错误信息
+3. `request` Get 方式过滤null和undifine选项
+4. `request`增加`cancel`取消的选项，返回值增加`isCancen`判断是否主动取消的
+5. 增加`requestVariant`，是`request`的变体，返回 { promise, abort }
+6. 修复`request` Get方式没有参数的情况下没有添加时间戳，导致IE缓存严重
+
 ### v 0.1.8
 1. `request` Get 方式过滤null和undifine选项
 ### v 0.1.7

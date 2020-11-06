@@ -1,4 +1,4 @@
-import axios, { Method as AxiosMethod, AxiosResponse } from 'axios'
+import axios, { Method as AxiosMethod, AxiosResponse, AxiosRequestConfig } from 'axios'
 // import store from '@/store'
 import { format } from './string'
 import gloablConfig from '../config'
@@ -12,6 +12,28 @@ export interface RequestOption {
     method?: AxiosMethod
     headers?: any
     data?: any
+}
+
+export interface ResponseOption<T> {
+    isShowError?: ((response: AxiosResponse, error: any) => boolean) | boolean
+    isSuccess?: (response: AxiosResponse) => boolean
+    getData?: (response: AxiosResponse) => T
+    handleCatch?: (
+        e: any
+    ) => Promise<{
+        /**
+         * 返回是否处理完成，true：则后续不处理，false：则还继续处理
+         */
+        handle: boolean
+        /**
+         * 当handle: true, 返回接口当数据
+         */
+        result?: any
+        /**
+         * 当handle: false，返回的错误信息
+         */
+        errorText?: string
+    }>
 }
 
 export enum Method {
@@ -47,24 +69,102 @@ function errorShow(errorText) {
     })
 }
 
-export function request<T>(url: string, options?: RequestOption): Promise<{ data?: T; error?: any; response?: any; success: boolean }> {
-    const config = {
+/**
+ * 请求一个WEBAPI地址，request的一个变体，返回取消和promise
+ * @param url 请求的地址
+ * @param options 请求选项
+ * @param resOption 结果的选项
+ *
+ * @example
+ *       const { promise, abort } = requestVariant('/x')
+ *
+ *       setTimeout(abort, 1000)
+ *
+ *       const { data, success, isCancel } = await promise
+ *       if (success) {
+ *           //data
+ *       } else if (isCancel) {
+ *          //被取消的
+ *       }
+ *
+ */
+export function requestVariant<T>(
+    url: string,
+    options?: RequestOption,
+    resOption?: ResponseOption<T>
+): {
+    /**
+     * 取消的方法
+     */
+    abort: () => void
+    /**
+     * 执行的promise
+     */
+    promise: Promise<{
+        data?: T
+        error?: any
+        response?: any
+        success: boolean
+        isCancel?: boolean
+    }>
+} {
+    let cancel
+    const cancelDelegate = c => {
+        cancel = c
+    }
+    const { ...ops } = options
+    const newOptions = {
+        ...ops,
+        cancel: cancelDelegate
+    }
+    return {
+        promise: request<T>(url, newOptions, resOption),
+        abort: cancel
+    }
+}
+
+export function request<T>(
+    url: string,
+    options: RequestOption & {
+        /**
+         * 取消回调函数
+         * @example
+         *
+         * let cancel
+         *
+         * const { data, success } = await request('/xxx',
+         *     {
+         *         cancel: (c) => {
+         *              cancel = c
+         *         }
+         *     })
+         *
+         * cancel
+         */
+        cancel?: (cancel: () => void) => void
+    } = {},
+    resOption?: ResponseOption<T>
+): Promise<{ data?: T; error?: any; response?: any; success: boolean; isCancel?: boolean }> {
+    const { cancel, ...ops } = options
+    const config: AxiosRequestConfig = {
         method: <Method>'GET',
         headers: {},
-        ...options
+        ...ops
     }
     config.url = url
 
     const type = config.method
 
-    if (type === 'GET' && config.data) {
-        const str = Object.keys(config.data)
-            .filter(key => config.data[key] !== undefined && config.data[key] !== null)
-            .map(key => {
-                return `${key}=${encodeURIComponent(config.data[key])}`
-            })
-            .join('&')
-        config.url = `${config.url}${url.indexOf('?') > -1 ? '&' : '?'}_=${new Date().getTime()}&${str}`
+    if (type === 'GET') {
+        const str = config.data
+            ? Object.keys(config.data)
+                  .filter(key => config.data[key] !== undefined && config.data[key] !== null)
+                  .map(key => {
+                      return `${key}=${encodeURIComponent(config.data[key])}`
+                  })
+                  .join('&')
+            : ''
+        config.url = `${config.url}${url.indexOf('?') > -1 ? '&' : '?'}_=${new Date().getTime()}${str ? '&' + str : ''}`
     }
 
     const token = gloablConfig.token
@@ -85,43 +185,80 @@ export function request<T>(url: string, options?: RequestOption): Promise<{ data
         }
     }
 
+    const responsedOption: ResponseOption<T> = {
+        isShowError: true,
+        isSuccess: response => {
+            return response.status >= 200 && response.status < 300 && response.data.flag === 0
+        },
+        getData: response => {
+            return response.data.data
+        },
+        ...resOption
+    }
+
+    if (cancel) {
+        config.cancelToken = new axios.CancelToken(cancel)
+    }
+
     return new Promise(resolve => {
         axiosInstance
             .request(config)
             .then(response => {
                 return new Promise<AxiosResponse<any>>((interResolve, interReject) => {
-                    if (response.status >= 200 && response.status < 300) {
-                        if (response.data.flag === 0) {
-                            interResolve(response)
-                        } else {
-                            interReject(response)
-                        }
+                    if (responsedOption.isSuccess(response)) {
+                        interResolve(response)
                     } else {
-                        interReject(response)
+                        interReject({ response: response })
                     }
                 })
             })
             .then(response => {
                 resolve({
-                    data: response.data.data,
+                    data: responsedOption.getData(response),
                     response: response,
                     success: true
                 })
             })
-            .catch(e => {
-                const status = getValue(e, 'response.status')
-                const flag = getValue(e, 'data.flag')
+            .catch(async e => {
                 let errorText = ''
-                if (flag && flag > 0) {
-                    errorText = getValue(e, 'data.message', getValue(codeMessage, status, getValue(e, 'statusText', '')))
-                } else {
-                    errorText = '请刷新重试、重新登录或联系管理员'
+
+                const { handleCatch } = responsedOption
+
+                if (handleCatch) {
+                    const { handle, errorText: handleErrorText, result: handleResult } = await handleCatch(e)
+                    if (handle) {
+                        if (handleResult) {
+                            resolve(handleResult)
+                        }
+                        return
+                    } else {
+                        errorText = handleErrorText
+                    }
                 }
 
-                errorShow(errorText)
+                const isCancel = axios.isCancel(e)
 
+                if (errorText) {
+                    errorShow(errorText)
+                } else {
+                    const isShowError = typeof responsedOption.isShowError === 'boolean' ? responsedOption.isShowError : responsedOption.isShowError(e.response, e)
+                    const status = getValue(e, 'response.status')
+                    const flag = getValue(e, 'response.data.flag')
+
+                    if (flag && flag > 0) {
+                        errorText = getValue(e, 'response.data.message', getValue(codeMessage, status, getValue(e, 'response.statusText', '')))
+                    } else {
+                        errorText = '请刷新重试、重新登录或联系管理员'
+                    }
+
+                    if (!isCancel && isShowError) {
+                        errorShow(errorText)
+                    }
+                }
                 resolve({
+                    isCancel: isCancel,
                     error: e,
+                    response: e.response,
                     success: false
                 })
             })
@@ -168,5 +305,6 @@ export function get<T>(url: string, options: RequestOption = {}) {
 }
 
 export default {
-    request
+    request,
+    requestVariant
 }
