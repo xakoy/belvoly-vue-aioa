@@ -1,4 +1,20 @@
+import { OPickerNode } from 'packages/m-ui/packages/opicker/types'
 import { OPickerObjective } from '../../../../../packages/m-ui'
+
+function convertNode(item): OPickerNode {
+    const isParent = !!item.children
+    return {
+        id: item.id,
+        name: item.label,
+        value: item.code,
+        isParent: isParent,
+        cancheck: !isParent,
+        sequence: 0,
+        data: item,
+        hasChildNodesData: true,
+        nodes: !isParent ? null : item.children.map(i => convertNode(i))
+    }
+}
 
 export const flowCategoryObjective: OPickerObjective<{
     onlyCurrentUnit: boolean
@@ -14,7 +30,7 @@ export const flowCategoryObjective: OPickerObjective<{
         rootOrgCode: null,
         cascade: true
     },
-    url: 'http://192.168.22.22:2001/api/private/wf/api/node/queryNodeApprover.do?_=1604633452285&flowId=1BCC0FFE-81F6-4E1C-B6F5-286B6328C255&formField=FL&orgCode=yfzx&holdType=1',
+    url: 'http://192.168.22.22:2001/api/public/formApi/formdata/getDicTreeData.do?_=1604653969726&id=F02A192F-11E7-4C58-983E-1C41660A4E93&formId=72268E7A-F78D-4E3C-80B0-9179DD67434B',
     chainAjax: function(ajax) {
         if (!ajax.headers) {
             ajax.headers = {}
@@ -22,17 +38,10 @@ export const flowCategoryObjective: OPickerObjective<{
         ajax.dataType = 'json'
     },
     dataConvert: function(data) {
-        return data.data.users
+        return data.data
     },
     dataFilter: function(item, config) {
-        return {
-            id: item.userUid,
-            name: item.userName,
-            value: item.userUid,
-            isParent: false,
-            sequence: item.sequence,
-            data: item
-        }
+        return convertNode(item)
     },
     getUrl: function(config, url) {
         const uri = new URL(url)

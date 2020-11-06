@@ -12,7 +12,7 @@ import { setGloablConfig as setMobileGloablConfig } from '../packages/m-core'
 setGloablConfig({ apiHost: 'http://192.168.101.135:2001/api' })
 setMobileGloablConfig({
     apiHost: 'http://192.168.101.135:2001/api',
-    token: 'd71cab23-3456-4bc4-a8ee-175923cd5ef5',
+    token: '59d9264f-7589-40c5-99e1-89650d8fb07f',
     o365: { enabled: true, baseURI: '', blobURI: '', supportFileExtensions: [] },
     wxwork: { enabled: true, debug: true, appId: 'wwc11ee87e20b78040', getJssdkTicketApiUrl: 'http://192.168.101.135:2001/sso/wework/jsapi/signature' }
 })

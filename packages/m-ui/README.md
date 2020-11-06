@@ -10,6 +10,7 @@ belvoly vue 移动APP专用组件库
 2.  `OPicker`和`ChoosePeopleOrOrg`修复页面后退没有关闭窗口
 3. 修复`OPicker`和`ChoosePeopleOrOrg`销毁时JS报错
 4. `OPicker`点击下方已经选中的元素，可以快速删除
+5. `tree` 增加同步数据节点属性
 
 ### 0.1.25
 1. 增加企业微信的配置和支持

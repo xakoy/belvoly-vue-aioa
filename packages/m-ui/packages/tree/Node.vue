@@ -77,8 +77,7 @@ export default class TreeNode extends Vue {
             } else {
                 return true
             }
-        }
-        {
+        } else {
             return !!node.children
         }
     }

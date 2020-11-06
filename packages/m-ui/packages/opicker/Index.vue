@@ -235,7 +235,7 @@ export default class OpickerIndex extends Vue {
             leaf: leaf || item.isParent === false,
             cancheck: item.cancheck === undefined ? true : item.cancheck,
             check: isSelected,
-            // children: item.nodes,
+            children: !(item.hasChildNodesData && item.nodes) ? null : item.nodes.map(i => this.convertOPickerNodeToTreeNode(i)),
             data: item.data
         }
     }
