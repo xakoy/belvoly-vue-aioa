@@ -9,8 +9,12 @@ const gloablConfig: GloablConfigType = {
 }
 
 export function setGloablConfig(config: typeof gloablConfig) {
-    gloablConfig.apiHost = config.apiHost
-    gloablConfig.token = config.token
+    if (config.apiHost) {
+        gloablConfig.apiHost = config.apiHost
+    }
+    if (config.token) {
+        gloablConfig.token = config.token
+    }
 }
 
 export default gloablConfig
