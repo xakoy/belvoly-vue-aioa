@@ -110,7 +110,9 @@ export default class OpickerIndex extends Vue {
     }
 
     destroyed() {
-        this.$el.parentNode.removeChild(this.$el)
+        if (this.$el && this.$el.parentNode) {
+            this.$el.parentNode.removeChild(this.$el)
+        }
     }
 
     async loadHandler(node, resolve) {

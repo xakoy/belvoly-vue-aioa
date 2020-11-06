@@ -104,7 +104,9 @@ export default class Index extends Vue {
     }
 
     destroyed() {
-        this.$el.parentNode.removeChild(this.$el)
+        if (this.$el && this.$el.parentNode) {
+            this.$el.parentNode.removeChild(this.$el)
+        }
     }
 
     searchCurrentCheckChangeHandler(checked: boolean, item: Node) {
