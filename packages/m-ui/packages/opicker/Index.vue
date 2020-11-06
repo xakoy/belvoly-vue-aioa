@@ -109,8 +109,7 @@ export default class OpickerIndex extends Vue {
         document.body.appendChild(this.$el)
     }
 
-    destoryed() {
-        console.log('opicker destoryed')
+    destroyed() {
         this.$el.parentNode.removeChild(this.$el)
     }
 

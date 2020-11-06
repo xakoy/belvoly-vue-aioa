@@ -103,7 +103,7 @@ export default class Index extends Vue {
         document.body.appendChild(this.$el)
     }
 
-    destoryed() {
+    destroyed() {
         this.$el.parentNode.removeChild(this.$el)
     }
 
