@@ -13,7 +13,7 @@
                     <bvan-icon v-else name="arrow-down" />
                 </div>
                 <div class="bvant-mui-opicker__selectedarea--content">
-                    <span v-for="(cItem, index) in checkItems" :key="index">
+                    <span v-for="(cItem, index) in checkItems" :key="index" @click="checkItemClickHandler(cItem)">
                         {{ cItem.name }}
                     </span>
                 </div>
@@ -260,6 +260,17 @@ export default class OpickerIndex extends Vue {
         this.$emit('selected', value)
         this.close()
     }
+
+    checkItemClickHandler(cItem: TreeNode) {
+        this.cancelSearchHandler()
+        const tree: any = this.$refs.tree
+        tree.setCheck(cItem.id, false)
+        const index = this.checkItems.findIndex(i => i.id === cItem.id)
+        if (index > -1) {
+            this.checkItems.splice(index, 1)
+        }
+    }
+
     close() {
         this.$emit('update:visible', false)
         this.$emit('close')
