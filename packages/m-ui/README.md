@@ -8,6 +8,7 @@ belvoly vue 移动APP专用组件库
 ### 0.1.27
 1.  `OPicker` 增加`dataConvert`生命周期配置，用来解决接口返回的特殊数据转换。
 2.  `OPicker`和`ChoosePeopleOrOrg`修复页面后退没有关闭窗口
+3. 修复`OPicker`和`ChoosePeopleOrOrg`销毁时JS报错
 
 ### 0.1.25
 1. 增加企业微信的配置和支持
