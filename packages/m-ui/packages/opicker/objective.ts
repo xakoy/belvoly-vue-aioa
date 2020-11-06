@@ -1,15 +1,21 @@
+import { OPickerNode } from './types'
+
 export interface Objective<C extends object = {}> {
     code: string
     title: string
     config: C
     url: string
     chainAjax?: (ajax: any) => void
+    /**
+     * 数据转换，第一次请求接口，会调用此方法
+     */
+    dataConvert?: (data: any) => any[]
     /*
-     * 数据过滤事件
+     * 数据项过滤事件
      * @event dataFilter
      * @param {object} 过滤的数据项
      */
-    dataFilter<T>(item, config: C, obj: Objective<C>, options: { selectionMode: string }): T
+    dataFilter<T>(item, config: C, obj: Objective<C>, options: { selectionMode: string }): OPickerNode
     /*
      * 获取静态数据数据源
      * @event getStaticDataSource

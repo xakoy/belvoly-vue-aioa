@@ -20,6 +20,16 @@
             splitChar=","
             :visible.sync="joinUserOPickerVisible"
         ></o-picker>
+
+        <bvan-cell form center title="流程分类" :value="flowCategoryItem.names" is-link @click="flowCategoryOPickerVisible = true" />
+        <o-picker
+            title="流程分类"
+            v-model="flowCategoryItem"
+            :objects="[{ code: 'flow-category', config: {} }]"
+            selectionMode="multiple"
+            splitChar=","
+            :visible.sync="flowCategoryOPickerVisible"
+        ></o-picker>
     </div>
 </template>
 
@@ -48,8 +58,19 @@ export default class Index extends Vue {
 
     joinUserOPickerVisible = false
 
+    flowCategoryItem = {
+        values: '',
+        names: ''
+    }
+
+    flowCategoryOPickerVisible = false
+
     selectedHandler() {
         //
+    }
+
+    destroyed() {
+        console.log('o de')
     }
 }
 </script>

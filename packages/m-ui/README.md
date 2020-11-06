@@ -5,6 +5,9 @@ belvoly vue 移动APP专用组件库
 1. `ChoosePeopleOrOrg` 选人组件
 2. `Upload` 上传组件
 
+###
+1.  `OPicker` 增加`dataConvert`生命周期配置，用来解决接口返回的特殊数据转换。
+
 ### 0.1.25
 1. 增加企业微信的配置和支持
 2. 修复App内o365判断有误，预览问题

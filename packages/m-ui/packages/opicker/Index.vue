@@ -32,21 +32,9 @@ import { Tree } from '../tree'
 import { Objective, get as getObjective } from './objective'
 import { utils } from '@belvoly-vue-aioa/m-core'
 import { Node } from '../tree/interface'
+import { OPickerNode } from './types'
 
 const { request } = utils
-
-interface OPickerNode {
-    id: string
-    name: string
-    text?: string
-    value: string
-    isParent: boolean
-    nodes?: OPickerNode[]
-    nodeType?: string
-    sequence: number
-    data?: any
-    [key: string]: any
-}
 
 interface TreeNode {
     id: string
@@ -122,6 +110,7 @@ export default class OpickerIndex extends Vue {
     }
 
     destoryed() {
+        console.log('opicker destoryed')
         this.$el.parentNode.removeChild(this.$el)
     }
 
@@ -178,6 +167,10 @@ export default class OpickerIndex extends Vue {
             }
         )
         let data = result.data
+        if (this.currentObjective.dataConvert) {
+            data = this.currentObjective.dataConvert(data)
+        }
+
         if (this.currentObjective.dataFilter) {
             data = data.map(item => this.currentObjective.dataFilter(item, this.currentObjective.config, this.currentObjective, { selectionMode: this.selectionMode }))
         }
