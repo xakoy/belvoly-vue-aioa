@@ -3,7 +3,7 @@
         <bvan-cell form :title="label" :border="true" v-if="!isReadonly">
             <template #right-icon>
                 <template v-if="!isReadonly && !isDisabled">
-                    <bvan-uploader v-if="!inApp" :before-read="beforeReadHandler" :accept="accept" :after-read="afterReadHandler" multiple="multiple">
+                    <bvan-uploader v-if="!inApp" :before-read="beforeReadHandler" :accept="accept" :after-read="afterReadHandler" :multiple="multiple">
                         <bvan-icon name="attachment" class-prefix="fc" color="#999" style="line-height: inherit;" />
                     </bvan-uploader>
                     <bvan-icon v-else name="attachment" class-prefix="fc" color="#999" style="line-height: inherit;" @click="appUploadClickHandler" />
@@ -55,7 +55,7 @@
         </bvan-cell-group>
     </div>
     <span class="bvan-mui-upload__simple" v-else>
-        <bvan-uploader v-if="!inApp" :before-read="beforeReadHandler" :after-read="afterReadHandler" multiple="multiple">
+        <bvan-uploader v-if="!inApp" :before-read="beforeReadHandler" :after-read="afterReadHandler" :multiple="multiple">
             <slot name="simple" />
         </bvan-uploader>
         <span v-else @click="appUploadClickHandler">
