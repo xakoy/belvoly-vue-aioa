@@ -1,6 +1,7 @@
 
-## new
+## v0.1.30
 1. `ChoosePeopleOrOrg`增加关闭前方法属性，关闭前的回调，会暂停 Dialog 的关闭	function(done)，done 用于关闭 Dialog
+2. `ChoosePeopleOrOrg`增加了`selectedOrgChange`、`selectedUserChange`、`selectedChange`三个事件
 
 ## v0.1.24
 1. 调整`ChoosePeopleOrOrg`组件样式

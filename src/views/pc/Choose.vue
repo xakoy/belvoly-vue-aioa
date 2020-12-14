@@ -30,6 +30,9 @@
                     :visible.sync="opickerToToVisible"
                     @selected="selectedHandler"
                     :beforeClose="beforeCloseHandler"
+                    @selectedOrgChange="selectedOrgChangeHandler"
+                    @selectedUserChange="selectedUserChangeHandler"
+                    @selectedChange="selectedChangeHandler"
                 />
             </el-form-item>
         </el-form>
@@ -70,6 +73,15 @@ export default class ChoosePeopeleOrOrg extends Vue {
 
     beforeCloseHandler(done) {
         done()
+    }
+    selectedOrgChangeHandler(orgs) {
+        console.log(orgs, 'selectedOrgChange')
+    }
+    selectedUserChangeHandler(users) {
+        console.log(users, 'selectedUserChange')
+    }
+    selectedChangeHandler(data) {
+        console.log(data, 'selectedChange')
     }
 }
 </script>

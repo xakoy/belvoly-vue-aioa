@@ -232,7 +232,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator'
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import { services, globalConfig } from '@belvoly-vue-aioa/core'
 import { ElTree } from 'element-ui/types/tree'
 import { User } from '@belvoly-vue-aioa/core/services/userService'
@@ -607,6 +607,18 @@ export default class New extends Vue {
 
     keyupSubmit() {
         //TODO:
+    }
+
+    @Watch('selectedOrgs')
+    watchSelectOrgs() {
+        this.$emit('selectedOrgChange', this.selectedOrgs)
+        this.$emit('selectedChange', { users: this.selectedUsers, orgs: this.selectedOrgs })
+    }
+
+    @Watch('selectedUsers')
+    watchSelectUsers() {
+        this.$emit('selectedUserChange', this.selectedUsers)
+        this.$emit('selectedChange', { users: this.selectedUsers, orgs: this.selectedOrgs })
     }
 
     handleClickConfirm() {
