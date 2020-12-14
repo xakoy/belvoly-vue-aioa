@@ -29,6 +29,7 @@
                     :names.sync="item.names"
                     :visible.sync="opickerToToVisible"
                     @selected="selectedHandler"
+                    :beforeClose="beforeCloseHandler"
                 />
             </el-form-item>
         </el-form>
@@ -65,6 +66,10 @@ export default class ChoosePeopeleOrOrg extends Vue {
     selectedHandler({ users, orgs }) {
         this.item.users = users
         this.item.orgs = orgs
+    }
+
+    beforeCloseHandler(done) {
+        done()
     }
 }
 </script>

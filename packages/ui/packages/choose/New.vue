@@ -253,6 +253,7 @@ export default class New extends Vue {
     @Prop({ default: false }) isShowGlobal: boolean
     @Prop({}) defaultUsers: NameValue[]
     @Prop({}) defaultOrgs: NameValue[]
+    @Prop() beforeClose: Function
 
     defaultExpandedKeys = []
 
@@ -592,6 +593,14 @@ export default class New extends Vue {
     }
 
     close() {
+        if (this.beforeClose) {
+            this.beforeClose(this.internalClose)
+            return
+        }
+        this.internalClose()
+    }
+
+    internalClose() {
         this.$emit('update:visible', false)
         this.$emit('close')
     }

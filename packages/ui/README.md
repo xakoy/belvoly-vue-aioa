@@ -1,3 +1,7 @@
+
+## new
+1. `ChoosePeopleOrOrg`增加关闭前方法属性，关闭前的回调，会暂停 Dialog 的关闭	function(done)，done 用于关闭 Dialog
+
 ## v0.1.24
 1. 调整`ChoosePeopleOrOrg`组件样式
 
