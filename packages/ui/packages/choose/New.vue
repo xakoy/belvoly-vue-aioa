@@ -7,7 +7,7 @@
                 <div class="bv-choose-people_close fc fc-close" @click="handleClickClose"></div>
             </div>
             <div class="bv-choose-people_view">
-                <div>
+                <div class="bv-choose-people_view__header">
                     <slot name="header"></slot>
                 </div>
                 <div class="bv-choose-people_body">
@@ -219,7 +219,7 @@
                         </div>
                     </template>
                 </div>
-                <div>
+                <div class="bv-choose-people_view__footer">
                     <slot name="footer"></slot>
                 </div>
             </div>
