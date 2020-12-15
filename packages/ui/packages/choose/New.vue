@@ -592,9 +592,9 @@ export default class New extends Vue {
         this.close()
     }
 
-    close() {
+    close(action: 'ok' | 'cancen' = 'cancen') {
         if (this.beforeClose) {
-            this.beforeClose(this.internalClose)
+            this.beforeClose(this.internalClose, action)
             return
         }
         this.internalClose()
@@ -638,7 +638,7 @@ export default class New extends Vue {
         this.$emit('update:names', data.names)
         this.$emit('update:values', data.values)
         this.$emit('selected', data)
-        this.close()
+        this.close('ok')
     }
     getUserIcon(user) {
         return `${config.api.baseURI}/bua/avatar/getHeadPhoto?userUid=` + user.value

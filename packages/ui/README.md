@@ -1,3 +1,5 @@
+## v0.1.31
+1. `ChoosePeopleOrOrg` beforeClose 方法增加了action参数，是确定关闭，还是取消关闭
 
 ## v0.1.30
 1. `ChoosePeopleOrOrg`增加关闭前方法属性，关闭前的回调，会暂停 Dialog 的关闭	function(done)，done 用于关闭 Dialog
