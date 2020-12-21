@@ -5,6 +5,8 @@ import gloablConfig from '../config'
 
 import { Notification } from 'element-ui'
 
+const isSafari = window.navigator.userAgent.indexOf('Safari') > -1
+
 const axiosInstance = axios.create({})
 
 export interface RequestOption {
@@ -220,6 +222,8 @@ export function request<T>(
                 })
             })
             .catch(async e => {
+                const isNetworkError = getValue(e, 'message') === 'Network Error'
+
                 let errorText = ''
 
                 const { handleCatch } = responsedOption
@@ -241,7 +245,7 @@ export function request<T>(
                 if (errorText) {
                     errorShow(errorText)
                 } else {
-                    const isShowError = typeof responsedOption.isShowError === 'boolean' ? responsedOption.isShowError : responsedOption.isShowError(e.response, e)
+                    const isShowError = !(isSafari && isNetworkError) && (typeof responsedOption.isShowError === 'boolean' ? responsedOption.isShowError : responsedOption.isShowError(e.response, e))
                     const status = getValue(e, 'response.status')
                     const flag = getValue(e, 'response.data.flag')
 

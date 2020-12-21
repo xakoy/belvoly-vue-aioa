@@ -52,6 +52,9 @@ if (success) {
 }
 ```
 ## 版本记录
+
+###
+1. 修复`request`在safari浏览器，当页面使用window.location.href产生302的情况，会显示错误提示。
 ### v 0.1.12
 1. 增加企业微信的配置和支持
 

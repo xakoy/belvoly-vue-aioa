@@ -1,5 +1,7 @@
 ## 版本记录
 
+###
+1. 修复`request`在safari浏览器，当页面使用window.location.href产生302的情况，会显示错误提示。
 ### v 0.1.11
 1. `request` 增加异常处理`handleCatch` 参数。 修复异常时 没有返回正确的response
 2. `request` 增加 isShowError选项，是否默认显示错误信息
