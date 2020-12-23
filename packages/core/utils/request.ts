@@ -5,7 +5,7 @@ import gloablConfig from '../config'
 
 import { Notification } from 'element-ui'
 
-const isSafari = window.navigator.userAgent.indexOf('Safari') > -1
+const isAppleWebKit = window.navigator.userAgent.indexOf('AppleWebKit') > -1
 
 const axiosInstance = axios.create({})
 
@@ -245,7 +245,8 @@ export function request<T>(
                 if (errorText) {
                     errorShow(errorText)
                 } else {
-                    const isShowError = !(isSafari && isNetworkError) && (typeof responsedOption.isShowError === 'boolean' ? responsedOption.isShowError : responsedOption.isShowError(e.response, e))
+                    const isShowError =
+                        !(isAppleWebKit && isNetworkError) && (typeof responsedOption.isShowError === 'boolean' ? responsedOption.isShowError : responsedOption.isShowError(e.response, e))
                     const status = getValue(e, 'response.status')
                     const flag = getValue(e, 'response.data.flag')
 
