@@ -109,21 +109,23 @@ interface ExisitFile {
     }
 })
 export default class Index extends Vue {
-    config = {
-        sharedservice: {
-            assets: {
-                baseURI: `${globalConfig.apiHost}/sharedservice/assets`
+    get config() {
+        return {
+            sharedservice: {
+                assets: {
+                    baseURI: `${globalConfig.apiHost}/sharedservice/assets`
+                }
+            },
+            api: {
+                baseURI: globalConfig.apiHost
+            },
+            o365: {
+                enabled: false,
+                baseURI: '',
+                blobURI: '',
+                supportFileExtensions: [],
+                ...globalConfig.o365
             }
-        },
-        api: {
-            baseURI: globalConfig.apiHost
-        },
-        o365: {
-            enabled: false,
-            baseURI: '',
-            blobURI: '',
-            supportFileExtensions: [],
-            ...globalConfig.o365
         }
     }
 

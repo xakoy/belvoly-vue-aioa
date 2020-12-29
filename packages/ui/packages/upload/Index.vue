@@ -51,23 +51,6 @@ import { MessageBox, Message } from 'element-ui'
 import { services, globalConfig } from '@belvoly-vue-aioa/core'
 const { attachmentService } = services
 
-const config = {
-    sharedservice: {
-        assets: {
-            baseURI: `${globalConfig.apiHost}/sharedservice/assets`
-        }
-    },
-    api: {
-        baseURI: globalConfig.apiHost
-    },
-    o365: {
-        enabled: false,
-        baseURI: '',
-        blobURI: '',
-        supportFileTypes: ''
-    }
-}
-
 interface BeforeUpload {
     (file: any): Promise<boolean>
 }
@@ -111,6 +94,25 @@ export default class Index extends Vue {
 
     uploadFiles: any[] = []
 
+    get config() {
+        return {
+            sharedservice: {
+                assets: {
+                    baseURI: `${globalConfig.apiHost}/sharedservice/assets`
+                }
+            },
+            api: {
+                baseURI: globalConfig.apiHost
+            },
+            o365: {
+                enabled: false,
+                baseURI: '',
+                blobURI: '',
+                supportFileTypes: ''
+            }
+        }
+    }
+
     get uploadAction() {
         let param = ''
         if (this.refTableName) {
@@ -126,7 +128,7 @@ export default class Index extends Vue {
     }
 
     get actionUrl() {
-        return this.action || `${config.api.baseURI}/sharedservice/blob/upload`
+        return this.action || `${this.config.api.baseURI}/sharedservice/blob/upload`
     }
 
     get getFileList() {
@@ -173,7 +175,7 @@ export default class Index extends Vue {
         }
     }
     handlePreviewCore(file) {
-        const preivewEnabled = config.o365.enabled
+        const preivewEnabled = this.config.o365.enabled
 
         if (preivewEnabled) {
             this.handleO365Preview(file)
@@ -185,13 +187,13 @@ export default class Index extends Vue {
         let url = file.url
 
         if (file.extension && this.checkO365PreviewSupproted(file.extension)) {
-            url = `${config.o365.baseURI}${config.o365.blobURI}/${file.id}`
+            url = `${this.config.o365.baseURI}${this.config.o365.blobURI}/${file.id}`
         }
 
         window.open(url)
     }
     checkO365PreviewSupproted(extension) {
-        const supportFileTypes = config.o365.supportFileTypes
+        const supportFileTypes = this.config.o365.supportFileTypes
 
         return supportFileTypes.includes(extension)
     }
@@ -330,7 +332,7 @@ export default class Index extends Vue {
         const url = file.url
         let urlv = ''
         if (file.extension && this.checkO365PreviewSupproted(file.extension)) {
-            urlv = `${config.o365.baseURI}${config.o365.blobURI}/${file.id}`
+            urlv = `${this.config.o365.baseURI}${this.config.o365.blobURI}/${file.id}`
             isView = true
         }
 
@@ -384,7 +386,7 @@ export default class Index extends Vue {
             return
         }
         const removedDotExtension = extension.substring(1)
-        const assertBaseURI = `${config.sharedservice.assets.baseURI}/img/files`
+        const assertBaseURI = `${this.config.sharedservice.assets.baseURI}/img/files`
         const iconUrl = `${assertBaseURI}/${removedDotExtension}.png`
         const errorUrl = `${assertBaseURI}/default.png`
         // el.previousSibling.parentElement.remove()
