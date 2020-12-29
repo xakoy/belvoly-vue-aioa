@@ -593,8 +593,6 @@ export default class Index extends Vue {
 
 <style lang="less">
 .bvan-mui-upload {
-    // &__group {
-    // }
     &__items {
         padding: 16px;
     }
@@ -611,7 +609,6 @@ export default class Index extends Vue {
             > span {
                 width: 24px;
                 height: 24px;
-                background: #3492e9;
                 text-align: center;
                 margin-right: 8px;
                 color: #ffffff;
@@ -625,7 +622,6 @@ export default class Index extends Vue {
             }
             em {
                 display: block;
-                // width: 42px;
                 overflow: hidden;
                 text-align: right;
                 font-style: normal;
