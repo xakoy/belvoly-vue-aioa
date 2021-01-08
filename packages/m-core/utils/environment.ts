@@ -3,7 +3,7 @@ import BM from './bm'
 export function isInIOS(userAgent?: string) {
     userAgent = userAgent || navigator.userAgent.toLowerCase()
 
-    return userAgent.indexOf('iPhone') !== -1
+    return userAgent.indexOf('iphone') !== -1
 }
 
 export function isInWeChat(userAgent?: string) {
