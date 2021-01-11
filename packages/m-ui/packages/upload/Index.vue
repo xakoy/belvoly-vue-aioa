@@ -109,21 +109,23 @@ interface ExisitFile {
     }
 })
 export default class Index extends Vue {
-    config = {
-        sharedservice: {
-            assets: {
-                baseURI: `${globalConfig.apiHost}/sharedservice/assets`
+    get config() {
+        return {
+            sharedservice: {
+                assets: {
+                    baseURI: `${globalConfig.apiHost}/sharedservice/assets`
+                }
+            },
+            api: {
+                baseURI: globalConfig.apiHost
+            },
+            o365: {
+                enabled: false,
+                baseURI: '',
+                blobURI: '',
+                supportFileExtensions: [],
+                ...globalConfig.o365
             }
-        },
-        api: {
-            baseURI: globalConfig.apiHost
-        },
-        o365: {
-            enabled: false,
-            baseURI: '',
-            blobURI: '',
-            supportFileExtensions: [],
-            ...globalConfig.o365
         }
     }
 
@@ -593,8 +595,6 @@ export default class Index extends Vue {
 
 <style lang="less">
 .bvan-mui-upload {
-    // &__group {
-    // }
     &__items {
         padding: 16px;
     }
@@ -611,7 +611,6 @@ export default class Index extends Vue {
             > span {
                 width: 24px;
                 height: 24px;
-                background: #3492e9;
                 text-align: center;
                 margin-right: 8px;
                 color: #ffffff;
@@ -625,7 +624,6 @@ export default class Index extends Vue {
             }
             em {
                 display: block;
-                // width: 42px;
                 overflow: hidden;
                 text-align: right;
                 font-style: normal;
