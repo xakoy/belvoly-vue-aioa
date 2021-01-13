@@ -83,8 +83,44 @@ export default Vue.extend({
     },
     mounted: function() {
         tinymce.init({})
+        try {
+            const frameWindow = this.$refs.editor.editor.iframeElement.contentWindow
+            if (frameWindow) {
+                frameWindow.addEventListener('focusin', this.focusinHandler)
+                frameWindow.addEventListener('focusout', this.focusoutHandler)
+            }
+        } catch {
+            //
+        }
+    },
+    beforeDestroy: function() {
+        try {
+            const frameWindow = this.$refs.editor.editor.iframeElement.contentWindow
+            if (frameWindow) {
+                frameWindow.removeEventListener('focusin', this.focusinHandler)
+                frameWindow.removeEventListener('focusout', this.focusoutHandler)
+            }
+        } catch {
+            //
+        }
     },
     methods: {
+        focusoutHandler(e) {
+            const event = new CustomEvent('keyboardHide', {
+                detail: {
+                    target: e.target
+                }
+            })
+            window.dispatchEvent(event)
+        },
+        focusinHandler(e) {
+            const event = new CustomEvent('keyboardShow', {
+                detail: {
+                    target: e.target
+                }
+            })
+            window.dispatchEvent(event)
+        },
         getCleanText: function() {
             const $editor = this.$refs.editor
             let text = this.editorHtml
