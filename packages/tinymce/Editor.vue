@@ -30,7 +30,7 @@ export default Vue.extend({
             type: String
         },
         toolbar: {
-            type: Object,
+            type: String,
             default: null
         },
         validateEvent: {
