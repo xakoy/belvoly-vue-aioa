@@ -13,8 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@tinymce/tinymce-vue": "3.2.0",
-    "tinymce": "5.2.2"
+    "@tinymce/tinymce-vue": "3.2.8",
+    "tinymce": "5.6.2"
   },
   "devDependencies": {
     "rollup-plugin-commonjs": "^10.1.0",
