@@ -4,6 +4,7 @@
 
 <script>
 import tinymce from 'tinymce/tinymce' // 配置富文本
+import 'tinymce/icons/default'
 import 'tinymce/themes/silver/theme' // 引入富文本的主要脚本
 import Editor from '@tinymce/tinymce-vue' // 引用富文本组件
 // import skin_url from "../../../public/static/tinymce/skins/ui/oxide/skin.min.css" // 富文本样式
