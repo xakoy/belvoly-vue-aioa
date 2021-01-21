@@ -26,6 +26,7 @@
                                     </div>
 
                                     <el-tree
+                                        v-loading="unitOrgsLoading"
                                         ref="tree"
                                         :show-checkbox="isShowCheckBox"
                                         :expand-on-click-node="false"
@@ -65,6 +66,7 @@
                                         </el-input>
                                     </div>
                                     <el-tree
+                                        v-loading="globalOrgsLoading"
                                         ref="globaltree"
                                         :show-checkbox="isShowCheckBox"
                                         node-key="id"
@@ -345,6 +347,7 @@ export default class New extends Vue {
         }
     }
 
+    unitOrgsLoading = true
     // 树的初始加载
     async loadUnitOrgs(node, resolve) {
         const rootOrgCode = this.rootOrgCode
@@ -361,6 +364,7 @@ export default class New extends Vue {
             const orgCode = node.data.value
             await this.loadSubNode(orgCode, resolve, true)
         }
+        this.unitOrgsLoading = false
     }
 
     async loadSubNode(orgCode, resolve, isOnlyChild: boolean) {
@@ -395,6 +399,8 @@ export default class New extends Vue {
         this.refreshTreeNodeSelectedStatus()
     }
 
+    globalOrgsLoading = true
+
     async loadGlobalOrgs(node, resolve) {
         if (node.level === 0) {
             const { data } = await orgService.getOrgRoot()
@@ -405,6 +411,7 @@ export default class New extends Vue {
             const orgCode = node.data.value
             await this.loadSubNode(orgCode, resolve, true)
         }
+        this.globalOrgsLoading = false
     }
 
     tabClickHandler(tab) {
@@ -796,6 +803,10 @@ interface NameValue {
             .el-tabs__nav-wrap {
                 padding-left: 20px;
             }
+        }
+
+        .el-tree__empty-block {
+            display: none;
         }
     }
 
