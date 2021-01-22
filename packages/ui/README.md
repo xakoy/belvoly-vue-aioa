@@ -1,3 +1,5 @@
+## v0.1.34
+1. 修复`ChoosePeopleOrOrg`在接口请求慢的时候，会先显示暂无数据，再把选人的数据显示出来 [#20](https://github.com/xakoy/belvoly-vue-aioa/issues/20)
 ## v0.1.31
 1. `ChoosePeopleOrOrg` beforeClose 方法增加了action参数，是确定关闭，还是取消关闭
 
