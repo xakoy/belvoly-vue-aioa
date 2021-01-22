@@ -2,7 +2,7 @@
     <div v-if="visible" class="bvant-choose-people-or-org">
         <div class="bvant-choose-people-or-org__container">
             <bvan-nav-bar :title="title" :border="false" />
-            <bvan-search v-if="searchInputVisible" v-model="searchText" shape="round" :show-action="searchVisible" placeholder="搜索" @search="searchHandler" @cancel="cancelSearchHandler" />
+            <bvan-search v-if="searchInputVisible" v-model="searchText" shape="round" placeholder="搜索" @input="searchHandler" @search="searchHandler" @cancel="cancelSearchHandler" />
             <div class="bvant-choose-people-or-org--content">
                 <tree v-show="!searchVisible" ref="tree" :lazy="true" :props="{ label: 'name', isLeaf: 'leaf' }" :load="loadHandler" @currentCheckChange="treeCurrentCheckChangeHandler" />
                 <search :loading="searchLoading" :isSingleMode="this.isSingleMode" v-if="searchVisible" :data="searchData" @currentCheckChange="searchCurrentCheckChangeHandler"></search>
@@ -27,7 +27,7 @@
 </template>
 
 <script lang="ts">
-import { services } from '@belvoly-vue-aioa/m-core'
+import { services, _ } from '@belvoly-vue-aioa/m-core'
 const { orgService, userService } = services
 
 import { Vue, Component, Prop } from 'vue-property-decorator'
@@ -164,10 +164,25 @@ export default class Index extends Vue {
     }
 
     cancelSearchHandler() {
+        this.searchLoading = false
         this.searchData = null
     }
 
+    searchAbortDelegate = null
+    searchDebounce = _.debounce(this.search, 500)
     searchHandler(value) {
+        this.searchDebounce(value)
+    }
+
+    search(val) {
+        const value = val && val.trim()
+        if (this.searchAbortDelegate) {
+            this.searchAbortDelegate()
+        }
+        if (!value) {
+            this.cancelSearchHandler()
+            return
+        }
         if (!this.isOnlyChooseOrg) {
             this.searchUser(value, this.isShowGlobal ? null : this.rootOrgCode)
         } else {
@@ -185,7 +200,12 @@ export default class Index extends Vue {
 
     async searchUser(text: string, parentCode?: string) {
         this.searchLoading = true
-        const { data, success } = await userService.searchUsers(text, text, parentCode)
+        const { promise, abort } = await userService.searchUsers(text, text, parentCode)
+        this.searchAbortDelegate = abort
+        const { data, success, isCancel } = await promise
+        if (isCancel) {
+            return
+        }
         if (success) {
             const userData = this.convertUsersToTreeNodeData(data)
             this.searchData = userData
@@ -197,7 +217,12 @@ export default class Index extends Vue {
 
     async searchOrg(text: string, parentCode?: string) {
         this.searchLoading = true
-        const { data, success } = await userService.searchUsers(text, text, parentCode)
+        const { promise, abort } = await userService.searchUsers(text, text, parentCode)
+        this.searchAbortDelegate = abort
+        const { data, success, isCancel } = await promise
+        if (isCancel) {
+            return
+        }
         if (success) {
             const userData = this.convertUsersToTreeNodeData(data)
             this.searchData = userData

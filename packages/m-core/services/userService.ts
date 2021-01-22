@@ -1,4 +1,4 @@
-import { request } from '../utils/request'
+import { request, requestVariant } from '../utils/request'
 import config from '../config'
 
 export interface User {
@@ -76,7 +76,7 @@ function getPicture(uid) {
  * @param {string} parentOrgCode 父级orgCode，限定在此机构下查找
  */
 function searchUsers(userUid, userName, parentOrgCode?: string) {
-    return request<User[]>(`${config.apiHost}/bua/user/searchUsers`, {
+    return requestVariant<User[]>(`${config.apiHost}/bua/user/searchUsers`, {
         method: 'POST',
         data: {
             userUid: userUid,
