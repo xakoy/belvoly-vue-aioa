@@ -24,7 +24,7 @@ export interface Org {
  * @param {string} orgCode 父组织机构代号
  */
 function queryOrgTree(orgCode) {
-    return request(`${config.apiHost}/bua/org/descendants`, {
+    return request(`${config.apiHost}/public/bua/org/descendants`, {
         method: 'GET',
         data: {
             orgCode: orgCode
@@ -37,7 +37,7 @@ function queryOrgTree(orgCode) {
  * @method getOrgRoot
  */
 function getOrgRoot() {
-    return request<Org>(`${config.apiHost}/bua/org/root`)
+    return request<Org>(`${config.apiHost}/public/bua/org/root`)
 }
 
 /**
@@ -46,7 +46,7 @@ function getOrgRoot() {
  * @param {string} orgCode 机构代号
  */
 function queryOrgAncestor(orgCode) {
-    return request(`${config.apiHost}/bua/org/ancestor`, {
+    return request(`${config.apiHost}/public/bua/org/ancestor`, {
         method: 'GET',
         data: {
             orgCode: orgCode
@@ -60,7 +60,7 @@ function queryOrgAncestor(orgCode) {
  * @param {string} userUid 用户账号
  */
 function getUnitInfo(userUid) {
-    return request(`${config.apiHost}/bua/user/unit`, {
+    return request(`${config.apiHost}/public/bua/user/unit`, {
         method: 'GET',
         data: {
             userUid: userUid
@@ -84,7 +84,7 @@ function queryChildren(orgCode) {
             orgParentName: string
             hasChildOrg: boolean
         }[]
-    >(`${config.apiHost}/bua/org/queryChildren`, {
+    >(`${config.apiHost}/public/bua/org/queryChildren`, {
         method: 'GET',
         data: {
             orgCode: orgCode
@@ -98,7 +98,7 @@ function queryChildren(orgCode) {
  * @param {string} orgCode 机构标识
  */
 function getOrgInfo(orgCode) {
-    return request<Org>(`${config.apiHost}/bua/org/${orgCode}`)
+    return request<Org>(`${config.apiHost}/public/bua/org/${orgCode}`)
 }
 
 export default {

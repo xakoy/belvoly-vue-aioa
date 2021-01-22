@@ -23,7 +23,7 @@ export interface User {
  * @param {string} userUid 用户账号
  */
 function queryMySubordinates(userUid) {
-    return request(`${config.apiHost}/bua/org/MySubordinates`, {
+    return request(`${config.apiHost}/public/bua/org/MySubordinates`, {
         method: 'GET',
         data: {
             userUid: userUid
@@ -37,7 +37,7 @@ function queryMySubordinates(userUid) {
  * @param {string} uid
  */
 const getUserBaseInfo = function(uid) {
-    return request(`${config.apiHost}/bua/user/getUser`, {
+    return request(`${config.apiHost}/public/bua/user/getUser`, {
         method: 'GET',
         data: {
             userUid: uid
@@ -59,7 +59,7 @@ function getCurrentUserInfo() {
  * @param {string} uid
  */
 function getPicture(uid) {
-    return request(`${config.apiHost}/bua/user/getPicture`, {
+    return request(`${config.apiHost}/public/bua/user/getPicture`, {
         method: 'GET',
 
         data: {
@@ -76,7 +76,7 @@ function getPicture(uid) {
  * @param {string} parentOrgCode 父级orgCode，限定在此机构下查找
  */
 function searchUsers(userUid, userName, parentOrgCode?: string) {
-    return requestVariant<User[]>(`${config.apiHost}/bua/user/searchUsers`, {
+    return requestVariant<User[]>(`${config.apiHost}/public/bua/user/searchUsers`, {
         method: 'POST',
         data: {
             userUid: userUid,
@@ -93,7 +93,7 @@ function searchUsers(userUid, userName, parentOrgCode?: string) {
  * @param {*} callback
  */
 function queryByOrgCodeAllUsers(orgCode) {
-    return request<User[]>(`${config.apiHost}/bua/user/queryByOrgCodeAllUsers`, {
+    return request<User[]>(`${config.apiHost}/public/bua/user/queryByOrgCodeAllUsers`, {
         method: 'GET',
         data: {
             orgCode: orgCode,
@@ -116,7 +116,7 @@ function getUserUnits() {
  * @param {*} callback
  */
 const queryByOrgCode = function(orgCode) {
-    return request<User[]>(`${config.apiHost}/bua/user/queryByOrgCode`, {
+    return request<User[]>(`${config.apiHost}/public/bua/user/queryByOrgCode`, {
         method: 'GET',
         data: {
             orgCode: orgCode

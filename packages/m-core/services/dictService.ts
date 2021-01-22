@@ -7,7 +7,7 @@ import config from '../config'
  * @param {*} callback
  */
 function queryChild(code) {
-    request(`${config.apiHost}/bua/dic/queryChild`, {
+    request(`${config.apiHost}/public/bua/dic/queryChild`, {
         method: 'GET',
         data: {
             code: code
