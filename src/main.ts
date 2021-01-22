@@ -9,10 +9,10 @@ import '@belvoly-vue-aioa/bvant/lib/index.css'
 import { setGloablConfig } from '../packages/core'
 import { setGloablConfig as setMobileGloablConfig } from '../packages/m-core'
 
-setGloablConfig({ apiHost: 'http://192.168.101.135:2001/api' })
+setGloablConfig({ token: '97b2a5ac-ded2-4998-8297-fb482bb940ac', apiHost: 'http://192.168.101.135:2001/api' })
 setMobileGloablConfig({
     apiHost: 'http://192.168.101.135:2001/api',
-    token: '59d9264f-7589-40c5-99e1-89650d8fb07f',
+    token: '97b2a5ac-ded2-4998-8297-fb482bb940ac',
     o365: { enabled: true, baseURI: '', blobURI: '', supportFileExtensions: [] },
     wxwork: { enabled: true, debug: true, appId: 'wwc11ee87e20b78040', getJssdkTicketApiUrl: 'http://192.168.101.135:2001/sso/wework/jsapi/signature' }
 })
