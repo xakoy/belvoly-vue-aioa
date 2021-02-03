@@ -79,7 +79,9 @@ export default Vue.extend({
                 automatic_uploads: true,
                 file_picker_types: 'image'
             },
-            editorHtml: this.tinymceHtml
+            editorHtml: this.tinymceHtml,
+            lasterFocusoutEvent: null,
+            lasterFocusoutTime: null
         }
     },
     mounted: function() {
@@ -107,6 +109,8 @@ export default Vue.extend({
     },
     methods: {
         focusoutHandler(e) {
+            this.lasterFocusoutEvent = e
+            this.lasterFocusoutTime = new Date()
             const event = new CustomEvent('keyboardHide', {
                 detail: {
                     target: e.target
@@ -115,6 +119,13 @@ export default Vue.extend({
             window.dispatchEvent(event)
         },
         focusinHandler(e) {
+            if (this.lasterFocusoutEvent) {
+                if (new Date() - this.lasterFocusoutTime < 200 && this.lasterFocusoutEvent.target === e.target) {
+                    // 修复iOS 在中文输入法下输入 ‘uuuu’ 直接点击完成，会连续触发 focusout, focusin, 导致键盘被收回，但是判断为键盘弹起来了
+                    e.target.blur()
+                    return
+                }
+            }
             const event = new CustomEvent('keyboardShow', {
                 detail: {
                     target: e.target
