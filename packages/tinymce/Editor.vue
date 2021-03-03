@@ -2,6 +2,12 @@
     <Editor ref="editor" v-model="editorHtml" :init="editorInit"></Editor>
 </template>
 
+<style>
+body .tox-tinymce-aux {
+    z-index: 10000;
+}
+</style>
+
 <script>
 import tinymce from 'tinymce/tinymce' // 配置富文本
 import 'tinymce/icons/default'

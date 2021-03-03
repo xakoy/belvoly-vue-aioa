@@ -1,15 +1,35 @@
 <template>
-    <el-form :model="item" :rules="rules" ref="form">
-        <el-form-item label="文本：" prop="html">
-            <tinymce-editor ref="textEditor" v-model="item.html" :text.sync="text" :imageUploadUrl="tinymceImageUploadUrl" />
-        </el-form-item>
-        <el-form-item label="文本2：" prop="html">
-            <tinymce-editor ref="textEditor2" v-model="item.html2" :imageUploadUrl="tinymceImageUploadUrl" />
-        </el-form-item>
-        <el-button @click="saveHandler">
-            保存
+    <div>
+        <el-dialog v-if="dialogVisible" :visible="true" title="标题">
+            <el-form :model="item" :rules="rules" ref="form">
+                <el-form-item label="文本：" prop="html">
+                    <tinymce-editor ref="textEditor" v-model="item.html" :text.sync="text" :imageUploadUrl="tinymceImageUploadUrl" />
+                </el-form-item>
+                <el-form-item label="文本2：" prop="html">
+                    <tinymce-editor ref="textEditor2" v-model="item.html2" :imageUploadUrl="tinymceImageUploadUrl" />
+                </el-form-item>
+
+                <el-button @click="saveHandler">
+                    保存
+                </el-button>
+            </el-form>
+        </el-dialog>
+        <el-button @click="dialogShowClickHandler">
+            在dialog测试
         </el-button>
-    </el-form>
+        <el-form :model="item" :rules="rules" ref="form">
+            <el-form-item label="文本：" prop="html">
+                <tinymce-editor ref="textEditor" v-model="item.html" :text.sync="text" :imageUploadUrl="tinymceImageUploadUrl" />
+            </el-form-item>
+            <el-form-item label="文本2：" prop="html">
+                <tinymce-editor ref="textEditor2" v-model="item.html2" :imageUploadUrl="tinymceImageUploadUrl" />
+            </el-form-item>
+
+            <el-button @click="saveHandler">
+                保存
+            </el-button>
+        </el-form>
+    </div>
 </template>
 
 <script lang="ts">
@@ -59,6 +79,11 @@ export default class HelloWorld extends Vue {
         Message.success({
             message: `值为：${this.item.html}, 纯文本为：${this.text}`
         })
+    }
+
+    dialogVisible = false
+    dialogShowClickHandler() {
+        this.dialogVisible = true
     }
 }
 </script>
