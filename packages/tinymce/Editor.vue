@@ -9,6 +9,7 @@ body .tox-tinymce-aux {
 </style>
 
 <script>
+/* eslint-disable no-var */
 import tinymce from 'tinymce/tinymce' // 配置富文本
 import 'tinymce/icons/default'
 import 'tinymce/themes/silver/theme' // 引入富文本的主要脚本
@@ -31,8 +32,12 @@ import 'tinymce/skins/ui/oxide/skin.min.css'
 import Vue from 'vue'
 export default Vue.extend({
     props: {
-        text: {},
-        value: {},
+        text: {
+            type: String
+        },
+        value: {
+            type: String
+        },
         imageUploadUrl: {
             type: String
         },
@@ -85,7 +90,7 @@ export default Vue.extend({
                 automatic_uploads: true,
                 file_picker_types: 'image'
             },
-            editorHtml: this.tinymceHtml,
+            editorHtml: '',
             lasterFocusoutEvent: null,
             lasterFocusoutTime: null
         }
@@ -93,46 +98,46 @@ export default Vue.extend({
     mounted: function() {
         tinymce.init({})
         try {
-            const frameWindow = this.$refs.editor.editor.iframeElement.contentWindow
+            var frameWindow = this.$refs.editor.editor.iframeElement.contentWindow
             if (frameWindow) {
                 frameWindow.addEventListener('focusin', this.focusinHandler)
                 frameWindow.addEventListener('focusout', this.focusoutHandler)
             }
-        } catch {
+        } catch (e) {
             //
         }
     },
     beforeDestroy: function() {
         try {
-            const frameWindow = this.$refs.editor.editor.iframeElement.contentWindow
+            var frameWindow = this.$refs.editor.editor.iframeElement.contentWindow
             if (frameWindow) {
                 frameWindow.removeEventListener('focusin', this.focusinHandler)
                 frameWindow.removeEventListener('focusout', this.focusoutHandler)
             }
-        } catch {
+        } catch (e) {
             //
         }
     },
     methods: {
-        focusoutHandler(e) {
+        focusoutHandler: function(e) {
             this.lasterFocusoutEvent = e
             this.lasterFocusoutTime = new Date()
-            const event = new CustomEvent('keyboardHide', {
+            var event = new CustomEvent('keyboardHide', {
                 detail: {
                     target: e.target
                 }
             })
             window.dispatchEvent(event)
         },
-        focusinHandler(e) {
+        focusinHandler: function(e) {
             if (this.lasterFocusoutEvent) {
-                if (new Date() - this.lasterFocusoutTime < 200 && this.lasterFocusoutEvent.target === e.target) {
+                if (new Date().getTime() - this.lasterFocusoutTime.getTime() < 200 && this.lasterFocusoutEvent.target === e.target) {
                     // 修复iOS 在中文输入法下输入 ‘uuuu’ 直接点击完成，会连续触发 focusout, focusin, 导致键盘被收回，但是判断为键盘弹起来了
                     e.target.blur()
                     return
                 }
             }
-            const event = new CustomEvent('keyboardShow', {
+            var event = new CustomEvent('keyboardShow', {
                 detail: {
                     target: e.target
                 }
@@ -140,8 +145,8 @@ export default Vue.extend({
             window.dispatchEvent(event)
         },
         getCleanText: function() {
-            const $editor = this.$refs.editor
-            let text = this.editorHtml
+            var $editor = this.$refs.editor
+            var text = this.editorHtml
             if ($editor) {
                 text = $editor.editor.getContent({ format: 'text' })
             } else {
@@ -150,7 +155,7 @@ export default Vue.extend({
             return text
         },
         cleanHtml: function(data) {
-            let text = data
+            var text = data
             if (text) {
                 text = text.replace(/(\n)/g, '')
                 text = text.replace(/(\t)/g, '')
@@ -166,7 +171,7 @@ export default Vue.extend({
             this.editorHtml = val
         },
         handleEditorHtml: function(val) {
-            const text = this.getCleanText()
+            var text = this.getCleanText()
             this.$emit('update:text', text)
             this.$emit('input', val)
             this.$emit('change', val)
@@ -175,8 +180,8 @@ export default Vue.extend({
             }
         },
         dispatch: function(componentName, eventName, params) {
-            let parent = this.$parent || this.$root
-            let name = parent.$options.componentName
+            var parent = this.$parent || this.$root
+            var name = parent.$options.componentName
 
             while (parent && (!name || name !== componentName)) {
                 parent = parent.$parent
