@@ -1,5 +1,6 @@
 ## v 0.2.3
 1. 修复IE 11兼容问题
+2. 修复VsCode TS 提示问题
 ## v 0.2.2
 1. 修复在el-dialog中工具栏隐藏在dialog的下方
 2. 增加`TinymceEditorPreview`组件来确保样式和编辑一致
