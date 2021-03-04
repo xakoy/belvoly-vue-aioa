@@ -10,6 +10,10 @@ export declare class TinymceEditor extends Vue {
     validateEvent?: boolean
 
     getCleanText(): string
+
+    readonly?: boolean
+
+    height?: number
 }
 
 export declare class TinymceEditorPreview extends Vue {

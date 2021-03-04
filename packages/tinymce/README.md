@@ -1,3 +1,5 @@
+## v 0.2.4
+1. 增加readonly、height属性
 ## v 0.2.3
 1. 修复IE 11兼容问题
 2. 修复VsCode TS 提示问题

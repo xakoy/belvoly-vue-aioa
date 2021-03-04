@@ -48,6 +48,14 @@ export default Vue.extend({
         validateEvent: {
             type: Boolean,
             default: true
+        },
+        readonly: {
+            type: Boolean,
+            default: false
+        },
+        height: {
+            type: Number,
+            default: 300
         }
     },
     components: {
@@ -76,7 +84,7 @@ export default Vue.extend({
                 language_url: languageUrl,
                 language: 'zh_CN',
                 // skin_url: skin_url, //样式放入public在index.html里引用
-                height: 300,
+                height: this.height,
                 plugins: 'link lists image code table wordcount fullscreen preview indent2em lineheight',
                 menu: {},
                 toolbar:
@@ -88,7 +96,8 @@ export default Vue.extend({
                 font_formats:
                     "微软雅黑=微软雅黑,Microsoft YaHei;宋体='宋体';黑体='黑体';仿宋='仿宋';楷体='楷体';隶书='隶书';幼圆='幼圆';Andale Mono=andale mono,times;Arial=arial,helvetica,sans-serif;Arial Black=arial black,avant garde;Book Antiqua=book antiqua,palatino;Comic Sans MS=comic sans ms,sans-serif;Courier New=courier new,courier;Georgia=georgia,palatino;Helvetica=helvetica;Impact=impact,chicago;Symbol=symbol;Tahoma=tahoma,arial,helvetica,sans-serif;Terminal=terminal,monaco;Times New Roman=times new roman,times;Trebuchet MS=trebuchet ms,geneva;Verdana=verdana,geneva;Webdings=webdings;Wingdings=wingdings",
                 automatic_uploads: true,
-                file_picker_types: 'image'
+                file_picker_types: 'image',
+                readonly: this.readonly
             },
             editorHtml: '',
             lasterFocusoutEvent: null,
