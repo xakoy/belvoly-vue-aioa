@@ -1,5 +1,9 @@
 ## v 0.2.2
 1. 修复在el-dialog中工具栏隐藏在dialog的下方
+2. 增加`TinymceEditorPreview`组件来确保样式和编辑一致
+    ```html
+    <tinymce-editor-preview :content="html" />
+    ```
 ## v 0.2.1
 1. 修复iOS 在中文输入法下输入 ‘uuuu’ 直接点击完成，会连续触发 focusout, focusin, 导致键盘被收回，但是判断为键盘弹起来了
 ## v 0.2.0

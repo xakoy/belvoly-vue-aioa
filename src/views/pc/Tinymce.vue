@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-dialog v-if="dialogVisible" :visible="true" title="标题">
+        <el-dialog v-if="dialogVisible" :visible="true" title="标题" :append-to-body="true">
             <el-form :model="item" :rules="rules" ref="form">
                 <el-form-item label="文本：" prop="html">
                     <tinymce-editor ref="textEditor" v-model="item.html" :text.sync="text" :imageUploadUrl="tinymceImageUploadUrl" />
@@ -17,6 +17,15 @@
         <el-button @click="dialogShowClickHandler">
             在dialog测试
         </el-button>
+
+        <el-dialog v-if="previewDialogVisible" width="900px" :visible="true" title="预览" :append-to-body="true" @close="prewDialogCloseHandler">
+            <tinymce-editor-preview :content="item.html" />
+        </el-dialog>
+
+        <el-button @click="previewClickHandler">
+            预览内容
+        </el-button>
+
         <el-form :model="item" :rules="rules" ref="form">
             <el-form-item label="文本：" prop="html">
                 <tinymce-editor ref="textEditor" v-model="item.html" :text.sync="text" :imageUploadUrl="tinymceImageUploadUrl" />
@@ -34,14 +43,16 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-// import { TinymceEditor } from '../../../packages/tinymce'
-import TinymceEditor from '../../../packages/tinymce/Editor.vue'
+import { TinymceEditor, TinymceEditorPreview } from '../../../packages/tinymce'
+// import TinymceEditor from '../../../packages/tinymce/Editor.vue'
+// import TinymceEditorPreview from '../../../packages/tinymce/preivew/Index.vue'
 import { ElForm } from 'element-ui/types/form'
 import { Message } from 'element-ui'
 
 @Component({
     components: {
-        TinymceEditor
+        TinymceEditor,
+        TinymceEditorPreview
     }
 })
 export default class HelloWorld extends Vue {
@@ -84,6 +95,15 @@ export default class HelloWorld extends Vue {
     dialogVisible = false
     dialogShowClickHandler() {
         this.dialogVisible = true
+    }
+
+    previewDialogVisible = false
+    previewClickHandler() {
+        this.previewDialogVisible = true
+    }
+
+    prewDialogCloseHandler() {
+        this.previewDialogVisible = false
     }
 }
 </script>
