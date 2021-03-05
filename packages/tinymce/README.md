@@ -1,3 +1,5 @@
+## v 0.2.5
+1. 修复readonly没起作用
 ## v 0.2.4
 1. 增加readonly、height属性
 ## v 0.2.3

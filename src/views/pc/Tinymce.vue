@@ -28,7 +28,7 @@
 
         <el-form :model="item" :rules="rules" ref="form">
             <el-form-item label="文本：" prop="html">
-                <tinymce-editor ref="textEditor" v-model="item.html" :text.sync="text" :imageUploadUrl="tinymceImageUploadUrl" />
+                <tinymce-editor :height="600" readonly ref="textEditor" v-model="item.html" :text.sync="text" :imageUploadUrl="tinymceImageUploadUrl" />
             </el-form-item>
             <el-form-item label="文本2：" prop="html">
                 <tinymce-editor ref="textEditor2" v-model="item.html2" :imageUploadUrl="tinymceImageUploadUrl" />
@@ -43,9 +43,9 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import { TinymceEditor, TinymceEditorPreview } from '../../../packages/tinymce'
-// import TinymceEditor from '../../../packages/tinymce/Editor.vue'
-// import TinymceEditorPreview from '../../../packages/tinymce/preivew/Index.vue'
+// import { TinymceEditor, TinymceEditorPreview } from '../../../packages/tinymce'
+import TinymceEditor from '../../../packages/tinymce/Editor.vue'
+import TinymceEditorPreview from '../../../packages/tinymce/preivew/Index.vue'
 import { ElForm } from 'element-ui/types/form'
 import { Message } from 'element-ui'
 
