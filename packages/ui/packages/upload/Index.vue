@@ -361,7 +361,8 @@ export default class Index extends Vue {
         const downloadElement = document.createElement('span')
         downloadElement.className = 'bv-upload-list__item-download'
         downloadElement.title = '下载'
-        downloadElement.addEventListener('click', function() {
+        downloadElement.addEventListener('click', () => {
+            this.$emit('download', file)
             window.open(url)
         })
 

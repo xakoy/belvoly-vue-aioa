@@ -439,6 +439,7 @@ export default class Index extends Vue {
     }
 
     handleDownload(file) {
+        this.$emit('download', file)
         if (file.id) {
             if (this.isWxworkReady) {
                 wxwork.wx.previewFile({

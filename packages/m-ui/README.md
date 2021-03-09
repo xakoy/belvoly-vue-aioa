@@ -4,7 +4,8 @@ belvoly vue 移动APP专用组件库
 ### 组件
 1. `ChoosePeopleOrOrg` 选人组件
 2. `Upload` 上传组件
-
+### 0.1.36
+1.  `Upload` 组件增加 `download`事件
 ### 0.1.35
 1. `OPicker` 搜索行为由点击确定修改为输入立即搜索[#22](https://github.com/xakoy/belvoly-vue-aioa/issues/22)
 ### 0.1.27

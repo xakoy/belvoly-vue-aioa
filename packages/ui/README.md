@@ -1,3 +1,5 @@
+## v0.1.35
+1.  `Upload` 组件增加 `download`事件
 ## v0.1.34
 1. 修复`ChoosePeopleOrOrg`在接口请求慢的时候，会先显示暂无数据，再把选人的数据显示出来 [#20](https://github.com/xakoy/belvoly-vue-aioa/issues/20)
 ## v0.1.31
@@ -26,3 +28,69 @@
 [修复]
 1. 选人控件本单位搜索
 2. 选人控件子部门选项无效
+
+# API
+## Upload
+上传组件
+
+### Props
+
+| 参数 | 说明 | 类型 | 默认值 |
+|------|------|------|------|
+| label | 标题 | *string* | `附件` |
+| action | 上传的API地址 | *string* | `${config.api.baseURI}/sharedservice/blob/upload` |
+| multiple | [是否开启图片多选，部分安卓机型不支持](#/zh-CN/uploader) | *boolean* | `true` |
+| fileList | 第一次显示文件集合 | *file[]* | `[]` |
+| visible 支持`.sync`语法 | 是否显示 | *boolean* | `false` |
+| refTableName | 共享附件接口`refTableName`参数 | *string* | - |
+| typeCode | 共享附件接口`typeCode`参数 | *string* | - |
+| userUid | 当前用户的`userUid` | *string* | - |
+| tip | 提示文字 | *string* | - |
+| maxSize | 最多只能上传多少MB内容 | *number* | `50` |
+| limit | 最多可以上传多少个文件 | *number* | `9999` |
+| isOnlyImage | 是否只允许图片 | *boolean* | `false` |
+| readonly | 是否只读模式 | *boolean* | `false` |
+| simple | 是否简易模式 | *boolean* | `false` |
+| beforeUpload | 上传前验证，Promise 异常，则取消上传 | *Promise<void>* | - |
+
+
+| 参数 | 说明 | 类型 | 默认值 |
+|------|------|------|------|
+| label | 标题 | *string* | `附件` |
+| action | 上传的API地址 | *string* | `${config.api.baseURI}/sharedservice/blob/upload` |
+| multiple | [是否开启图片多选，部分安卓机型不支持](#/zh-CN/uploader) | *boolean* | `true` |
+| fileList | 第一次显示文件集合 | *file[]* | `[]` |
+| visible 支持`.sync`语法 | 是否显示 | *boolean* | `false` |
+| refTableName | 共享附件接口`refTableName`参数 | *string* | - |
+| typeCode | 共享附件接口`typeCode`参数 | *string* | - |
+| userUid | 当前用户的`userUid` | *string* | - |
+| tip | 提示文字 | *string* | - |
+| maxSize | 最多只能上传多少MB内容 | *number* | `50` |
+| limit | 最多可以上传多少个文件 | *number* | `9999` |
+| isOnlyImage | 是否只允许图片 | *boolean* | `false` |
+| readonly | 是否只读模式 | *boolean* | `false` |
+| simple | 是否简易模式 | *boolean* | `false` |
+| beforeUpload | 上传前验证，Promise 异常，则取消上传 | *Promise<void>* | - |
+
+### Events
+
+| 事件名 | 说明 | 回调参数 |
+|------|------|------|
+| success | 上传成功后触发 | *info*, *responseData* |
+| change | 上传完成后触发 | *files[]* |
+| error | 上传失败后触发| - |
+| uploading | 上传中后触发| - |
+| download | 点击下载后的事件 | file |
+
+### Methods
+
+| 方法名 | 说明 | 回调参数 |
+|------|------|------|
+| updateRelevance| 更新关联业务表记录ID | refTableID: *string* |
+
+### Slots
+
+| 名称 | 说明 | 参数
+|------|------|------|
+| buttons | 按钮区自定义内容 | item: { status: '文件状态', file: '文件内容'} |
+| simple | 简易模式的上传自定义内容 | - |
