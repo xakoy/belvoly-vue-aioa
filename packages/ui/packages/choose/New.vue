@@ -933,6 +933,8 @@ interface NameValue {
                 display: none;
                 font-size: large;
                 margin-top: -2px;
+                width: 100%;
+                height: 100%;
             }
             &:hover &_close {
                 display: inline-block;
