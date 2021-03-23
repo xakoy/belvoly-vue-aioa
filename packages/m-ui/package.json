@@ -1,6 +1,6 @@
 {
   "name": "@belvoly-vue-aioa/m-ui",
-  "version": "0.1.36",
+  "version": "0.1.37",
   "description": "智能办公移动ui组件",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -23,5 +23,5 @@
     "rollup-plugin-typescript2": "^0.27.0",
     "rollup-plugin-vue": "^5.1.6"
   },
-  "gitHead": "04b4117e630191537b1c509f4f18d10b61e05795"
+  "gitHead": "22ec2075c1dc926e9dfa582cf5f63d38b6d7b780"
 }
