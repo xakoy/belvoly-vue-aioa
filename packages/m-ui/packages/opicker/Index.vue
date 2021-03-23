@@ -157,16 +157,17 @@ export default class OpickerIndex extends Vue {
             url.searchParams.set('code', code)
         }
 
-        const result = await request.request<OPickerNode[]>(
-            url.href,
-            { method: 'GET' },
-            {
-                isSuccess: response => {
-                    return response.status === 200
-                },
-                getData: response => response.data
-            }
-        )
+        const reOption: any = { method: 'GET' }
+        if (this.currentObjective.chainAjax) {
+            this.currentObjective.chainAjax(reOption)
+        }
+
+        const result = await request.request<OPickerNode[]>(url.href, reOption, {
+            isSuccess: response => {
+                return response.status === 200
+            },
+            getData: response => response.data
+        })
         let data = result.data
         if (this.currentObjective.dataConvert) {
             data = this.currentObjective.dataConvert(data)

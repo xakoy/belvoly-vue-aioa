@@ -32,10 +32,7 @@ export const flowCategoryObjective: OPickerObjective<{
     },
     url: 'http://192.168.22.22:2001/api/public/formApi/formdata/getDicTreeData.do?_=1604653969726&id=F02A192F-11E7-4C58-983E-1C41660A4E93&formId=72268E7A-F78D-4E3C-80B0-9179DD67434B',
     chainAjax: function(ajax) {
-        if (!ajax.headers) {
-            ajax.headers = {}
-        }
-        ajax.dataType = 'json'
+        ajax.method = 'POST'
     },
     dataConvert: function(data) {
         return data.data
