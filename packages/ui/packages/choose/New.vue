@@ -94,9 +94,49 @@
                                     </el-tree>
                                 </div>
                             </el-tab-pane>
+                            <el-tab-pane v-for="(tab, index) in tabs" :name="'tab_' + tab.code" :label="tab.label" :key="index">
+                                <div class="bv-choose-people_treenav">
+                                    <div class="bv-choose-people_search">
+                                        <el-input size="small" v-model="tab.searchText" @keyup.enter.native="searchTabHandler(tab)" :placeholder="tab.placeholder">
+                                            <template v-slot:append>
+                                                <el-button title="查询" class="bv-choose-people_search_button" @click="searchTabHandler(tab)">
+                                                    <i class="fc fc-search"></i>
+                                                </el-button>
+                                            </template>
+                                        </el-input>
+                                    </div>
+                                    <el-tree
+                                        v-loading="tab.loading"
+                                        :ref="'tab_' + tab.code"
+                                        :show-checkbox="false"
+                                        node-key="id"
+                                        :expand-on-click-node="false"
+                                        :props="{
+                                            label: 'name',
+                                            children: 'zones',
+                                            isLeaf: 'leaf'
+                                        }"
+                                        lazy
+                                        :default-expanded-keys="defaultExpandedKeys"
+                                        :check-strictly="true"
+                                        :load="loadTab(tab)"
+                                        @node-click="handleTabTreeNodeClick(tab, ...$event)"
+                                        @check-change="handleTabTreeNodeCheckChange(tab)"
+                                    >
+                                        <template v-slot="{ node }">
+                                            <span style="font-size: 14px;">
+                                                <span style="padding-right: 3px;">
+                                                    <i class="fc fc-company" />
+                                                </span>
+                                                <span>{{ node.label }}</span>
+                                            </span>
+                                        </template>
+                                    </el-tree>
+                                </div>
+                            </el-tab-pane>
                         </el-tabs>
                     </div>
-                    <div class="bv-choose-people_canselect" v-loading="getUserLoading">
+                    <div key="notcustomtab" v-show="!isCustomTab" class="bv-choose-people_canselect" v-loading="getUserLoading">
                         <div class="bv-choose-people_canselect_title">
                             <span class="bv-choose-people_canselect_title_left bv-choose-people_canselect_title_primary">{{ currentSelectOrg ? currentSelectOrg.orgName : '' }}</span>
                             <span class="bv-choose-people_canselect_title_right">
@@ -109,11 +149,37 @@
                                 <li class="bv-choose-people_select_item" v-for="(item, index) in canSelecteUsers" :key="index" @click="handleSelectUser(item, $event)">
                                     <span :class="{ 'bv-choose-people_select_item_avatar': !item.checked, 'bv-choose-people_select_item_checked': item.checked }">
                                         <span v-show="item.checked">.</span>
-                                        <img v-show="!item.checked" :src="getUserIcon(item)" />
+                                        <img v-show="!item.checked" :src="getUserIcon(item)" @error="avatarLoadError(this)" />
                                     </span>
                                     <span class="bv-choose-people_select_item_name">
                                         <b>{{ item.name }}</b>
                                         <i>{{ item.data.orgName }}</i>
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div key="customtab" v-show="isCustomTab" class="bv-choose-people_canselect" v-loading="getTabDataItemLoading">
+                        <div class="bv-choose-people_canselect_title">
+                            <span class="bv-choose-people_canselect_title_left bv-choose-people_canselect_title_primary">{{
+                                currentSelectTabDataItemCategory ? currentSelectTabDataItemCategory.name : ''
+                            }}</span>
+                            <span class="bv-choose-people_canselect_title_right">
+                                <el-checkbox @change="checkAllChangeHandler" v-model="checkAllTabDataItem" v-if="currentSelectTabDataItemCategory" :disabled="checkAllTabDataItemDisabled"
+                                    >全选</el-checkbox
+                                >
+                            </span>
+                        </div>
+                        <div>
+                            <ul class="bv-choose-people_canselect_list">
+                                <li class="bv-choose-people_select_item" v-for="(item, index) in canSelecteTabDataItems" :key="index" @click="handleSelectUser(item, $event)">
+                                    <span :class="{ 'bv-choose-people_select_item_avatar': !item.checked, 'bv-choose-people_select_item_checked': item.checked }">
+                                        <span v-show="item.checked">.</span>
+                                        <img v-show="!item.checked" :src="getTabDataItemAvatar(item)" @error="avatarLoadError(this)" />
+                                    </span>
+                                    <span class="bv-choose-people_select_item_name">
+                                        <b>{{ item.name }}</b>
+                                        <i>{{ item.data.subName }}</i>
                                     </span>
                                 </li>
                             </ul>
@@ -139,7 +205,7 @@
                                                     x
                                                 </span>
                                                 <span class="bv-choose-people_select_item_avatar_name">
-                                                    <img :src="getUserIcon(item)" />
+                                                    <img :src="getSelectUserIcon(item)" @error="avatarLoadError(this)" />
                                                 </span>
                                             </span>
                                             <span
@@ -203,7 +269,7 @@
                                                     x
                                                 </span>
                                                 <span class="bv-choose-people_select_item_avatar_name">
-                                                    <img :src="getUserIcon(item)" />
+                                                    <img :src="getSelectUserIcon(item)" @error="avatarLoadError(this)" />
                                                 </span>
                                             </span>
                                             <span
@@ -235,9 +301,22 @@
 
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
-import { services, globalConfig } from '@belvoly-vue-aioa/core'
+import { services, globalConfig, utils } from '@belvoly-vue-aioa/core'
 import { ElTree } from 'element-ui/types/tree'
 import { User } from '@belvoly-vue-aioa/core/services/userService'
+import { ChooseItemNode, ChooseNode, Objective, ObjectiveDataType } from './types'
+
+const { request } = utils
+
+interface Tab {
+    code: string
+    label: string
+    searchText: string
+    placeholder: string
+    loading: boolean
+    objective: Objective
+}
+
 const { orgService, userService } = services
 const config = {
     api: {
@@ -247,6 +326,9 @@ const config = {
 
 @Component
 export default class New extends Vue {
+    defaultAvatar =
+        'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBARXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAPKADAAQAAAABAAAAPAAAAAD/4gfYSUNDX1BST0ZJTEUAAQEAAAfIYXBwbAIgAABtbnRyUkdCIFhZWiAH2QACABkACwAaAAthY3NwQVBQTAAAAABhcHBsAAAAAAAAAAAAAAAAAAAAAAAA9tYAAQAAAADTLWFwcGwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAtkZXNjAAABCAAAAG9kc2NtAAABeAAABYpjcHJ0AAAHBAAAADh3dHB0AAAHPAAAABRyWFlaAAAHUAAAABRnWFlaAAAHZAAAABRiWFlaAAAHeAAAABRyVFJDAAAHjAAAAA5jaGFkAAAHnAAAACxiVFJDAAAHjAAAAA5nVFJDAAAHjAAAAA5kZXNjAAAAAAAAABRHZW5lcmljIFJHQiBQcm9maWxlAAAAAAAAAAAAAAAUR2VuZXJpYyBSR0IgUHJvZmlsZQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbWx1YwAAAAAAAAAfAAAADHNrU0sAAAAoAAABhGRhREsAAAAkAAABrGNhRVMAAAAkAAAB0HZpVk4AAAAkAAAB9HB0QlIAAAAmAAACGHVrVUEAAAAqAAACPmZyRlUAAAAoAAACaGh1SFUAAAAoAAACkHpoVFcAAAASAAACuGtvS1IAAAAWAAACym5iTk8AAAAmAAAC4GNzQ1oAAAAiAAADBmhlSUwAAAAeAAADKHJvUk8AAAAkAAADRmRlREUAAAAsAAADaml0SVQAAAAoAAADlnN2U0UAAAAmAAAC4HpoQ04AAAASAAADvmphSlAAAAAaAAAD0GVsR1IAAAAiAAAD6nB0UE8AAAAmAAAEDG5sTkwAAAAoAAAEMmVzRVMAAAAmAAAEDHRoVEgAAAAkAAAEWnRyVFIAAAAiAAAEfmZpRkkAAAAoAAAEoGhySFIAAAAoAAAEyHBsUEwAAAAsAAAE8HJ1UlUAAAAiAAAFHGVuVVMAAAAmAAAFPmFyRUcAAAAmAAAFZABWAWEAZQBvAGIAZQBjAG4A/QAgAFIARwBCACAAcAByAG8AZgBpAGwARwBlAG4AZQByAGUAbAAgAFIARwBCAC0AcAByAG8AZgBpAGwAUABlAHIAZgBpAGwAIABSAEcAQgAgAGcAZQBuAOgAcgBpAGMAQx6lAHUAIABoAOwAbgBoACAAUgBHAEIAIABDAGgAdQBuAGcAUABlAHIAZgBpAGwAIABSAEcAQgAgAEcAZQBuAOkAcgBpAGMAbwQXBDAEMwQwBDsETAQ9BDgEOQAgBD8EQAQ+BEQEMAQ5BDsAIABSAEcAQgBQAHIAbwBmAGkAbAAgAGcA6QBuAOkAcgBpAHEAdQBlACAAUgBWAEIAwQBsAHQAYQBsAOEAbgBvAHMAIABSAEcAQgAgAHAAcgBvAGYAaQBskBp1KABSAEcAQoJyX2ljz4/wx3y8GAAgAFIARwBCACDVBLhc0wzHfABHAGUAbgBlAHIAaQBzAGsAIABSAEcAQgAtAHAAcgBvAGYAaQBsAE8AYgBlAGMAbgD9ACAAUgBHAEIAIABwAHIAbwBmAGkAbAXkBegF1QXkBdkF3AAgAFIARwBCACAF2wXcBdwF2QBQAHIAbwBmAGkAbAAgAFIARwBCACAAZwBlAG4AZQByAGkAYwBBAGwAbABnAGUAbQBlAGkAbgBlAHMAIABSAEcAQgAtAFAAcgBvAGYAaQBsAFAAcgBvAGYAaQBsAG8AIABSAEcAQgAgAGcAZQBuAGUAcgBpAGMAb2ZukBoAUgBHAEJjz4/wZYdO9k4AgiwAIABSAEcAQgAgMNcw7TDVMKEwpDDrA5MDtQO9A7kDugPMACADwAPBA78DxgOvA7sAIABSAEcAQgBQAGUAcgBmAGkAbAAgAFIARwBCACAAZwBlAG4A6QByAGkAYwBvAEEAbABnAGUAbQBlAGUAbgAgAFIARwBCAC0AcAByAG8AZgBpAGUAbA5CDhsOIw5EDh8OJQ5MACAAUgBHAEIAIA4XDjEOSA4nDkQOGwBHAGUAbgBlAGwAIABSAEcAQgAgAFAAcgBvAGYAaQBsAGkAWQBsAGUAaQBuAGUAbgAgAFIARwBCAC0AcAByAG8AZgBpAGkAbABpAEcAZQBuAGUAcgBpAQ0AawBpACAAUgBHAEIAIABwAHIAbwBmAGkAbABVAG4AaQB3AGUAcgBzAGEAbABuAHkAIABwAHIAbwBmAGkAbAAgAFIARwBCBB4EMQRJBDgEOQAgBD8EQAQ+BEQEOAQ7BEwAIABSAEcAQgBHAGUAbgBlAHIAaQBjACAAUgBHAEIAIABQAHIAbwBmAGkAbABlBkUGRAZBACAGKgY5BjEGSgZBACAAUgBHAEIAIAYnBkQGOQYnBkUAAHRleHQAAAAAQ29weXJpZ2h0IDIwMDcgQXBwbGUgSW5jLiwgYWxsIHJpZ2h0cyByZXNlcnZlZC4AWFlaIAAAAAAAAPNSAAEAAAABFs9YWVogAAAAAAAAdE0AAD3uAAAD0FhZWiAAAAAAAABadQAArHMAABc0WFlaIAAAAAAAACgaAAAVnwAAuDZjdXJ2AAAAAAAAAAEBzQAAc2YzMgAAAAAAAQxCAAAF3v//8yYAAAeSAAD9kf//+6L///2jAAAD3AAAwGz/wAARCAA8ADwDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9sAQwACAgICAgIDAgIDBQMDAwUGBQUFBQYIBgYGBgYICggICAgICAoKCgoKCgoKDAwMDAwMDg4ODg4PDw8PDw8PDw8P/9sAQwECAgIEBAQHBAQHEAsJCxAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ/90ABAAE/9oADAMBAAIRAxEAPwD90KpajqNho+n3WrarcR2dlZRPNPNKwWOKKMFndmPACgEk1dr8vf8Agqj8VdQ8HfBfR/h7o9w9vP41vWS5KHBaxs1DyJkdnkaMEdxVwjzOwHx/+1F/wUr8e+MdZvfCXwEvH8N+Gbd2i/tNFAv74DILoWB8iM/wgDeRySOg/MTWfEviPxHfNqniHVbvVL1zuae6nknlJPcu7E/rWJRXpxgkrIi59I/CH9rX4+/BS/gm8IeK7qfTomUvpt+7XdlIgPK+XITsz6xlT71/RF+yt+1P4P8A2n/Bkmr6VGNL8Q6XsTVNLZ9zQM33ZI24Lwvg7W6ggqeRX8plfT/7G/xV1P4RftFeDtds52jstTvYdK1CMHCy2t86xMGHQ7WKuM9CoNZ1qSkr9Rpn9XNFKRgkdcUleaUf/9D90K/GX/gr54fv5tH+GnipEJsrSfUrKRuwluVhlQH6iFq/ZqvC/wBo/wCB2i/tDfCXV/htq0gtp7gLcWF0Rn7New5MMhHdckq47qT3xWlKVpJgfyN0V3XxI+G3jT4S+ML/AMC+PtNk0vV9Pcq6OPkkXPyyRP0eNxyrDgj34rha9QzCvRvg9oV74n+Lfgrw9pyl7jUNa0+JAoyRm4Qk49gCfwrzmv2p/wCCa37I2t2GrwftE/EiwexSGNh4ftJ12ySGRcNesp5VQpIizgkkv0C5ipNRV2NH7X7Qvyg528Z+lFFFeUWf/9H90K+BP2pP2/fhx+z7dXPg7w/APFvjWIYe0ik2WtmxGR9qmGSG7+WgLepWsv8A4KCftXXPwE8DQeCfBFyIvG/iuNxFKpG+wswdr3GOzucpF6Hc38Ir+bqaaa5mkubmRpppWLu7kszMxyWYnkknkk11UKF9WJs+g/j1+1B8WP2jb+C5+Il1am1snZrW1tbaOGO3Dfwq+DKR/vOc96+eKKK7UktEQWrK9utNvINQsZDDc2zrLE4AJR0OVYZyMg81+mnwJ/4Kf/FzwNdWukfF6IeN9CBVXuMLDqcKdNyyDCS4/uuAT2YV+YNFKUE9x3P7E/hZ8V/Afxn8HWnjr4d6mmp6Vd8Ej5ZYZB96KaM8pIvdT9QSMGvRa/lB/ZV/aT8Sfs1fEu18TWLyXPh6+ZYdY08N8lxbZxvUHgSxZ3I3/ATwTX9U/h/X9H8VaFp/ibw/dJe6ZqsEdzbTxnKyRSqGVh+B6djwea8+tS5WUmf/0vgD9q/4rT/Gf9oDxh43Mhksmu2s7AZOFs7P9zDgHpuC7z7tXztW94p06HR/E2raTbs7xWV3PCjOQXKxuVBYgAEkDngVg166VtDMKKKKYBRRRQAV+u37Hv7ffh34M/Be1+G/j2OS7m0e7uFsmUZ22cm2RUJP92RpAPbFfkTXoHhTwpp2u6dJd3ckqOkpQBCoGAqnup55qZRT0YXP/9k='
+
     @Prop({ default: '选择人员' }) title: string
     @Prop({ default: 'multiple' }) selectionMode: string
     @Prop({ default: 'orgAndUser' }) mode: string
@@ -256,6 +338,12 @@ export default class New extends Vue {
     @Prop({}) defaultUsers: NameValue[]
     @Prop({}) defaultOrgs: NameValue[]
     @Prop() beforeClose: Function
+    @Prop({
+        default: function() {
+            return []
+        }
+    })
+    objects: Objective[]
 
     defaultExpandedKeys = []
 
@@ -276,7 +364,7 @@ export default class New extends Vue {
     /**
      * 选中的用户
      */
-    selectedUsers = []
+    selectedUsers: TreeNode[] = []
     /**
      * 选中的机构
      */
@@ -329,6 +417,10 @@ export default class New extends Vue {
 
     get checkAllDisabled() {
         return this.canSelecteUsers.length <= 0 || this.isSingleMode
+    }
+
+    created() {
+        this.loadTabs()
     }
 
     mounted() {
@@ -414,8 +506,10 @@ export default class New extends Vue {
         this.globalOrgsLoading = false
     }
 
+    isCustomTab = false
     tabClickHandler(tab) {
         this.tab.activeTabName = tab.name
+        this.isCustomTab = this.tab.activeTabName.startsWith('tab_')
         this.refreshTreeNodeSelectedStatus()
     }
 
@@ -548,6 +642,7 @@ export default class New extends Vue {
             this.selectedUsers.splice(index, 1)
         }
         this.refreshCanSelectUserStatus()
+        this.refreshCanSelectDataItemsStatus()
     }
 
     handleClick() {
@@ -558,6 +653,7 @@ export default class New extends Vue {
         this.checkAll = false
         this.selectedUsers = []
         this.refreshCanSelectUserStatus()
+        this.refreshCanSelectDataItemsStatus()
     }
 
     // 清空选中的机构
@@ -650,6 +746,13 @@ export default class New extends Vue {
     getUserIcon(user) {
         return `${config.api.baseURI}/bua/avatar/getHeadPhoto?userUid=` + user.value
     }
+
+    getSelectUserIcon(user: TreeNode) {
+        if (user.data && user.data.avatar !== null && user.data.avatar !== undefined) {
+            return user.data.avatar || this.defaultAvatar
+        }
+        return `${config.api.baseURI}/bua/avatar/getHeadPhoto?userUid=` + user.value
+    }
     // 获取机构头像
     getOrgIcon(name) {
         let nameIcon = ''
@@ -701,11 +804,207 @@ export default class New extends Vue {
             data: node.data
         }
     }
+
+    //#region 自定义tab栏
+    currentSelectTabDataItemCategory: TreeNode = null
+    getTabDataItemLoading = false
+    checkAllTabDataItem = false
+    // checkAllTabDataItemDisabled = false
+    get checkAllTabDataItemDisabled() {
+        return this.canSelecteTabDataItems.length <= 0 || this.isSingleMode
+    }
+    canSelecteTabDataItems: TreeNode[] = []
+    tabs: Tab[] = []
+
+    loadTabs() {
+        this.tabs = this.objects.map(obj => {
+            return {
+                code: obj.code,
+                label: obj.title,
+                searchText: '',
+                placeholder: '',
+                loading: false,
+                objective: obj
+            }
+        })
+    }
+
+    searchTabHandler(tab: Tab) {
+        //
+    }
+
+    loadTab(tab: Tab) {
+        return async (node, resolve) => {
+            if (node.level === 0) {
+                const { data } = await this.queryRemoteData(tab, '')
+                if (data) {
+                    console.log(data)
+                    resolve(data)
+                }
+            } else {
+                const { data } = await this.queryRemoteData(tab, node.data.value)
+                if (data) {
+                    console.log(data)
+
+                    resolve(data)
+                }
+            }
+            tab.loading = false
+        }
+    }
+
+    async handleTabTreeNodeClick(tab, nodeData: TreeNode) {
+        console.log(nodeData)
+        this.checkAllTabDataItem = false
+
+        this.currentSelectTabDataItemCategory = nodeData
+        this.getTabDataItemLoading = true
+        const { data } = await this.queryTabDataItems(this.currentSelectTabDataItemCategory.value, tab)
+        this.getTabDataItemLoading = false
+
+        if (!data) {
+            this.canSelecteTabDataItems = []
+        } else {
+            this.canSelecteTabDataItems = data.map(item => {
+                const isSelected = this.selectedUsers.findIndex(u => u.id === item.value) > -1
+                const userNode = <TreeNode>{
+                    id: item.id,
+                    name: item.name,
+                    value: item.value,
+                    type: 'user',
+                    checked: isSelected,
+                    data: {
+                        avatar: item.rawData.avatar,
+                        subName: item.rawData.subName,
+                        ...(item.data || {})
+                    }
+                }
+                return userNode
+            })
+        }
+    }
+
+    handleTabTreeNodeCheckChange(tab) {
+        //
+    }
+
+    refreshCanSelectDataItemsStatus() {
+        this.canSelecteTabDataItems.forEach(item => {
+            const isSelected = this.selectedUsers.findIndex(u => u.id === item.id) > -1
+            item.checked = isSelected
+        })
+    }
+
+    async queryTabDataItems(category: string, tab: Tab) {
+        const sdata = await this.queryTabData(tab, category, 'item')
+
+        const data: TreeNode<ChooseItemNode>[] = this.convertTabDataItemsToTreeNodeData(sdata, tab) as any
+
+        return {
+            data
+        }
+    }
+
+    async queryTabData(tab: Tab, code: string, dataType: ObjectiveDataType) {
+        const objective = tab.objective
+        const uri = objective.getUrl ? objective.getUrl(objective.config, objective.url, code, dataType) : objective.url
+
+        const result = await request.request<any>(
+            uri,
+            { method: 'GET' },
+            {
+                isSuccess: response => {
+                    return response.status === 200
+                },
+                getData: response => response.data
+            }
+        )
+        const rawData = result.data
+
+        let rdata: ChooseNode[] = []
+
+        if (objective.dataConvert) {
+            rdata = objective.dataConvert(rawData, dataType)
+        } else {
+            rdata = rawData.data
+        }
+
+        let data: ChooseNode[] = []
+        if (objective.dataFilter) {
+            data = rdata.map(item => objective.dataFilter(item, objective.config, objective, { selectionMode: this.selectionMode }, dataType))
+        }
+        return data
+    }
+
+    async queryRemoteData(tab: Tab, code: string) {
+        let data = await this.queryTabData(tab, code, 'category')
+
+        data = this.convertTabDataCategoriesToTreeNodeData(data, tab)
+
+        return {
+            data
+        }
+    }
+
+    getTabDataItemAvatar(item: ChooseItemNode) {
+        return item.data.avatar || this.defaultAvatar
+    }
+
+    convertTabDataCategoriesToTreeNodeData(data: ChooseNode[], tab: Tab) {
+        if (!data) return []
+
+        return data.map(item => {
+            const node = this.convertTabDataCategoryToTreeNode(item, !item.isParent, tab)
+            return node
+        })
+    }
+
+    convertTabDataCategoryToTreeNode(item: ChooseNode, leaf = false, tab: Tab) {
+        return <TreeNode>{
+            id: item.id,
+            name: item.text || item.name,
+            value: item.value,
+            type: 'category_' + tab.code,
+            leaf: leaf,
+            checked: false,
+            data: item.data,
+            rawData: item,
+            children: item.isParent && item.nodes ? item.nodes.map(n => this.convertTabDataCategoryToTreeNode(n, !n.isParent, tab)) : null
+        }
+    }
+
+    convertTabDataItemsToTreeNodeData(data: ChooseNode[], tab: Tab): TreeNode[] {
+        if (!data) return []
+
+        return data.map(item => {
+            const node = this.convertTabDataItemToTreeNode(item, !item.isParent, tab)
+            return node
+        })
+    }
+
+    convertTabDataItemToTreeNode(item: ChooseNode, leaf = false, tab: Tab) {
+        return <TreeNode>{
+            id: item.id,
+            name: item.text || item.name,
+            value: item.value,
+            type: 'item_' + tab.code,
+            leaf: leaf,
+            checked: false,
+            data: item.data,
+            rawData: item,
+            children: item.isParent && item.nodes ? item.nodes.map(n => this.convertTabDataItemToTreeNode(n, !n.isParent, tab)) : null
+        }
+    }
+    //#endregion
+
+    avatarLoadError(el: HTMLImageElement) {
+        el.src = this.defaultAvatar
+    }
 }
 
 type TreeNodeType = 'org' | 'user'
 
-interface TreeNode {
+interface TreeNode<T = {}> {
     id: string
     name: string
     value: string
@@ -714,6 +1013,7 @@ interface TreeNode {
     checked: boolean
     data: any
     children: TreeNode[]
+    rawData: T
     [key: string]: any
 }
 

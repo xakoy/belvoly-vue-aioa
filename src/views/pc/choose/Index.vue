@@ -35,13 +35,35 @@
                     @selectedChange="selectedChangeHandler"
                 />
             </el-form-item>
+            <el-form-item label="自定义Tab">
+                <el-input v-model="item.names" readonly @click.native="inputClickHandler" />
+                <choose-people-or-org
+                    v-if="opickerToToVisible"
+                    rootOrgCode="shhr"
+                    selectionMode="multiple"
+                    mode="orgAndUser"
+                    :objects="objectives"
+                    :isShowGlobal="true"
+                    :defaultUsers="item.users"
+                    :defaultOrgs="item.orgs"
+                    :codes.sync="item.codes"
+                    :names.sync="item.names"
+                    :visible.sync="opickerToToVisible"
+                    @selected="selectedHandler"
+                    :beforeClose="beforeCloseHandler"
+                    @selectedOrgChange="selectedOrgChangeHandler"
+                    @selectedUserChange="selectedUserChangeHandler"
+                    @selectedChange="selectedChangeHandler"
+                />
+            </el-form-item>
         </el-form>
     </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import { ChoosePeopleOrOrg } from '../../../packages/ui/packages/choose'
+import { ChoosePeopleOrOrg } from '../../../../packages/ui/packages/choose'
+import { orgObjective } from './objectives/org'
 @Component({
     components: {
         ChoosePeopleOrOrg
@@ -83,5 +105,7 @@ export default class ChoosePeopeleOrOrg extends Vue {
     selectedChangeHandler(data) {
         console.log(data, 'selectedChange')
     }
+
+    objectives = [orgObjective]
 }
 </script>

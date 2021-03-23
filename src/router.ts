@@ -39,7 +39,7 @@ const routes: RouteConfig[] = [
             {
                 path: 'choose',
                 name: routeNames.pc.choose,
-                component: () => import('./views/pc/Choose.vue')
+                component: () => import('./views/pc/choose/Index.vue')
             },
             {
                 path: 'subscription-event',
