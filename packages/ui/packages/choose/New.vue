@@ -96,8 +96,8 @@
                             </el-tab-pane>
                             <el-tab-pane v-for="(tab, index) in tabs" :name="'tab_' + tab.code" :label="tab.label" :key="index">
                                 <div class="bv-choose-people_treenav">
-                                    <div class="bv-choose-people_search">
-                                        <el-input size="small" v-model="tab.searchText" @keyup.enter.native="searchTabHandler(tab)" :placeholder="tab.placeholder">
+                                    <div class="bv-choose-people_search" v-show="tab.isShowSearch">
+                                        <el-input size="small" v-model.trim="tab.searchText" @keyup.enter.native="searchTabHandler(tab)" :placeholder="tab.placeholder">
                                             <template v-slot:append>
                                                 <el-button title="查询" class="bv-choose-people_search_button" @click="searchTabHandler(tab)">
                                                     <i class="fc fc-search"></i>
@@ -311,6 +311,7 @@ const { request } = utils
 interface Tab {
     code: string
     label: string
+    isShowSearch: boolean
     searchText: string
     placeholder: string
     loading: boolean
@@ -821,16 +822,28 @@ export default class New extends Vue {
             return {
                 code: obj.code,
                 label: obj.title,
+                isShowSearch: !!obj.getSearchUrl,
                 searchText: '',
-                placeholder: '',
+                placeholder: obj.searchPlaceholder,
                 loading: false,
                 objective: obj
             }
         })
     }
 
-    searchTabHandler(tab: Tab) {
-        //
+    async searchTabHandler(tab: Tab) {
+        if (!tab.searchText) {
+            return
+        }
+        const url = tab.objective.getSearchUrl(tab.objective.config, tab.searchText)
+        if (!url) {
+            return
+        }
+        this.getTabDataItemLoading = true
+        const sdata = await this.queryTabData(tab, '', 'search', url)
+        this.getTabDataItemLoading = false
+        const data: TreeNode<ChooseItemNode>[] = this.convertTabDataItemsToTreeNodeData(sdata, tab) as any
+        this.changeTabDataItems(data)
     }
 
     loadTab(tab: Tab) {
@@ -838,14 +851,13 @@ export default class New extends Vue {
             if (node.level === 0) {
                 const { data } = await this.queryRemoteData(tab, '')
                 if (data) {
-                    console.log(data)
                     resolve(data)
                 }
+            } else if (node.data.rawData.hasChildNodesData) {
+                resolve(node.data.children)
             } else {
                 const { data } = await this.queryRemoteData(tab, node.data.value)
                 if (data) {
-                    console.log(data)
-
                     resolve(data)
                 }
             }
@@ -854,14 +866,16 @@ export default class New extends Vue {
     }
 
     async handleTabTreeNodeClick(tab, nodeData: TreeNode) {
-        console.log(nodeData)
         this.checkAllTabDataItem = false
 
         this.currentSelectTabDataItemCategory = nodeData
         this.getTabDataItemLoading = true
         const { data } = await this.queryTabDataItems(this.currentSelectTabDataItemCategory.value, tab)
         this.getTabDataItemLoading = false
+        this.changeTabDataItems(data)
+    }
 
+    changeTabDataItems(data: TreeNode<ChooseItemNode>[]) {
         if (!data) {
             this.canSelecteTabDataItems = []
         } else {
@@ -905,9 +919,9 @@ export default class New extends Vue {
         }
     }
 
-    async queryTabData(tab: Tab, code: string, dataType: ObjectiveDataType) {
+    async queryTabData(tab: Tab, code: string, dataType: ObjectiveDataType, url = '') {
         const objective = tab.objective
-        const uri = objective.getUrl ? objective.getUrl(objective.config, objective.url, code, dataType) : objective.url
+        const uri = url || (objective.getUrl ? objective.getUrl(objective.config, objective.url, code, dataType) : objective.url)
 
         const result = await request.request<any>(
             uri,
@@ -969,7 +983,7 @@ export default class New extends Vue {
             checked: false,
             data: item.data,
             rawData: item,
-            children: item.isParent && item.nodes ? item.nodes.map(n => this.convertTabDataCategoryToTreeNode(n, !n.isParent, tab)) : null
+            children: item.hasChildNodesData && item.nodes ? item.nodes.map(n => this.convertTabDataCategoryToTreeNode(n, !n.isParent, tab)) : null
         }
     }
 

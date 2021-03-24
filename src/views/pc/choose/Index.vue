@@ -41,7 +41,7 @@
                     v-if="opickerToToVisible"
                     rootOrgCode="shhr"
                     selectionMode="multiple"
-                    mode="orgAndUser"
+                    mode="user"
                     :objects="objectives"
                     :isShowGlobal="true"
                     :defaultUsers="item.users"
@@ -63,7 +63,7 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
 import { ChoosePeopleOrOrg } from '../../../../packages/ui/packages/choose'
-import { orgObjective } from './objectives/org'
+import { orgObjective } from './objectives/contact'
 @Component({
     components: {
         ChoosePeopleOrOrg

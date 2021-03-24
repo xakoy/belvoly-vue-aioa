@@ -29,7 +29,7 @@ export interface ChooseItemNode extends ChooseNode {
     subName?: string
 }
 
-export type ObjectiveDataType = 'category' | 'item'
+export type ObjectiveDataType = 'category' | 'item' | 'search'
 export interface Objective<C extends object = {}> {
     code: string
     title: string
@@ -52,7 +52,11 @@ export interface Objective<C extends object = {}> {
      */
     getStaticDataSource?: Function
 
-    getSearchUrl?: (config: C) => string
+    /**
+     * 搜索占位文本
+     */
+    searchPlaceholder?: string
+    getSearchUrl?: (config: C, searchText: string) => string
     /*
      * 获取服务Url事件
      * @event getUrl
