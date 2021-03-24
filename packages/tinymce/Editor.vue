@@ -84,7 +84,7 @@ export default Vue.extend({
                 language_url: languageUrl,
                 language: 'zh_CN',
                 // content_css: '../content.css',
-                content_style: 'html,body{height: 98%}',
+                content_style: 'html{height: 100%;} body{ height: 100%; padding:5px; margin:0; box-sizing: border-box;}',
                 // skin_url: skin_url, //样式放入public在index.html里引用
                 height: this.height,
                 plugins: 'link lists image code table wordcount fullscreen preview indent2em lineheight',
