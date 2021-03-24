@@ -28,6 +28,7 @@ import 'tinymce/plugins/preview'
 import './plugins/indent2em'
 import './plugins/lineheight'
 import 'tinymce/skins/ui/oxide/skin.min.css'
+import content_css from 'tinymce/skins/content/default/content.css'
 
 import Vue from 'vue'
 export default Vue.extend({
@@ -83,6 +84,8 @@ export default Vue.extend({
                 selector: 'textarea',
                 language_url: languageUrl,
                 language: 'zh_CN',
+                // content_css: '../content.css',
+                content_style: 'html,body{height: 98%}',
                 // skin_url: skin_url, //样式放入public在index.html里引用
                 height: this.height,
                 plugins: 'link lists image code table wordcount fullscreen preview indent2em lineheight',
