@@ -5,6 +5,9 @@ belvoly vue 移动APP专用组件库
 1. `ChoosePeopleOrOrg` 选人组件
 2. `Upload` 上传组件
 
+### 0.1.39
+1. `Upload` 修复查看按钮判断是在线预览，文件扩展名是大写会导致判断失败
+
 ### 0.1.37
 1. `OPicker` 增加`chainAjax`生命周期，解决设置请求前的信息
 ### 0.1.36

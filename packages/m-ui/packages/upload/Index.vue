@@ -500,10 +500,11 @@ export default class Index extends Vue {
             window.open(url)
         }
     }
-    checkO365PreviewSupproted(extension) {
+    checkO365PreviewSupproted(extension: string) {
+        const ext = extension.toLowerCase()
         const supportFileExtensions = this.config.o365.supportFileExtensions
 
-        return supportFileExtensions.includes(extension)
+        return supportFileExtensions.includes(ext)
     }
 
     async removeHandler(file) {
