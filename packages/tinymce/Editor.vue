@@ -28,7 +28,6 @@ import 'tinymce/plugins/preview'
 import './plugins/indent2em'
 import './plugins/lineheight'
 import 'tinymce/skins/ui/oxide/skin.min.css'
-import content_css from 'tinymce/skins/content/default/content.css'
 
 import Vue from 'vue'
 export default Vue.extend({
