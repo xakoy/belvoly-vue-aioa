@@ -9,7 +9,7 @@ import '@belvoly-vue-aioa/bvant/lib/index.css'
 import { setGloablConfig } from '../packages/core'
 import { setGloablConfig as setMobileGloablConfig } from '../packages/m-core'
 
-setGloablConfig({ token: '5e700364-7248-4eb0-8748-b355b673c4a2', apiHost: 'http://192.168.101.135:2001/api' })
+setGloablConfig({ token: '6326b8e2-4733-4d0b-8774-82af90abfacc', apiHost: 'http://192.168.101.135:2001/api' })
 setMobileGloablConfig({
     apiHost: 'http://192.168.101.135:2001/api',
     token: '97b2a5ac-ded2-4998-8297-fb482bb940ac',
