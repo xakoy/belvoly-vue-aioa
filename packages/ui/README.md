@@ -1,5 +1,6 @@
 ## 
-1. 修复[BUG#4282] `ChoosePeopleOrOrg`自定义tab页面默认展开第一个节点
+1. `ChoosePeopleOrOrg`自定义tab页面默认展开第一个节点 [BUG#4282]
+2. `ChoosePeopleOrOrg` 更新默认头像 [BUG#4273]
 ## v0.1.37
 1. `ChoosePeopleOrOrg` 增加`objectives`属性，支持选人配置自定义tab页面
 
