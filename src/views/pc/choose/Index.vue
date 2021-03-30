@@ -63,7 +63,8 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
 import { ChoosePeopleOrOrg } from '../../../../packages/ui/packages/choose'
-import { orgObjective } from './objectives/contact'
+import { personalContactObjective } from './objectives/personalContact'
+import { publicContactObjective } from './objectives/publicContact'
 @Component({
     components: {
         ChoosePeopleOrOrg
@@ -106,6 +107,6 @@ export default class ChoosePeopeleOrOrg extends Vue {
         console.log(data, 'selectedChange')
     }
 
-    objectives = [orgObjective]
+    objectives = [personalContactObjective, publicContactObjective]
 }
 </script>

@@ -1,3 +1,8 @@
+## 
+1. 修复[BUG#4282] `ChoosePeopleOrOrg`自定义tab页面默认展开第一个节点
+## v0.1.37
+1. `ChoosePeopleOrOrg` 增加`objectives`属性，支持选人配置自定义tab页面
+
 ## v0.1.35
 1.  `Upload` 组件增加 `download`事件
 ## v0.1.34

@@ -117,7 +117,7 @@
                                             isLeaf: 'leaf'
                                         }"
                                         lazy
-                                        :default-expanded-keys="defaultExpandedKeys"
+                                        :default-expanded-keys="tab.defaultExpandedKeys"
                                         :check-strictly="true"
                                         :load="loadTab(tab)"
                                         @node-click="handleTabTreeNodeClick(tab, ...$event)"
@@ -316,6 +316,7 @@ interface Tab {
     placeholder: string
     loading: boolean
     objective: Objective
+    defaultExpandedKeys: string[]
 }
 
 const { orgService, userService } = services
@@ -826,7 +827,8 @@ export default class New extends Vue {
                 searchText: '',
                 placeholder: obj.searchPlaceholder,
                 loading: false,
-                objective: obj
+                objective: obj,
+                defaultExpandedKeys: []
             }
         })
     }
@@ -851,6 +853,9 @@ export default class New extends Vue {
             if (node.level === 0) {
                 const { data } = await this.queryRemoteData(tab, '')
                 if (data) {
+                    if (data.length > 0) {
+                        tab.defaultExpandedKeys = [data[0].id]
+                    }
                     resolve(data)
                 }
             } else if (node.data.rawData.hasChildNodesData) {
