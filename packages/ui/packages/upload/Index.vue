@@ -171,7 +171,7 @@ export default class Index extends Vue {
         if (file.id) {
             this.handlePreviewCore(file)
         } else {
-            window.open(file.response.data.url)
+            this.download(file.response.data.url, file)
         }
     }
     handlePreviewCore(file) {
@@ -180,14 +180,17 @@ export default class Index extends Vue {
         if (preivewEnabled) {
             this.handleO365Preview(file)
         } else {
-            window.open(file.url)
+            this.download(file.url, file)
         }
     }
     handleO365Preview(file) {
         let url = file.url
+        const isSupportPreview = file.extension && this.checkO365PreviewSupproted(file.extension)
 
-        if (file.extension && this.checkO365PreviewSupproted(file.extension)) {
+        if (isSupportPreview) {
             url = `${this.config.o365.baseURI}${this.config.o365.blobURI}/${file.id}`
+            this.download(file.url, file)
+            return
         }
 
         window.open(url)
@@ -195,7 +198,7 @@ export default class Index extends Vue {
     checkO365PreviewSupproted(extension) {
         const supportFileTypes = this.config.o365.supportFileTypes
 
-        return supportFileTypes.includes(extension)
+        return supportFileTypes.includes((extension || '').toLowerCase())
     }
 
     async handleExceed(files, fileList) {
@@ -362,8 +365,7 @@ export default class Index extends Vue {
         downloadElement.className = 'bv-upload-list__item-download'
         downloadElement.title = '下载'
         downloadElement.addEventListener('click', () => {
-            this.$emit('download', file)
-            window.open(url)
+            this.download(url, file)
         })
 
         const iNode = document.createElement('i')
@@ -371,6 +373,12 @@ export default class Index extends Vue {
         downloadElement.prepend(iNode)
         el.parentNode.insertBefore(downloadElement, el)
     }
+
+    download(url: string, file) {
+        this.$emit('download', file)
+        window.open(url)
+    }
+
     showFileIcon(el: HTMLElement, file) {
         let extension = file.extension
         if (!extension) {

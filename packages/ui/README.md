@@ -1,7 +1,9 @@
-## 
+## v0.1.39
 1. `ChoosePeopleOrOrg`自定义tab页面默认展开第一个节点 [BUG#4282]
 2. `ChoosePeopleOrOrg` 更新默认头像 [BUG#4273]
 3. `ChoosePeopleOrOrg` 自定义tab点击全选和列表点开的数据匹配、点击清空按钮全选的勾选按钮不勾选 [BUG#4274]
+4. `Upload` 修复点击标题也触发`download`事件
+5. `Upload` 在线预览断修复大小写扩展名判断失败，修复如.doc和.DOC都可以支持
 ## v0.1.37
 1. `ChoosePeopleOrOrg` 增加`objectives`属性，支持选人配置自定义tab页面
 
