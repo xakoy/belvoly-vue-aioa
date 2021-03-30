@@ -165,7 +165,7 @@
                                 currentSelectTabDataItemCategory ? currentSelectTabDataItemCategory.name : ''
                             }}</span>
                             <span class="bv-choose-people_canselect_title_right">
-                                <el-checkbox @change="checkAllChangeHandler" v-model="checkAllTabDataItem" v-if="currentSelectTabDataItemCategory" :disabled="checkAllTabDataItemDisabled"
+                                <el-checkbox @change="checkAllTabDataItemAllChangeHandler" v-model="checkAllTabDataItem" v-if="currentSelectTabDataItemCategory" :disabled="checkAllTabDataItemDisabled"
                                     >全选</el-checkbox
                                 >
                             </span>
@@ -653,6 +653,7 @@ export default class New extends Vue {
 
     handleClearSelectedUsers() {
         this.checkAll = false
+        this.checkAllTabDataItem = false
         this.selectedUsers = []
         this.refreshCanSelectUserStatus()
         this.refreshCanSelectDataItemsStatus()
@@ -905,6 +906,18 @@ export default class New extends Vue {
 
     handleTabTreeNodeCheckChange(tab) {
         //
+    }
+
+    checkAllTabDataItemAllChangeHandler(isCheckAll) {
+        if (isCheckAll) {
+            this.canSelecteTabDataItems.forEach(item => {
+                this.handleSelectUser(item)
+            })
+        } else {
+            this.canSelecteTabDataItems.forEach(item => {
+                this.handleRemoveSelectedUser(item)
+            })
+        }
     }
 
     refreshCanSelectDataItemsStatus() {
