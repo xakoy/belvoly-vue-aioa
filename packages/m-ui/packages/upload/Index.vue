@@ -475,6 +475,7 @@ export default class Index extends Vue {
         } else {
             if (this.inApp) {
                 BM.appointment.file.download(`${this.config.api.baseURI}/sharedservice/blob/${file.id}`, file.name, '')
+                this.$emit('download', file)
             } else {
                 window.open(file.url)
             }
@@ -495,9 +496,11 @@ export default class Index extends Vue {
                 BM.appointment.webview.open(url)
             } else {
                 BM.appointment.file.download(url, file.name, '')
+                this.$emit('download', file)
             }
         } else {
             window.open(url)
+            this.$emit('download', file)
         }
     }
     checkO365PreviewSupproted(extension: string) {
