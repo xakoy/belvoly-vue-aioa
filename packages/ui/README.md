@@ -1,3 +1,5 @@
+## v0.1.40
+1. `ChoosePeopleOrOrg` 自定义tab切换时，待选择区域数据还是上一tab的数据。同时修复点击左侧树节点接口很慢的情况下，数据显示错误。
 ## v0.1.39
 1. `ChoosePeopleOrOrg`自定义tab页面默认展开第一个节点 [BUG#4282]
 2. `ChoosePeopleOrOrg` 更新默认头像 [BUG#4273]

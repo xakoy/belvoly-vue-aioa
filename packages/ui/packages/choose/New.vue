@@ -512,6 +512,10 @@ export default class New extends Vue {
     tabClickHandler(tab) {
         this.tab.activeTabName = tab.name
         this.isCustomTab = this.tab.activeTabName.startsWith('tab_')
+        this.currentSelectOrg = null
+        this.currentSelectTabDataItemCategory = null
+        this.canSelecteUsers = []
+        this.canSelecteTabDataItems = []
         this.refreshTreeNodeSelectedStatus()
     }
 
@@ -589,6 +593,9 @@ export default class New extends Vue {
     }
 
     setChooseUser(data: User[]) {
+        if (!this.currentSelectOrg) {
+            return []
+        }
         if (!data) {
             this.canSelecteUsers = []
         } else {
@@ -843,7 +850,7 @@ export default class New extends Vue {
             return
         }
         this.getTabDataItemLoading = true
-        const sdata = await this.queryTabData(tab, '', 'search', url)
+        const sdata = await this.queryTabData(tab, '', 'search', url, true)
         this.getTabDataItemLoading = false
         const data: TreeNode<ChooseItemNode>[] = this.convertTabDataItemsToTreeNodeData(sdata, tab) as any
         this.changeTabDataItems(data)
@@ -882,6 +889,9 @@ export default class New extends Vue {
     }
 
     changeTabDataItems(data: TreeNode<ChooseItemNode>[]) {
+        if (!this.currentSelectTabDataItemCategory) {
+            return []
+        }
         if (!data) {
             this.canSelecteTabDataItems = []
         } else {
@@ -928,7 +938,7 @@ export default class New extends Vue {
     }
 
     async queryTabDataItems(category: string, tab: Tab) {
-        const sdata = await this.queryTabData(tab, category, 'item')
+        const sdata = await this.queryTabData(tab, category, 'item', '', true)
 
         const data: TreeNode<ChooseItemNode>[] = this.convertTabDataItemsToTreeNodeData(sdata, tab) as any
 
@@ -937,11 +947,16 @@ export default class New extends Vue {
         }
     }
 
-    async queryTabData(tab: Tab, code: string, dataType: ObjectiveDataType, url = '') {
+    tabRequestAbortDelegate = null
+
+    async queryTabData(tab: Tab, code: string, dataType: ObjectiveDataType, url = '', isCanAbort = false) {
+        if (this.tabRequestAbortDelegate) {
+            this.tabRequestAbortDelegate()
+        }
         const objective = tab.objective
         const uri = url || (objective.getUrl ? objective.getUrl(objective.config, objective.url, code, dataType) : objective.url)
 
-        const result = await request.request<any>(
+        const res = await request.requestVariant<any>(
             uri,
             { method: 'GET' },
             {
@@ -951,6 +966,17 @@ export default class New extends Vue {
                 getData: response => response.data
             }
         )
+
+        const { abort, promise } = res
+        if (isCanAbort) {
+            this.tabRequestAbortDelegate = abort
+        }
+
+        const result = await promise
+
+        if (!result.success) {
+            return []
+        }
         const rawData = result.data
 
         let rdata: ChooseNode[] = []
