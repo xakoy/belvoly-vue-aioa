@@ -1,4 +1,4 @@
-import { request } from '../utils/request'
+import { request, requestVariant } from '../utils/request'
 import config from '../config'
 
 export interface User {
@@ -87,6 +87,24 @@ function searchUsers(userUid, userName, parentOrgCode?: string) {
 }
 
 /**
+ * 根据用户的名称或者账号模糊查询
+ * @method searchUsers
+ * @param {string} userUid
+ * @param {string} userName
+ * @param {string} parentOrgCode 父级orgCode，限定在此机构下查找
+ */
+function searchUsersVariant(userUid, userName, parentOrgCode?: string) {
+    return requestVariant<User[]>(`${config.apiHost}/public/bua/user/searchUsers`, {
+        method: 'POST',
+        data: {
+            userUid: userUid,
+            userName: userName,
+            orgCode: parentOrgCode
+        }
+    })
+}
+
+/**
  * 查询机构下面的所有用户（穿透查询）
  * @method queryByOrgCodeAllUsers
  * @param {string} orgCode
@@ -94,6 +112,22 @@ function searchUsers(userUid, userName, parentOrgCode?: string) {
  */
 function queryByOrgCodeAllUsers(orgCode) {
     return request<User[]>(`${config.apiHost}/public/bua/user/queryByOrgCodeAllUsers`, {
+        method: 'GET',
+        data: {
+            orgCode: orgCode,
+            includeLocked: false
+        }
+    })
+}
+
+/**
+ * 查询机构下面的所有用户（穿透查询）
+ * @method queryByOrgCodeAllUsers
+ * @param {string} orgCode
+ * @param {*} callback
+ */
+function queryByOrgCodeAllUsersVariant(orgCode) {
+    return requestVariant<User[]>(`${config.apiHost}/public/bua/user/queryByOrgCodeAllUsers`, {
         method: 'GET',
         data: {
             orgCode: orgCode,
@@ -124,6 +158,21 @@ const queryByOrgCode = function(orgCode) {
     })
 }
 
+/**
+ * 查询机构下面的所有用户
+ * @method queryByOrgCode
+ * @param {string} orgCode
+ * @param {*} callback
+ */
+const queryByOrgCodeVariant = function(orgCode) {
+    return requestVariant<User[]>(`${config.apiHost}/public/bua/user/queryByOrgCode`, {
+        method: 'GET',
+        data: {
+            orgCode: orgCode
+        }
+    })
+}
+
 export default {
     queryMySubordinates,
     getUserUnits,
@@ -131,6 +180,9 @@ export default {
     getCurrentUserInfo,
     getPicture,
     searchUsers,
+    searchUsersVariant,
     queryByOrgCodeAllUsers,
-    queryByOrgCode
+    queryByOrgCodeAllUsersVariant,
+    queryByOrgCode,
+    queryByOrgCodeVariant
 }

@@ -527,11 +527,20 @@ export default class New extends Vue {
         await this.searchUser(this.searchText)
     }
 
+    getUsersAbortDelegate = null
+
     async searchUser(text: string, parentCode?: string) {
+        this.cancelGetUserAbortDelegate()
+
         this.currentSelectOrg = null
         this.getUserLoading = true
-        const { data } = await userService.searchUsers(text, text, parentCode)
-        this.getUserLoading = false
+        const res = await userService.searchUsersVariant(text, text, parentCode)
+        const { abort, promise } = res
+        this.getUsersAbortDelegate = abort
+        const { data, isCancel } = await promise
+        if (!isCancel) {
+            this.getUserLoading = false
+        }
         this.setChooseUser(data)
     }
 
@@ -543,6 +552,8 @@ export default class New extends Vue {
     }
 
     async queryUser(orgCode: string, isQueryAllChild: boolean) {
+        this.cancelGetUserAbortDelegate()
+
         if (isQueryAllChild) {
             await this.queryAllUsersByOrgCode(orgCode)
         } else {
@@ -577,25 +588,39 @@ export default class New extends Vue {
         }
     }
 
+    cancelGetUserAbortDelegate() {
+        if (this.getUsersAbortDelegate) {
+            this.getUsersAbortDelegate()
+            this.getUsersAbortDelegate = null
+        }
+    }
+
     // 查询机构下的用户
     async queryUserByOrgCode(orgCode) {
+        this.cancelGetUserAbortDelegate()
         this.getUserLoading = true
-        const { data } = await userService.queryByOrgCode(orgCode)
-        this.getUserLoading = false
+        const { abort, promise } = await userService.queryByOrgCodeVariant(orgCode)
+        this.getUsersAbortDelegate = abort
+        const { data, isCancel } = await promise
+        if (!isCancel) {
+            this.getUserLoading = false
+        }
         this.setChooseUser(data)
     }
     // 查询机构下穿透的用户集合
     async queryAllUsersByOrgCode(orgCode) {
+        this.cancelGetUserAbortDelegate()
         this.getUserLoading = true
-        const { data } = await userService.queryByOrgCodeAllUsers(orgCode)
-        this.getUserLoading = false
+        const { abort, promise } = await userService.queryByOrgCodeAllUsersVariant(orgCode)
+        this.getUsersAbortDelegate = abort
+        const { data, isCancel } = await promise
+        if (!isCancel) {
+            this.getUserLoading = false
+        }
         this.setChooseUser(data)
     }
 
     setChooseUser(data: User[]) {
-        if (!this.currentSelectOrg) {
-            return []
-        }
         if (!data) {
             this.canSelecteUsers = []
         } else {
@@ -889,9 +914,6 @@ export default class New extends Vue {
     }
 
     changeTabDataItems(data: TreeNode<ChooseItemNode>[]) {
-        if (!this.currentSelectTabDataItemCategory) {
-            return []
-        }
         if (!data) {
             this.canSelecteTabDataItems = []
         } else {
