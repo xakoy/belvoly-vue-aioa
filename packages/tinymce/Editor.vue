@@ -25,6 +25,7 @@ import 'tinymce/plugins/image'
 import 'tinymce/plugins/link'
 import 'tinymce/plugins/fullscreen'
 import 'tinymce/plugins/preview'
+import 'tinymce/plugins/codesample'
 import './plugins/indent2em'
 import './plugins/lineheight'
 import 'tinymce/skins/ui/oxide/skin.min.css'
@@ -91,7 +92,7 @@ export default Vue.extend({
                 content_style: 'html{height: 100%;} body{ height: 100%; padding:5px; margin:0; box-sizing: border-box;}',
                 // skin_url: skin_url, //样式放入public在index.html里引用
                 height: this.height,
-                plugins: 'link lists image code table wordcount fullscreen preview indent2em lineheight',
+                plugins: 'link lists image code table wordcount fullscreen preview indent2em lineheight codesample',
                 menu: {},
                 menubar: this.menubar,
                 toolbar:
