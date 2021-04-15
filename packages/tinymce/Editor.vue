@@ -41,6 +41,10 @@ export default Vue.extend({
         imageUploadUrl: {
             type: String
         },
+        menubar: {
+            type: [Boolean, Object, String],
+            default: true
+        },
         toolbar: {
             type: String,
             default: null
@@ -89,6 +93,7 @@ export default Vue.extend({
                 height: this.height,
                 plugins: 'link lists image code table wordcount fullscreen preview indent2em lineheight',
                 menu: {},
+                menubar: this.menubar,
                 toolbar:
                     this.toolbar ||
                     'fontselect fontsizeselect lineheight | forecolor | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent indent2em | removeformat | link unlink image | code fullscreen | newnote print preview',
