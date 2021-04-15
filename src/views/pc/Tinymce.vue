@@ -31,7 +31,7 @@
                 <tinymce-editor :height="600" readonly ref="textEditor" v-model="item.html" :text.sync="text" :imageUploadUrl="tinymceImageUploadUrl" />
             </el-form-item>
             <el-form-item label="文本2：" prop="html">
-                <tinymce-editor ref="textEditor2" :toolbar="'codesample'" :menubar="false" v-model="item.html2" :imageUploadUrl="tinymceImageUploadUrl" />
+                <tinymce-editor ref="textEditor2" v-model="item.html2" :imageUploadUrl="tinymceImageUploadUrl" />
             </el-form-item>
 
             <el-button @click="saveHandler">
