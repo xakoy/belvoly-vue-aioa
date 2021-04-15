@@ -1,5 +1,5 @@
 # v0.2.12
-1. 增加`codesample`插件，使用此插件需要引入额外的样式
+1. 增加`codesample`插件，使用此插件需要引入额外的样式，需要在public目录新建文件夹`js`里面放置从tinymce拷贝skins这个目录放置到js目录下
 # v0.2.11
 1. 增加`menubar`属性，boolean是否显示菜单栏
 # v 0.2.8
