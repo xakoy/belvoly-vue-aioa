@@ -5,6 +5,8 @@ belvoly vue 移动APP专用组件库
 1. `ChoosePeopleOrOrg` 选人组件
 2. `Upload` 上传组件
 
+### 0.1.41
+1. `Upload` 增加`onRemove`属性，当定义此属性，则替换默认删除事件
 ### 0.1.39
 1. `Upload` 修复查看按钮判断是在线预览，文件扩展名是大写会导致判断失败
 2. `Upload` 在线预览如果不支持，则也会触发`download`事件

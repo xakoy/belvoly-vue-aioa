@@ -1,3 +1,5 @@
+### 0.1.43
+1. `Upload` 增加`onRemove`属性，当定义此属性，则替换默认删除事件
 ## v0.1.42
 1. `ChoosePeopleOrOrg` 搜索用户无效 [BUG#4472]
 

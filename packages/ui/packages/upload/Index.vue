@@ -51,6 +51,9 @@ import { MessageBox, Message } from 'element-ui'
 import { services, globalConfig } from '@belvoly-vue-aioa/core'
 const { attachmentService } = services
 
+interface OnRemove {
+    (id: string): Promise<void>
+}
 interface BeforeUpload {
     (file: any): Promise<boolean>
 }
@@ -91,6 +94,10 @@ export default class Index extends Vue {
      * 上传前验证
      */
     @Prop() beforeUpload: BeforeUpload
+    /**
+     * 删除，当没有定义删除属性时，则启用默认删除事件
+     */
+    @Prop() onRemove: OnRemove
 
     uploadFiles: any[] = []
 
@@ -211,17 +218,29 @@ export default class Index extends Vue {
         }
         const id = file.id || file.response.data.id
 
-        const { success } = await attachmentService.remove(id)
-
-        if (success) {
-            Message({
-                message: '删除附件成功',
-                type: 'success'
-            })
-
+        const removeSuccessHandle = () => {
             const fileIndex = this.uploadFiles.findIndex(file => file.id === id)
             if (fileIndex > -1) {
                 this.uploadFiles.splice(fileIndex, 1)
+            }
+        }
+
+        if (this.onRemove) {
+            try {
+                await this.onRemove(id)
+                removeSuccessHandle()
+            } catch {
+                //
+            }
+        } else {
+            const { success } = await attachmentService.remove(id)
+
+            if (success) {
+                Message({
+                    message: '删除附件成功',
+                    type: 'success'
+                })
+                removeSuccessHandle()
             }
         }
         this.change()
