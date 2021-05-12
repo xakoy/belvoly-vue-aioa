@@ -1,13 +1,17 @@
 <template>
     <div v-if="item" class="bvant-choose-people-or-org__node">
         <div class="bvant-choose-people-or-org__item" :style="{ 'padding-left': `${zindex}px` }">
-            <div class="bvant-choose-people-or-org__item--expand-icon" @click="expandClickHandler">
+            <div v-if="item.cancheck" class="bvant-choose-people-or-org__item--expand-icon" @click="expandClickHandler">
                 <bvan-icon v-if="isExpand" name="arrow-down" />
                 <bvan-icon v-else v-model="item.check" name="arrow" />
             </div>
             <div class="bvant-choose-people-or-org__item--label" @click="itemLabelClickHandler">{{ item.label }}</div>
             <div v-if="item.cancheck" class="bvant-choose-people-or-org__item--checkbox">
                 <bvan-checkbox v-model="item.check" shape="square" @change="checkChange($event, item)" />
+            </div>
+            <div v-else class="bvant-choose-people-or-org__item--expand-righticon" @click="expandClickHandler">
+                <bvan-icon v-if="isExpand" name="arrow-down" />
+                <bvan-icon v-else v-model="item.check" name="arrow" />
             </div>
         </div>
         <template v-for="(child, index) in children">
@@ -124,6 +128,8 @@ export default class TreeNode extends Vue {
     itemLabelClickHandler() {
         if (this.item.cancheck) {
             this.item.check = !this.item.check
+        } else {
+            this.expandClickHandler()
         }
     }
 

@@ -424,6 +424,12 @@ export default class Index extends Vue {
             color: #cccccc;
             cursor: pointer;
         }
+        &--expand-righticon {
+            width: 32px;
+            text-align: left;
+            color: #cccccc;
+            cursor: pointer;
+        }
 
         &--avatar {
             > span,
@@ -506,7 +512,9 @@ export default class Index extends Vue {
                 margin-bottom: 8px;
             }
         }
-
+        &--state-expand {
+            height: 80%;
+        }
         &--state-expand &--content {
             white-space: normal;
         }
