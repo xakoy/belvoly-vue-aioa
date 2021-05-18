@@ -4,7 +4,7 @@
 
 <style>
 body .tox-tinymce-aux {
-    z-index: 10000;
+    z-index: 10000 !important;
 }
 </style>
 
