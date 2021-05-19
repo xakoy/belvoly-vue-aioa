@@ -34,6 +34,7 @@ import { Vue, Component, Prop } from 'vue-property-decorator'
 import Tree from './Tree.vue'
 import Search from './Search.vue'
 import { Node } from './interface'
+import { PeopleDataFilterOfChoosePeopleOrOrg } from './types'
 
 type TreeNodeType = 'org' | 'user'
 
@@ -74,6 +75,11 @@ export default class Index extends Vue {
     @Prop({}) defaultOrgs: NameValue[]
     @Prop() names: string
     @Prop() codes: string
+
+    /**
+     * 用户过滤器
+     */
+    @Prop({ type: Function }) peopleDataFilter: PeopleDataFilterOfChoosePeopleOrOrg
 
     get searchInputVisible() {
         return !this.isOnlyChooseOrg
@@ -207,7 +213,13 @@ export default class Index extends Vue {
             return
         }
         if (success) {
-            const userData = this.convertUsersToTreeNodeData(data)
+            let filterUsers
+            if (this.peopleDataFilter) {
+                filterUsers = this.peopleDataFilter(data)
+            } else {
+                filterUsers = data
+            }
+            const userData = this.convertUsersToTreeNodeData(filterUsers)
             this.searchData = userData
         } else {
             this.searchData = []
@@ -252,7 +264,13 @@ export default class Index extends Vue {
             let userData
             if (!this.isOnlyChooseOrg) {
                 const { data: users } = await userService.queryByOrgCode(orgCode)
-                userData = this.convertUsersToTreeNodeData(users)
+                let filterUsers
+                if (this.peopleDataFilter) {
+                    filterUsers = this.peopleDataFilter(users)
+                } else {
+                    filterUsers = users
+                }
+                userData = this.convertUsersToTreeNodeData(filterUsers)
             }
             if (parentOrg) {
                 // this.defaultExpandedKeysId = orgCode

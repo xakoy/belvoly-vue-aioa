@@ -1,3 +1,5 @@
+import { User } from '@belvoly-vue-aioa/core/services/userService'
+
 export interface ChooseNode {
     id: string
     name: string
@@ -70,4 +72,8 @@ export interface Objective<C extends object = {}> {
      * @param {object} 数据项
      */
     showIcon?: (item) => boolean
+}
+
+export interface PeopleDataFilterOfChoosePeopleOrOrg {
+    (users: User[]): User[]
 }

@@ -304,7 +304,7 @@ import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import { services, globalConfig, utils } from '@belvoly-vue-aioa/core'
 import { ElTree } from 'element-ui/types/tree'
 import { User } from '@belvoly-vue-aioa/core/services/userService'
-import { ChooseItemNode, ChooseNode, Objective, ObjectiveDataType } from './types'
+import { ChooseItemNode, ChooseNode, Objective, ObjectiveDataType, PeopleDataFilterOfChoosePeopleOrOrg } from './types'
 
 const { request } = utils
 
@@ -346,6 +346,11 @@ export default class New extends Vue {
         }
     })
     objects: Objective[]
+
+    /**
+     * 用户过滤器
+     */
+    @Prop({ type: Function }) peopleDataFilter: PeopleDataFilterOfChoosePeopleOrOrg
 
     defaultExpandedKeys = []
 
@@ -620,7 +625,13 @@ export default class New extends Vue {
         this.setChooseUser(data)
     }
 
-    setChooseUser(data: User[]) {
+    setChooseUser(users: User[]) {
+        let data: User[]
+        if (this.peopleDataFilter) {
+            data = this.peopleDataFilter(users)
+        } else {
+            data = users
+        }
         if (!data) {
             this.canSelecteUsers = []
         } else {
@@ -730,7 +741,7 @@ export default class New extends Vue {
         this.close()
     }
 
-    close(action: 'ok' | 'cancen' = 'cancen') {
+    close(action: 'ok' | 'cancel' = 'cancel') {
         if (this.beforeClose) {
             this.beforeClose(this.internalClose, action)
             return

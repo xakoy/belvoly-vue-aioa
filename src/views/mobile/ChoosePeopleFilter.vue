@@ -1,6 +1,6 @@
 <template>
     <div>
-        <bvan-field label="收件人" is-link v-model="item.names" readonly @click="inputClickHandler" />
+        <bvan-field label="用户过滤器" is-link v-model="item.names" readonly @click="inputClickHandler" />
         <choose-people-or-org
             v-if="opickerToToVisible"
             rootOrgCode="shhr"
@@ -12,43 +12,23 @@
             :codes.sync="item.codes"
             :names.sync="item.names"
             :visible.sync="opickerToToVisible"
+            :peopleDataFilter="peopleDataFilter"
             @selected="selectedHandler"
         />
-
-        <bvan-field label="参与部门" is-link v-model="item.names" readonly @click="orgOpickerToToVisible = true" />
-        <choose-people-or-org
-            v-if="orgOpickerToToVisible"
-            rootOrgCode="shhr"
-            mode="org"
-            title="参与部门"
-            :isShowGlobal="false"
-            :defaultUsers="item.users"
-            :defaultOrgs="item.orgs"
-            :codes.sync="item.codes"
-            :names.sync="item.names"
-            :visible.sync="orgOpickerToToVisible"
-            @selected="selectedHandler"
-        />
-        <choose-people-filter />
     </div>
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator'
-// import { ChoosePeopleOrOrg } from '../../../packages/m-ui'
+import { Vue, Component, Prop } from 'vue-property-decorator'
 import { ChoosePeopleOrOrg } from '../../../packages/m-ui/packages/choose'
-import ChoosePeopleFilter from './ChoosePeopleFilter.vue'
 
 @Component({
     components: {
-        ChoosePeopleOrOrg,
-        ChoosePeopleFilter
+        ChoosePeopleOrOrg
     }
 })
-export default class ChoosePeopeleOrOrg extends Vue {
+export default class PeopleFilter extends Vue {
     opickerToToVisible = false
-
-    orgOpickerToToVisible = false
     item = {
         codes: 'luolong',
         names: '罗龙',
@@ -69,6 +49,11 @@ export default class ChoosePeopeleOrOrg extends Vue {
         this.item.users = users
         this.item.orgs = orgs
         console.log(users, orgs)
+    }
+
+    peopleDataFilter = (users: any[]) => {
+        console.log(1)
+        return users.filter(u => !!u.mobilePhone || !!u?.person?.mobile)
     }
 }
 </script>

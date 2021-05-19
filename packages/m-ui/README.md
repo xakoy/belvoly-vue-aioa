@@ -5,6 +5,9 @@ belvoly vue 移动APP专用组件库
 1. `ChoosePeopleOrOrg` 选人组件
 2. `Upload` 上传组件
 
+### 0.1.43
+1. `ChoosePeopleOrOrg` 增加 `peopleDataFilter` 用户过滤器
+
 ### 0.1.42
 1. [FEATURE#1482] 选人控件机构不可以选时箭头移动到右侧，并且点击文字时展开或折叠。选择的内容在展开时撑满屏幕
 ### 0.1.41

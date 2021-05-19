@@ -56,6 +56,7 @@
                     @selectedChange="selectedChangeHandler"
                 />
             </el-form-item>
+            <people-filter />
         </el-form>
     </div>
 </template>
@@ -65,9 +66,13 @@ import { Vue, Component } from 'vue-property-decorator'
 import { ChoosePeopleOrOrg } from '../../../../packages/ui/packages/choose'
 import { personalContactObjective } from './objectives/personalContact'
 import { publicContactObjective } from './objectives/publicContact'
+
+import PeopleFilter from './PeopleFilter.vue'
+
 @Component({
     components: {
-        ChoosePeopleOrOrg
+        ChoosePeopleOrOrg,
+        PeopleFilter
     }
 })
 export default class ChoosePeopeleOrOrg extends Vue {

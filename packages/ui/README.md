@@ -1,3 +1,5 @@
+### 0.1.44 
+1. `ChoosePeopleOrOrg` 增加 `peopleDataFilter` 用户过滤器
 ### 0.1.43
 1. `Upload` 增加`onRemove`属性，当定义此属性，则替换默认删除事件
 ## v0.1.42
@@ -69,25 +71,6 @@
 | simple | 是否简易模式 | *boolean* | `false` |
 | beforeUpload | 上传前验证，Promise 异常，则取消上传 | *Promise<void>* | - |
 
-
-| 参数 | 说明 | 类型 | 默认值 |
-|------|------|------|------|
-| label | 标题 | *string* | `附件` |
-| action | 上传的API地址 | *string* | `${config.api.baseURI}/sharedservice/blob/upload` |
-| multiple | [是否开启图片多选，部分安卓机型不支持](#/zh-CN/uploader) | *boolean* | `true` |
-| fileList | 第一次显示文件集合 | *file[]* | `[]` |
-| visible 支持`.sync`语法 | 是否显示 | *boolean* | `false` |
-| refTableName | 共享附件接口`refTableName`参数 | *string* | - |
-| typeCode | 共享附件接口`typeCode`参数 | *string* | - |
-| userUid | 当前用户的`userUid` | *string* | - |
-| tip | 提示文字 | *string* | - |
-| maxSize | 最多只能上传多少MB内容 | *number* | `50` |
-| limit | 最多可以上传多少个文件 | *number* | `9999` |
-| isOnlyImage | 是否只允许图片 | *boolean* | `false` |
-| readonly | 是否只读模式 | *boolean* | `false` |
-| simple | 是否简易模式 | *boolean* | `false` |
-| beforeUpload | 上传前验证，Promise 异常，则取消上传 | *Promise<void>* | - |
-
 ### Events
 
 | 事件名 | 说明 | 回调参数 |
@@ -110,3 +93,21 @@
 |------|------|------|
 | buttons | 按钮区自定义内容 | item: { status: '文件状态', file: '文件内容'} |
 | simple | 简易模式的上传自定义内容 | - |
+
+
+## ChoosePeopleOrOrg
+选人选部门组件
+### Props
+
+| 参数 | 说明 | 类型 | 默认值 |
+|------|------|------|------|
+| title | 标题 | *string* | `选择人员` |
+| selectionMode | 选择模式，单选还是多选 | *`multiple`,`single`* | `single` | 
+| mode | 模式，选用户还是选用户和部门 | `user`,`orgAndUser` | `orgAndUser` |
+| rootOrgCode | 根部门Code | *string* | - |
+| visible | 是否可见 ｜ *boolean* | `false` |
+| isShowGlobal | 是否显示全局人员 ｜ *boolean* | `false` |
+| defaultUsers | 默认选中的用户集合 | *NameValue[]* | |
+| defaultOrgs | 默认选中的部门集合 | *NameValue[]* | |
+| beforeClose | 关闭前触发的方法 | Functin(internalClose, 'ok' \| 'cancel') | |
+| peopleDataFilter | 用户数据源过滤器 | Function(users: user[]) => user[]  | |
