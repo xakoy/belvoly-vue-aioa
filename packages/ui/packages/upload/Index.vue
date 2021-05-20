@@ -115,7 +115,8 @@ export default class Index extends Vue {
                 enabled: false,
                 baseURI: '',
                 blobURI: '',
-                supportFileTypes: ''
+                supportFileExtensions: [],
+                ...globalConfig.o365
             }
         }
     }
@@ -196,16 +197,18 @@ export default class Index extends Vue {
 
         if (isSupportPreview) {
             url = `${this.config.o365.baseURI}${this.config.o365.blobURI}/${file.id}`
-            this.download(file.url, file)
+            window.open(url)
             return
         }
 
         window.open(url)
     }
-    checkO365PreviewSupproted(extension) {
-        const supportFileTypes = this.config.o365.supportFileTypes
 
-        return supportFileTypes.includes((extension || '').toLowerCase())
+    checkO365PreviewSupproted(extension: string) {
+        const ext = extension.toLowerCase()
+        const supportFileExtensions = this.config.o365.supportFileExtensions
+
+        return supportFileExtensions.includes(ext)
     }
 
     async handleExceed(files, fileList) {
@@ -352,28 +355,21 @@ export default class Index extends Vue {
     addDownloadIcon(el: HTMLElement, file) {
         let isView = false
         const url = file.url
-        let urlv = ''
-        if (file.extension && this.checkO365PreviewSupproted(file.extension)) {
-            urlv = `${this.config.o365.baseURI}${this.config.o365.blobURI}/${file.id}`
+        if (file.extension && this.config.o365.enabled && this.checkO365PreviewSupproted(file.extension)) {
             isView = true
         }
 
         if (isView) {
-            const viewNode = document.createElement('span')
-            viewNode.title = '查看'
-            viewNode.addEventListener('click', function() {
-                window.open(urlv)
+            const viewElement = document.createElement('span')
+            viewElement.className = 'bv-upload-list__item-view'
+            viewElement.title = '查看'
+            viewElement.addEventListener('click', () => {
+                this.handlePreview(file)
             })
-            viewNode.style.cursor = 'pointer'
-            viewNode.style.position = 'absolute'
-            viewNode.style.right = '18px'
-            viewNode.style.top = '0'
 
-            const iNode = document.createElement('i')
-            iNode.className = 'fc fc-eyes-open'
-            viewNode.prepend(iNode)
+            viewElement.innerHTML = '<i class="fc fc-eyes-open" /> 查看'
 
-            el.parentNode.insertBefore(viewNode, el)
+            el.parentNode.insertBefore(viewElement, el)
 
             el.style.right = '35px'
         } else {
@@ -386,10 +382,7 @@ export default class Index extends Vue {
         downloadElement.addEventListener('click', () => {
             this.download(url, file)
         })
-
-        const iNode = document.createElement('i')
-        iNode.className = 'fc fc-next-one'
-        downloadElement.prepend(iNode)
+        downloadElement.innerHTML = '<i class="fc fc-cloud-download" /> 下载'
         el.parentNode.insertBefore(downloadElement, el)
     }
 
@@ -453,6 +446,7 @@ export default class Index extends Vue {
         display: inline-block;
     }
     .el-upload-list__item {
+        transition: none;
         .el-upload-list__item-name {
             display: inline-block;
             vertical-align: middle;
@@ -472,6 +466,7 @@ export default class Index extends Vue {
             display: inline-block;
         }
         .bv-upload-list__item-download,
+        .bv-upload-list__item-view,
         .el-upload-list__item-status-label,
         .el-icon-close {
             position: static;
@@ -494,6 +489,7 @@ export default class Index extends Vue {
         display: none !important;
     }
     .el-upload-list__item {
+        transition: none;
         line-height: 26px;
         &:hover {
             background-color: transparent;
@@ -524,7 +520,8 @@ export default class Index extends Vue {
     }
 }
 
-.bv-upload-list__item-download {
+.bv-upload-list__item-download,
+.bv-upload-list__item-view {
     // position: absolute;
     // right: 1px;
     top: 0;
@@ -532,5 +529,8 @@ export default class Index extends Vue {
 
     display: inline-block;
     vertical-align: middle;
+}
+.bv-upload-list__item-download {
+    margin-left: 10px;
 }
 </style>

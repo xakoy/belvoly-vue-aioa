@@ -1,3 +1,5 @@
+### 0.1.45
+1. `Upload` 功能和移动端保持一致，增加在线查看选项
 ### 0.1.44 
 1. `ChoosePeopleOrOrg` 增加 `peopleDataFilter` 用户过滤器
 ### 0.1.43

@@ -18,7 +18,7 @@
         </el-form>
         <div>
             简易模式：
-            <upload simple @success="simpleSuccessHandler" @error="simpleErrorHandler" action="http://192.168.101.135:2001/api/bua/avatar/uploadHeadPhoto?userUid=luolong">
+            <upload simple @success="simpleSuccessHandler" @error="simpleErrorHandler" action="http://192.168.22.22:2001/api/bua/avatar/uploadHeadPhoto?userUid=luolong">
                 <template #simple>
                     <el-button size="mini" type="primary" native-type="button">上传</el-button>
                 </template>
@@ -41,7 +41,7 @@ import Upload from '../../../packages/ui/packages/upload/Index.vue'
     }
 })
 export default class UploadIndex extends Vue {
-    actionUrl = `http://192.168.101.135:2001/api/sharedservice/blob/upload`
+    actionUrl = `http://192.168.22.22:2001/api/sharedservice/blob/upload`
     typeCode = 'demo'
     refTableName = 'FRONTEND_TEST'
     fileList = [
