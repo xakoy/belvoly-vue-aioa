@@ -98,6 +98,10 @@ export default class Index extends Vue {
      * 删除，当没有定义删除属性时，则启用默认删除事件
      */
     @Prop() onRemove: OnRemove
+    /**
+     * 是否开启下载日志功能
+     */
+    @Prop({ default: false, type: Boolean }) enableDownloadLog: boolean
 
     uploadFiles: any[] = []
 
@@ -388,7 +392,11 @@ export default class Index extends Vue {
 
     download(url: string, file) {
         this.$emit('download', file)
-        window.open(url)
+        let downloadUrl = url
+        if (this.enableDownloadLog) {
+            downloadUrl = downloadUrl + (downloadUrl.indexOf('?') === -1 ? '?' : '&') + 'access_token=' + globalConfig.token
+        }
+        window.open(downloadUrl)
     }
 
     showFileIcon(el: HTMLElement, file) {
