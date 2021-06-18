@@ -394,7 +394,7 @@ export default class Index extends Vue {
         this.$emit('download', file)
         let downloadUrl = url
         if (this.enableDownloadLog) {
-            downloadUrl = downloadUrl + (downloadUrl.indexOf('?') === -1 ? '?' : '&') + 'access_token=' + globalConfig.token
+            downloadUrl = downloadUrl + (downloadUrl.indexOf('?') === -1 ? '?' : '&') + 'token=' + globalConfig.token
         }
         window.open(downloadUrl)
     }
