@@ -98,6 +98,7 @@ function getFileName(path) {
 }
 
 interface HtmlFile {
+    id?: string
     name: string
     size: number
     response?: {
