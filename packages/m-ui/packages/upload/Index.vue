@@ -43,6 +43,10 @@
                                 <bvan-icon name="cloud-download" class-prefix="fc" style="line-height: inherit;" />
                                 下载
                             </span>
+                            <!-- <span class="bvan-mui-upload__button" @click="rename(item.file)">
+                                <bvan-icon name="edit-pen" class-prefix="fc" style="line-height: inherit;" />
+                                重命名
+                            </span> -->
                             <!-- 
                             <span class="bvan-mui-upload__button">
                                 <bvan-icon name="write-mail" class-prefix="fc" style="line-height: inherit;" />
@@ -53,6 +57,13 @@
                 </dl>
             </div>
         </bvan-cell-group>
+        <bvan-dialog v-if="!!renameItem" :value="true" title="重命名" show-cancel-button @confirm="renameConfirmHandler" @cancel="renameCancelHandler">
+            <div style="padding: 20px 0">
+                <bvan-cell-group title="名称：" :border="false">
+                    <bvan-field v-model="renameItem.name" border form />
+                </bvan-cell-group>
+            </div>
+        </bvan-dialog>
     </div>
     <span class="bvan-mui-upload__simple" v-else>
         <bvan-uploader v-if="!inApp" :before-read="beforeReadHandler" :after-read="afterReadHandler" :multiple="multiple">
@@ -615,6 +626,28 @@ export default class Index extends Vue {
         }
         return attachmentService.updateRelevance(blobRelevance)
     }
+
+    renameItem = null
+
+    rename(file) {
+        this.renameItem = {
+            id: file.id,
+            name: file.name
+        }
+    }
+
+    renameConfirmHandler() {
+        this.files.find(f => f.file.id === this.renameItem.id).file.name = this.renameItem.name
+        this.$emit('rename', {
+            name: this.renameItem.name,
+            id: this.renameItem.id
+        })
+        this.renameItem = null
+    }
+
+    renameCancelHandler() {
+        this.renameItem = null
+    }
 }
 </script>
 
@@ -646,6 +679,11 @@ export default class Index extends Vue {
                 overflow: hidden;
                 text-overflow: ellipsis;
                 font-weight: normal;
+
+                input {
+                    width: 100%;
+                    box-sizing: border-box;
+                }
             }
             em {
                 display: block;
