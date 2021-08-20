@@ -43,10 +43,10 @@
                                 <bvan-icon name="cloud-download" class-prefix="fc" style="line-height: inherit;" />
                                 下载
                             </span>
-                            <!-- <span class="bvan-mui-upload__button" @click="rename(item.file)">
+                            <span class="bvan-mui-upload__button" @click="rename(item.file)">
                                 <bvan-icon name="edit-pen" class-prefix="fc" style="line-height: inherit;" />
                                 重命名
-                            </span> -->
+                            </span>
                             <!-- 
                             <span class="bvan-mui-upload__button">
                                 <bvan-icon name="write-mail" class-prefix="fc" style="line-height: inherit;" />
@@ -57,10 +57,10 @@
                 </dl>
             </div>
         </bvan-cell-group>
-        <bvan-dialog v-if="!!renameItem" :value="true" title="重命名" show-cancel-button @confirm="renameConfirmHandler" @cancel="renameCancelHandler">
+        <bvan-dialog v-if="!!renameItem" :value="true" title="重命名" show-cancel-button :before-close="renameBeforeClosehandler">
             <div style="padding: 20px 0">
                 <bvan-cell-group title="名称：" :border="false">
-                    <bvan-field v-model="renameItem.name" border form />
+                    <bvan-field v-model="renameItem.name" border form :maxlength="nameMaxLength" />
                 </bvan-cell-group>
             </div>
         </bvan-dialog>
@@ -90,6 +90,10 @@ interface OnRemove {
 
 interface BeforeUpload {
     (file: any): Promise<boolean>
+}
+
+interface BeforeRename {
+    (file: { id: string; name: string }): Promise<boolean>
 }
 
 function getFileName(path) {
@@ -162,6 +166,11 @@ export default class Index extends Vue {
     @Prop({ default: false, type: Boolean }) simple: boolean
 
     /**
+     * 重命名时名称最大长度
+     */
+    @Prop({ type: Number, default: 250 }) nameMaxLength: number
+
+    /**
      * 文字提示
      */
     @Prop({ required: false }) tip: string
@@ -175,6 +184,11 @@ export default class Index extends Vue {
      * 上传前验证
      */
     @Prop({ required: false }) beforeUpload: BeforeUpload
+    /**
+     * 重命名前验证
+     */
+    @Prop({ required: false }) beforeRename: BeforeRename
+
     /**
      * 删除，当没有定义删除属性时，则启用默认删除事件
      */
@@ -637,17 +651,41 @@ export default class Index extends Vue {
         }
     }
 
-    renameConfirmHandler() {
+    async renameConfirmHandler() {
+        const before = this.beforeRename
+        if (before) {
+            try {
+                await before(this.renameItem)
+            } catch (e) {
+                Notify({ type: 'warning', message: typeof e === 'string' ? e : e.message })
+                return false
+            }
+        }
+
         this.files.find(f => f.file.id === this.renameItem.id).file.name = this.renameItem.name
         this.$emit('rename', {
             name: this.renameItem.name,
             id: this.renameItem.id
         })
         this.renameItem = null
+        return true
     }
 
     renameCancelHandler() {
         this.renameItem = null
+    }
+
+    async renameBeforeClosehandler(action, done) {
+        if (action === 'confirm') {
+            const success = await this.renameConfirmHandler()
+            console.log(success)
+
+            if (!success) {
+                done(false)
+            }
+        } else {
+            this.renameCancelHandler()
+        }
     }
 }
 </script>
