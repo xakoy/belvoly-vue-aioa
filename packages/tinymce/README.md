@@ -1,3 +1,5 @@
+# v0.2.14
+1. 增加`forcedRootBlock` 属性，参考[tinymce的官方文档](https://www.tiny.cloud/docs/configure/content-filtering/#forced_root_block), 用于设置编辑默认是否添加P元素，警告：官方不推荐禁用此功能。
 # v0.2.13
 1. 富文本编辑器在全屏状态下点击的菜单栏点击无效 #4954
 # v0.2.12

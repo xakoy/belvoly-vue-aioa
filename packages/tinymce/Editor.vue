@@ -33,6 +33,10 @@ import 'tinymce/skins/ui/oxide/skin.min.css'
 import Vue from 'vue'
 export default Vue.extend({
     props: {
+        forcedRootBlock: {
+            type: [Boolean, String],
+            default: 'p'
+        },
         text: {
             type: String
         },
@@ -85,6 +89,7 @@ export default Vue.extend({
     data: function() {
         return {
             editorInit: {
+                forced_root_block: this.forcedRootBlock,
                 selector: 'textarea',
                 language_url: languageUrl,
                 language: 'zh_CN',
