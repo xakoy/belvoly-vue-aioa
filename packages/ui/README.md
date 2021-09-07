@@ -1,3 +1,5 @@
+### 0.1.47
+1. `Upload` 开启下载日志功能设为默认开启
 ### 0.1.46
 1. `Upload` 增加开启下载日志功能
 ### 0.1.45
@@ -74,6 +76,8 @@
 | readonly | 是否只读模式 | *boolean* | `false` |
 | simple | 是否简易模式 | *boolean* | `false` |
 | beforeUpload | 上传前验证，Promise 异常，则取消上传 | *Promise<void>* | - |
+| enableDownloadLog | 是否开启下载日志 | *boolean* | `true` |
+
 
 ### Events
 
