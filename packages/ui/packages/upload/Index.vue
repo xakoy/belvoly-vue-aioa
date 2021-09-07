@@ -101,7 +101,7 @@ export default class Index extends Vue {
     /**
      * 是否开启下载日志功能
      */
-    @Prop({ default: false, type: Boolean }) enableDownloadLog: boolean
+    @Prop({ default: true, type: Boolean }) enableDownloadLog: boolean
 
     uploadFiles: any[] = []
 
