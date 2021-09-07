@@ -13,12 +13,12 @@
                 />
             </el-form-item>
             <el-form-item label="附件">
-                <upload ref="upload" :action="actionUrl" :limit="3" :fileList="fileList" :typeCode="typeCode" :refTableName="refTableName" :isEditFile="false" @change="changeHandler" />
+                <upload ref="upload" :action="actionUrl" :limit="5" :fileList="fileList" :typeCode="typeCode" :refTableName="refTableName" :isEditFile="false" @change="changeHandler" />
             </el-form-item>
         </el-form>
         <div>
             简易模式：
-            <upload simple @success="simpleSuccessHandler" @error="simpleErrorHandler" action="http://192.168.22.22:2001/api/bua/avatar/uploadHeadPhoto?userUid=luolong">
+            <upload simple @success="simpleSuccessHandler" @error="simpleErrorHandler" action="http://192.168.24.111/api/bua/avatar/uploadHeadPhoto?userUid=luolong">
                 <template #simple>
                     <el-button size="mini" type="primary" native-type="button">上传</el-button>
                 </template>
@@ -41,81 +41,121 @@ import Upload from '../../../packages/ui/packages/upload/Index.vue'
     }
 })
 export default class UploadIndex extends Vue {
-    actionUrl = `http://192.168.22.22:2001/api/sharedservice/blob/upload`
+    actionUrl = `http://192.168.24.111/api/sharedservice/blob/upload`
     typeCode = 'demo'
     refTableName = 'FRONTEND_TEST'
     fileList = [
         {
-            id: '30cfe4ac-6635-4bff-8bae-721c3247605a',
-            refTableID: '302df60ca8a94cfe8d7cc1f7b64c0d45',
-            refTableName: 'CALENDAR_MYCALENDAR',
-            displayName: '155058843.jpg',
+            id: '22523ceb-ade9-4e5e-8a22-9eb4ebc041a4',
+            refTableID: null,
+            refTableName: 'FRONTEND_TEST',
+            displayName: 'TongHttpServer3.8用户手册.pdf',
             persistentType: 0,
-            contentType: 'image/jpeg',
-            name: '155058843',
-            extension: '.jpg',
+            contentType: 'application/pdf',
+            name: 'TongHttpServer3.8用户手册',
+            extension: '.pdf',
             content: null,
-            length: 23100,
-            relativePath: 'CALENDAR_MYCALENDAR\\20200331',
-            internalName: '8c4d33f1-c92b-4306-9332-d1c357c7ec7b.jpg',
-            typeCode: null,
+            length: 2154031,
+            relativePath: 'FRONTEND_TEST/20210907',
+            internalName: '0db76f02-395c-4849-81fe-b7a0deabaceb.pdf',
+            typeCode: 'demo',
             isDelete: 0,
             extraData: null,
             sequence: 0,
-            creatorID: 'xiejianyun',
-            creatorName: '谢建云',
-            createTime: '2020-03-31 16:51:53',
-            updateTime: '2020-03-31 16:51:53',
-            url: 'http://192.168.101.135:2001/api/sharedservice/blob/30cfe4ac-6635-4bff-8bae-721c3247605a',
-            downTimes: 0
-        },
-        {
-            id: 'f3880c0f-e022-4523-98c8-535fe84beb4e',
-            refTableID: '302df60ca8a94cfe8d7cc1f7b64c0d45',
-            refTableName: 'CALENDAR_MYCALENDAR',
-            displayName: '155058843.jpg',
-            persistentType: 0,
-            contentType: 'image/jpeg',
-            name: '155058843',
-            extension: '.jpg',
-            content: null,
-            length: 23100,
-            relativePath: 'CALENDAR_MYCALENDAR\\20200331',
-            internalName: '6599bbb1-2180-4fde-9aae-fda56bb2106f.jpg',
-            typeCode: null,
-            isDelete: 0,
-            extraData: null,
-            sequence: 0,
-            creatorID: 'xiejianyun',
-            creatorName: '谢建云',
-            createTime: '2020-03-31 16:52:14',
-            updateTime: '2020-03-31 16:52:14',
-            url: 'http://192.168.101.135:2001/api/sharedservice/blob/f3880c0f-e022-4523-98c8-535fe84beb4e',
-            downTimes: 0
-        },
-        {
-            id: 'f6b80c23-41d2-42f1-8743-75f4190d123f',
-            refTableID: '302df60ca8a94cfe8d7cc1f7b64c0d45',
-            refTableName: 'CALENDAR_MYCALENDAR',
-            displayName: '155058843.jpg',
-            persistentType: 0,
-            contentType: 'image/jpeg',
-            name: '155058843',
-            extension: '.jpg',
-            content: null,
-            length: 190124,
-            relativePath: 'CALENDAR_MYCALENDAR\\20200331',
-            internalName: '39d675c8-85ca-4683-a03b-f3fa3c0498d1.jpg',
-            typeCode: 'undefined',
-            isDelete: 0,
-            extraData: null,
-            sequence: 0,
-            creatorID: 'xiejianyun',
+            creatorID: null,
             creatorName: null,
-            createTime: '2020-03-31 17:15:02',
-            updateTime: '2020-03-31 17:15:02',
-            url: 'http://192.168.101.135:2001/api/sharedservice/blob/f6b80c23-41d2-42f1-8743-75f4190d123f',
-            downTimes: 0
+            createTime: '2021-09-07 10:17:23',
+            updateTime: '2021-09-07 10:17:23',
+            url: 'http://192.168.24.111/api/sharedservice/blob/22523ceb-ade9-4e5e-8a22-9eb4ebc041a4',
+            downTimes: 0,
+            md5_: '90a18c0689eff76a3798df3e7edd32b1',
+            chunksUploadJson: null,
+            internalFileName: null,
+            base64: null
+        },
+        {
+            id: '81bc401f-341d-4961-900e-7e068955fef5',
+            refTableID: null,
+            refTableName: 'FRONTEND_TEST',
+            displayName: '基础前端面试题.docx',
+            persistentType: 0,
+            contentType: 'application/octet-stream',
+            name: '基础前端面试题',
+            extension: '.docx',
+            content: null,
+            length: 13077,
+            relativePath: 'FRONTEND_TEST/20210907',
+            internalName: 'eaab8934-5eab-4a85-bbc8-71ce7a39a133.docx',
+            typeCode: 'demo',
+            isDelete: 0,
+            extraData: null,
+            sequence: 0,
+            creatorID: null,
+            creatorName: null,
+            createTime: '2021-09-07 10:17:44',
+            updateTime: '2021-09-07 10:17:44',
+            url: 'http://192.168.24.111/api/sharedservice/blob/81bc401f-341d-4961-900e-7e068955fef5',
+            downTimes: 0,
+            md5_: '2fe3794c4b5a8e306298d27094e866ad',
+            chunksUploadJson: null,
+            internalFileName: null,
+            base64: null
+        },
+        {
+            id: 'fe548395-17ae-482b-93cf-acce367e05c9',
+            refTableID: null,
+            refTableName: 'FRONTEND_TEST',
+            displayName: '1.jpeg',
+            persistentType: 0,
+            contentType: 'image/jpeg',
+            name: '1',
+            extension: '.jpeg',
+            content: null,
+            length: 18175,
+            relativePath: 'FRONTEND_TEST/20210907',
+            internalName: '74664f74-5661-43eb-82e3-61ef8d6f6fb0.jpeg',
+            typeCode: 'demo',
+            isDelete: 0,
+            extraData: null,
+            sequence: 0,
+            creatorID: null,
+            creatorName: null,
+            createTime: '2021-09-07 10:18:00',
+            updateTime: '2021-09-07 10:18:00',
+            url: 'http://192.168.24.111/api/sharedservice/blob/fe548395-17ae-482b-93cf-acce367e05c9',
+            downTimes: 0,
+            md5_: 'f86144ba1c66c35dbb0440ca83870025',
+            chunksUploadJson: null,
+            internalFileName: null,
+            base64: null
+        },
+        {
+            id: '7150a3db-a478-4034-acc1-d7f89ce6bd02',
+            refTableID: null,
+            refTableName: 'FRONTEND_TEST',
+            displayName: 'WPS+云办公场景.pptx',
+            persistentType: 0,
+            contentType: 'application/octet-stream',
+            name: 'WPS+云办公场景',
+            extension: '.pptx',
+            content: null,
+            length: 7913136,
+            relativePath: 'FRONTEND_TEST/20210907',
+            internalName: '354c0460-340e-4780-8b49-da5388840f0c.pptx',
+            typeCode: 'demo',
+            isDelete: 0,
+            extraData: null,
+            sequence: 0,
+            creatorID: null,
+            creatorName: null,
+            createTime: '2021-09-07 10:30:15',
+            updateTime: '2021-09-07 10:30:15',
+            url: 'http://192.168.24.111/api/sharedservice/blob/7150a3db-a478-4034-acc1-d7f89ce6bd02',
+            downTimes: 0,
+            md5_: '5227a149c4778f243f0433f18b2b3a17',
+            chunksUploadJson: null,
+            internalFileName: null,
+            base64: null
         }
     ]
 

@@ -9,7 +9,16 @@ import '@belvoly-vue-aioa/bvant/lib/index.css'
 import { setGloablConfig } from '../packages/core'
 import { setGloablConfig as setMobileGloablConfig } from '../packages/m-core'
 
-setGloablConfig({ token: '38754a00-93e4-4cf4-99d4-6bde5f2ab863', apiHost: 'http://192.168.22.22:2001/api', o365: { enabled: true, baseURI: '/a', blobURI: '/b', supportFileExtensions: ['.jepg'] } })
+setGloablConfig({
+    token: '38754a00-93e4-4cf4-99d4-6bde5f2ab863',
+    apiHost: 'http://192.168.24.111/api',
+    o365: {
+        enabled: true,
+        baseURI: 'http://192.168.24.111/wpscloud/web/?fileUrl=',
+        blobURI: 'http://192.168.24.111/api/sharedservice/blob',
+        supportFileExtensions: ['.doc', '.docx', '.ppt', '.pptx', '.xls', '.xlsx', '.pdf', '.wps', '.dps', '.et', '.txt', '.zip', '.rar', '.7z', '.gif', '.jpg', '.jpeg', '.png', '.wpt']
+    }
+})
 setMobileGloablConfig({
     apiHost: 'http://192.168.22.22:2001/api',
     token: 'b6fd5d4aa81d46acb7402e9fa7fabb15',
