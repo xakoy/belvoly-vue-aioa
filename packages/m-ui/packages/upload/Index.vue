@@ -43,7 +43,7 @@
                                 <bvan-icon name="cloud-download" class-prefix="fc" style="line-height: inherit;" />
                                 下载
                             </span>
-                            <span class="bvan-mui-upload__button" @click="rename(item.file)">
+                            <span class="bvan-mui-upload__button" v-if="enabledRename || beforeRename" @click="rename(item.file)">
                                 <bvan-icon name="edit-pen" class-prefix="fc" style="line-height: inherit;" />
                                 重命名
                             </span>
@@ -184,6 +184,10 @@ export default class Index extends Vue {
      * 上传前验证
      */
     @Prop({ required: false }) beforeUpload: BeforeUpload
+    /**
+     * 开启重名功能
+     */
+    @Prop({ type: Boolean, default: false }) enabledRename: boolean
     /**
      * 重命名前验证
      */
@@ -385,22 +389,42 @@ export default class Index extends Vue {
         }
     }
 
-    async beforeReadHandler(file) {
-        const before = this.beforeUpload || (this.isOnlyImage && this.beforeUploadImage)
-        if (before) {
-            try {
-                await before(file)
-            } catch (e) {
-                Notify({ type: 'danger', message: e.message })
-                throw new Error(e.message)
+    async beforeReadHandler(obj) {
+        const validFile = async file => {
+            const before = this.beforeUpload || (this.isOnlyImage && this.beforeUploadImage)
+            if (before) {
+                try {
+                    await before(file)
+                } catch (e) {
+                    Notify({ type: 'danger', message: e.message })
+                    throw new Error(e.message)
+                }
+            }
+            const isLtSize = file.size / 1024 / 1024 < this.maxSize
+            if (!isLtSize) {
+                const message = `上传文件大小不能超过 ${this.maxSize}MB!`
+                Notify({ type: 'danger', message: message })
+
+                throw new Error(message)
             }
         }
-        const isLtSize = file.size / 1024 / 1024 < this.maxSize
-        if (!isLtSize) {
-            const message = `上传文件大小不能超过 ${this.maxSize}MB!`
-            Notify({ type: 'danger', message: message })
 
-            throw new Error(message)
+        if (!Array.isArray(obj)) {
+            return await validFile(obj)
+        } else {
+            const prs = obj.map(f => {
+                return validFile(f)
+            })
+            return await new Promise((resolve, reject) => {
+                Promise.all(prs).then(
+                    () => {
+                        resolve(undefined)
+                    },
+                    () => {
+                        reject(false)
+                    }
+                )
+            })
         }
     }
     async beforeUploadImage(file) {
@@ -417,7 +441,6 @@ export default class Index extends Vue {
     }
 
     async afterReadHandler(file) {
-        //
         if (file instanceof Array) {
             file.forEach(item => {
                 this.uploadFile(item.file)
