@@ -199,6 +199,10 @@ export default class Index extends Vue {
     @Prop() onRemove: OnRemove
 
     @Prop({ default: 9999 }) limit: number
+    /**
+     * 是否开启下载日志功能
+     */
+    @Prop({ default: true, type: Boolean }) enableDownloadLog: boolean
 
     inApp = false
     inWxWork = false
@@ -500,26 +504,26 @@ export default class Index extends Vue {
         if (file.id) {
             if (this.isWxworkReady) {
                 wxwork.wx.previewFile({
-                    url: file.url,
+                    url: this.getDownloadUrl(file.url),
                     name: file.name,
                     size: file.length || file.size
                 })
             } else if (this.inApp) {
-                BM.appointment.file.download(file.url, file.name, '')
+                BM.appointment.file.download(this.getDownloadUrl(file.url), file.name, '')
             } else {
-                window.open(file.url)
+                window.open(this.getDownloadUrl(file.url))
             }
         } else {
             if (this.isWxworkReady) {
                 wxwork.wx.previewFile({
-                    url: file.response.data.url,
+                    url: this.getDownloadUrl(file.response.data.url),
                     name: file.name,
                     size: file.length || file.size
                 })
             } else if (this.inApp) {
-                BM.appointment.file.download(file.response.data.url, file.name, '')
+                BM.appointment.file.download(this.getDownloadUrl(file.response.data.url), file.name, '')
             } else {
-                window.open(file.response.data.url)
+                window.open(this.getDownloadUrl(file.response.data.url))
             }
         }
     }
@@ -531,12 +535,20 @@ export default class Index extends Vue {
             this.handleO365Preview(file)
         } else {
             if (this.inApp) {
-                BM.appointment.file.download(`${this.config.api.baseURI}/sharedservice/blob/${file.id}`, file.name, '')
+                BM.appointment.file.download(this.getDownloadUrl(`${this.config.api.baseURI}/sharedservice/blob/${file.id}`), file.name, '')
                 this.$emit('download', file)
             } else {
-                window.open(file.url)
+                window.open(this.getDownloadUrl(file.url))
             }
         }
+    }
+
+    getDownloadUrl(url: string) {
+        let downloadUrl = url
+        if (this.enableDownloadLog) {
+            downloadUrl = downloadUrl + (downloadUrl.indexOf('?') === -1 ? '?' : '&') + 'token=' + globalConfig.token
+        }
+        return downloadUrl
     }
 
     async handleO365Preview(file: { id: string; name: string; length?: number; size?: number; url: string; extension?: string }) {
@@ -550,13 +562,13 @@ export default class Index extends Vue {
 
         if (this.inApp) {
             if (isSupport) {
-                BM.appointment.webview.open(url)
+                BM.appointment.webview.open(this.getDownloadUrl(url))
             } else {
-                BM.appointment.file.download(url, file.name, '')
+                BM.appointment.file.download(this.getDownloadUrl(url), file.name, '')
                 this.$emit('download', file)
             }
         } else {
-            window.open(url)
+            window.open(this.getDownloadUrl(url))
             this.$emit('download', file)
         }
     }
