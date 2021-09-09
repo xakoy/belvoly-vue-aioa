@@ -1,6 +1,6 @@
 <template>
     <div style="text-align: left">
-        <el-form>
+        <el-form label-width="60px">
             <el-form-item label="封面">
                 <upload
                     :action="actionUrl"
@@ -13,7 +13,9 @@
                 />
             </el-form-item>
             <el-form-item label="附件">
-                <upload ref="upload" :action="actionUrl" :limit="5" :fileList="fileList" :typeCode="typeCode" :refTableName="refTableName" :isEditFile="false" @change="changeHandler" />
+                <div>
+                    <upload ref="upload" :action="actionUrl" :limit="6" :fileList="fileList" :typeCode="typeCode" :refTableName="refTableName" :isEditFile="false" @change="changeHandler" />
+                </div>
             </el-form-item>
         </el-form>
         <div>

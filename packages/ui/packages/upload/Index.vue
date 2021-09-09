@@ -1,5 +1,5 @@
 <template>
-    <div class="bv-upload" v-if="!simple">
+    <div class="bv-upload" :class="{ ['bv-upload__readonly']: !isEditFile }" v-if="!simple">
         <el-upload
             :action="uploadAction"
             :on-preview="handlePreview"
@@ -9,18 +9,33 @@
             :accept="accept"
             :limit="limit"
             :multiple="multiple"
-            :file-list="getFileList"
+            :file-list="getElementFiles"
+            :on-change="handleUploadChange"
             :on-success="handleUploadSuccess"
             :on-error="handleUploadError"
             :on-progress="handleUploadProgress"
             :on-exceed="handleExceed"
             v-if="isEditFile"
+            :show-file-list="false"
         >
             <el-button size="mini" type="primary" :disabled="isDisabled">上传附件</el-button>
             <div slot="tip" class="bv-upload__tip el-upload__tip">({{ uploadTip }})</div>
         </el-upload>
-        <!-- 查看附件 -->
-        <el-upload class="bv-upload__detail" :action="uploadAction" :on-preview="handlePreview" :file-list="getFileList" v-else></el-upload>
+        <div class="bv-upload__detail">
+            <div class="bv-upload-list__item" v-for="(item, index) in files" :key="index">
+                <span class="bv-upload-list__item-icon"><img class="el-upload-file-icon" :src="getFileIcon(item)" @error="iconErrorHandler(item, $event)" alt=".pdf"/></span>
+                <span class="bv-upload-list__item-title">
+                    <a href="" @click="titleClickHandler(item, $event)" :title="item.file.displayName || item.file.name">{{ item.file.displayName || item.file.name }}</a>
+                </span>
+                <span v-if="item.status === 'uploading'" class="bv-upload-list__item-loading"><i class="el-icon-loading"></i> 上传中...</span>
+                <span v-else-if="item.status === 'failed'" class="bv-upload-list__item-errortip">上传失败</span>
+                <template v-else>
+                    <span class="bv-upload-list__item-view" title="查看" @click="viewClickHandler(item)"><i class="fc fc-eyes-open"></i> 查看</span>
+                    <span class="bv-upload-list__item-download" title="下载" @click="downloadClickHandler(item)"><i class="fc fc-cloud-download"></i> 下载</span>
+                </template>
+                <span v-if="isEditFile && item.status !== 'uploading'" class="bv-upload-list__item-delete" @click="removeClickHandler(item)" title="删除"><i class="fc fc-delete"></i> 删除</span>
+            </div>
+        </div>
     </div>
     <div class="bv-upload bv-upload__simple" v-else>
         <el-upload
@@ -58,10 +73,29 @@ interface BeforeUpload {
     (file: any): Promise<boolean>
 }
 
+interface HtmlFile {
+    id?: string
+    name: string
+    size: number
+    response?: {
+        data: UploadFile
+    }
+}
+
 interface UploadFile {
     name?: string
     id?: string
+    url?: string
     displayName?: string
+    extension?: string
+}
+
+type UploadFileStatus = 'success' | 'failed' | 'uploading'
+
+interface ExisitFile {
+    status: UploadFileStatus
+    file: HtmlFile & UploadFile
+    uid?: string
 }
 
 @Component
@@ -103,7 +137,11 @@ export default class Index extends Vue {
      */
     @Prop({ default: true, type: Boolean }) enableDownloadLog: boolean
 
-    uploadFiles: any[] = []
+    uploadFiles: UploadFile[] = []
+
+    files: ExisitFile[] = []
+
+    elementFiles: Array<any> = []
 
     get config() {
         return {
@@ -152,6 +190,25 @@ export default class Index extends Vue {
         })
         return files
     }
+
+    get getNewFileList() {
+        const files = this.fileList.map(c => {
+            if (c.displayName) {
+                c.name = c.displayName
+            }
+
+            return <ExisitFile>{
+                status: 'success',
+                file: c
+            }
+        })
+        return files
+    }
+
+    get getElementFiles() {
+        return this.files.map(c => c.file)
+    }
+
     get accept() {
         if (this.isOnlyImage) {
             return '.jpg,.jpeg,.png,.bmp'
@@ -167,16 +224,13 @@ export default class Index extends Vue {
     }
 
     mounted() {
-        this.watchFileList(this.fileList)
+        this.watchFileList()
     }
 
     @Watch('fileList')
-    watchFileList(newValue) {
-        this.uploadFiles = [...newValue]
-    }
-    @Watch('uploadFiles')
-    watchUploadFiles(newValue) {
-        this.replaceFileIcons(newValue)
+    watchFileList() {
+        this.files = this.getNewFileList
+        this.uploadFiles = this.fileList.map(f => f)
     }
 
     handlePreview(file) {
@@ -230,6 +284,10 @@ export default class Index extends Vue {
             if (fileIndex > -1) {
                 this.uploadFiles.splice(fileIndex, 1)
             }
+            const index = this.files.findIndex(f => f.file.id === id)
+            if (index > -1) {
+                this.files.splice(index, 1)
+            }
         }
 
         if (this.onRemove) {
@@ -254,9 +312,42 @@ export default class Index extends Vue {
     }
     async beforeRemove(file) {
         if (file.status === 'ready') {
+            const uid = file.uid
+            const rawFile = this.files.find(f => f.uid === uid)
+            if (rawFile) {
+                rawFile.status = 'failed'
+                this.files.splice(
+                    this.files.findIndex(f => f.uid === uid),
+                    1
+                )
+            }
             return true
         }
         return await MessageBox.confirm(`确定移除 ${file.name}？`)
+    }
+
+    handleUploadChange(file, fileList) {
+        const uid = file.uid
+        let status: UploadFileStatus = 'uploading'
+        if (file.status === 'success') {
+            status = 'success'
+        } else if (file.status === 'fail') {
+            status = 'failed'
+        }
+        const rawFile = this.files.find(f => f.uid === uid)
+        if (rawFile) {
+            rawFile.status = status
+            rawFile.file = file
+            if (status === 'success') {
+                rawFile.file = file.response.data
+            }
+        } else {
+            this.files.push({
+                file: file,
+                status: status,
+                uid: uid
+            })
+        }
     }
 
     handleUploadSuccess(response, file, fileList) {
@@ -272,12 +363,14 @@ export default class Index extends Vue {
             return
         }
 
+        const fs = this.uploadFiles.map(f => ({ ...f }))
+
         const uploadInfo = {
-            ids: fileList.map(file => file.id || file.response.data?.id),
+            ids: fs.map(file => file.id),
             refTableId: '',
             refTableName: this.refTableName,
             file: file,
-            fileList: fileList
+            fileList: fs
         }
 
         this.$emit('on-success', uploadInfo)
@@ -286,6 +379,11 @@ export default class Index extends Vue {
     }
 
     handleUploadError(err, file) {
+        const uid = file.uid
+        const rawFile = this.files.find(f => f.uid === uid)
+        if (rawFile) {
+            rawFile.status = 'failed'
+        }
         this.$emit('error', err, file)
     }
 
@@ -331,63 +429,61 @@ export default class Index extends Vue {
         throw new Error(`图片格式不正确`)
     }
 
-    replaceFileIcons(files) {
-        this.$nextTick(() => {
-            this.$el.querySelectorAll('.el-icon-document').forEach((el: HTMLElement, i) => {
-                el.style.display = 'none'
-
-                if (i >= files.length) {
-                    return
-                }
-
-                this.showFileIcon(el, files[i])
-            })
-            // 查看模式下才显示
-            if (!this.isEditFile) {
-                this.$el.querySelectorAll('.el-upload-list__item-status-label').forEach((el: HTMLElement, i) => {
-                    el.style.display = 'none'
-
-                    if (i >= files.length) {
-                        return
-                    }
-                    // 添加下载和预览按钮
-                    this.addDownloadIcon(el, files[i])
-                })
+    getFileIcon(item: ExisitFile) {
+        const file = item.file
+        let extension = file.extension
+        if (!extension) {
+            const names = file.name.split('.')
+            if (names.length > 1) {
+                extension = '.' + names.pop()
             }
-        })
+        }
+        if (!extension) {
+            return
+        }
+
+        const removedDotExtension = extension.substring(1)
+        const assertBaseURI = `${this.config.sharedservice.assets.baseURI}/img/files`
+        const iconUrl = `${assertBaseURI}/${removedDotExtension}.png`
+
+        return iconUrl
     }
-    addDownloadIcon(el: HTMLElement, file) {
-        let isView = false
-        const url = file.url
-        if (file.extension && this.config.o365.enabled && this.checkO365PreviewSupproted(file.extension)) {
-            isView = true
+
+    iconErrorHandler(item: ExisitFile, e: Event) {
+        const assertBaseURI = `${this.config.sharedservice.assets.baseURI}/img/files`
+        const errorUrl = `${assertBaseURI}/default.png`
+        ;(e.target as HTMLImageElement).src = errorUrl
+    }
+
+    titleClickHandler(item: ExisitFile, e: Event) {
+        if (item.status === 'success') {
+            this.handlePreview(item.file)
         }
+        e.preventDefault()
+    }
 
-        if (isView) {
-            const viewElement = document.createElement('span')
-            viewElement.className = 'bv-upload-list__item-view'
-            viewElement.title = '查看'
-            viewElement.addEventListener('click', () => {
-                this.handlePreview(file)
-            })
+    viewClickHandler(item: ExisitFile) {
+        this.handlePreview(item.file)
+    }
 
-            viewElement.innerHTML = '<i class="fc fc-eyes-open" /> 查看'
+    downloadClickHandler(item: ExisitFile) {
+        this.download(item.file.url, item.file)
+    }
 
-            el.parentNode.insertBefore(viewElement, el)
-
-            el.style.right = '35px'
-        } else {
-            el.style.right = '19px'
+    async removeClickHandler(item: ExisitFile) {
+        if (item.status === 'failed') {
+            this.files.splice(
+                this.files.findIndex(f => f.uid === item.uid),
+                1
+            )
+            return
         }
-
-        const downloadElement = document.createElement('span')
-        downloadElement.className = 'bv-upload-list__item-download'
-        downloadElement.title = '下载'
-        downloadElement.addEventListener('click', () => {
-            this.download(url, file)
-        })
-        downloadElement.innerHTML = '<i class="fc fc-cloud-download" /> 下载'
-        el.parentNode.insertBefore(downloadElement, el)
+        this.beforeRemove(item.file).then(
+            () => {
+                this.handleRemove(item.file)
+            },
+            () => {}
+        )
     }
 
     download(url: string, file) {
@@ -399,37 +495,6 @@ export default class Index extends Vue {
         window.open(downloadUrl)
     }
 
-    showFileIcon(el: HTMLElement, file) {
-        let extension = file.extension
-        if (!extension) {
-            const names = file.name.split('.')
-            if (names.length > 1) {
-                extension = '.' + names.pop()
-            }
-        }
-        if (!extension) {
-            return
-        }
-        const element = el.parentNode.querySelector('.el-upload-file-icon')
-        if (element) {
-            return
-        }
-        const removedDotExtension = extension.substring(1)
-        const assertBaseURI = `${this.config.sharedservice.assets.baseURI}/img/files`
-        const iconUrl = `${assertBaseURI}/${removedDotExtension}.png`
-        const errorUrl = `${assertBaseURI}/default.png`
-        // el.previousSibling.parentElement.remove()
-
-        const imgElement = document.createElement('img')
-        imgElement.className = 'el-upload-file-icon'
-        imgElement.src = iconUrl
-        imgElement.alt = extension
-        imgElement.addEventListener('error', function() {
-            imgElement.src = errorUrl
-        })
-
-        el.parentNode.insertBefore(imgElement, el)
-    }
     /**
      * 更新关联业务表记录ID
      */
@@ -491,6 +556,9 @@ export default class Index extends Vue {
         }
     }
 }
+.bv-upload__readonly .bv-upload__detail {
+    clear: none;
+}
 .bv-upload__detail {
     clear: both;
     .el-upload--text {
@@ -528,8 +596,38 @@ export default class Index extends Vue {
     }
 }
 
+.bv-upload-list__item-icon {
+    display: inline-block;
+    vertical-align: middle;
+    width: 26px;
+    height: 26px;
+    margin-right: 7px;
+    flex-shrink: 0;
+    img {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+}
+.bv-upload-list__item-title {
+    // flex: 1;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    padding-right: 10px;
+    a {
+        color: #333;
+        &:hover {
+            color: #409eff;
+        }
+    }
+}
+
+.bv-upload-list__item-loading,
 .bv-upload-list__item-download,
-.bv-upload-list__item-view {
+.bv-upload-list__item-view,
+.bv-upload-list__item-delete,
+.bv-upload-list__item-errortip {
     // position: absolute;
     // right: 1px;
     top: 0;
@@ -537,8 +635,32 @@ export default class Index extends Vue {
 
     display: inline-block;
     vertical-align: middle;
-}
-.bv-upload-list__item-download {
+    color: #999;
     margin-left: 10px;
+    flex-shrink: 0;
+}
+.bv-upload-list__item-errortip {
+    color: red;
+}
+.bv-upload-list__item-delete {
+    display: none;
+}
+.bv-upload-list__item-download,
+.bv-upload-list__item-view,
+.bv-upload-list__item-delete {
+    &:hover {
+        color: #409eff;
+    }
+}
+.bv-upload-list__item {
+    display: flex;
+    line-height: 26px;
+    padding: 3px 10px 3px 4px;
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+        .bv-upload-list__item-delete {
+            display: inline-block;
+        }
+    }
 }
 </style>
