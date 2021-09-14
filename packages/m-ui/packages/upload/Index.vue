@@ -349,6 +349,7 @@ export default class Index extends Vue {
                 file: file
             }
             this.files.push(item)
+            this.add(file)
 
             uploadFileFunction(url, this.uploadAction, data => {
                 switch (data.state) {
@@ -465,6 +466,7 @@ export default class Index extends Vue {
         this.files.push(item)
         const data = new FormData()
         data.append(`file`, file)
+        this.add(file)
         this.uploading()
         const { data: result, success } = await request.request(this.uploadAction, {
             headers: {
@@ -487,6 +489,11 @@ export default class Index extends Vue {
     error() {
         this.$emit('error')
     }
+
+    add(file) {
+        this.$emit('add', file)
+    }
+
     uploading() {
         this.$emit('uploading')
     }

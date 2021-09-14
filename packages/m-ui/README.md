@@ -4,6 +4,9 @@ belvoly vue 移动APP专用组件库
 ### 组件
 1. `ChoosePeopleOrOrg` 选人组件
 2. `Upload` 上传组件
+
+### 0.1.47
+1. `Upload` 增加 `add` 事件
 ### 0.1.46 
 1. `Upload` 增加`enabledRename`属性，是否开启重命名功能
 2. `Upload` 修复批量上传报错
