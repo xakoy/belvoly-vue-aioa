@@ -5,6 +5,9 @@ belvoly vue 移动APP专用组件库
 1. `ChoosePeopleOrOrg` 选人组件
 2. `Upload` 上传组件
 
+###
+1. `Upload` 的 `uploading` 事件增加进度参数
+
 ### 0.1.47
 1. `Upload` 增加 `add` 事件
 ### 0.1.46 

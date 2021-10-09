@@ -357,7 +357,7 @@ export default class Index extends Vue {
                         break
                     case 1: //上传中
                         // uploadProgress(options, file, data.progressPercentage)
-                        this.uploading()
+                        this.uploading(item, data.progressPercentage)
                         break
                     case 2: //成功
                         if (!data.result || data.result == '') {
@@ -379,11 +379,11 @@ export default class Index extends Vue {
                         // data.state = UPLOAD_ERROR_TYPE.ERROR
                         // uploadError(options, file, '上传失败')
                         item.status = 'failed'
-                        this.error()
+                        this.error(item)
                         break
                     case 4: //超时
                         item.status = 'failed'
-                        this.error()
+                        this.error(item)
                         // data.state = UPLOAD_ERROR_TYPE.TIMEOUT
                         // uploadError(options, file, '上传超时')
                         break
@@ -467,14 +467,20 @@ export default class Index extends Vue {
         const data = new FormData()
         data.append(`file`, file)
         this.add(file)
-        this.uploading()
+        this.uploading(item, 0)
         const { data: result, success } = await request.request(this.uploadAction, {
             headers: {
                 //添加请求头
                 'Content-Type': 'multipart/form-data'
             },
             method: 'POST',
-            data: data
+            data: data,
+            onUploadProgress: event => {
+                if (event.lengthComputable) {
+                    const percentComplete = (event.loaded / event.total) * 100
+                    this.uploading(item, percentComplete)
+                }
+            }
         })
         if (success) {
             item.file.response = { data: result }
@@ -483,19 +489,19 @@ export default class Index extends Vue {
             this.handleUploadSuccess(result, file, this.files)
         } else {
             item.status = 'failed'
-            this.error()
+            this.error(item)
         }
     }
-    error() {
-        this.$emit('error')
+    error(item: ExisitFile) {
+        this.$emit('error', item.file, item)
     }
 
     add(file) {
         this.$emit('add', file)
     }
 
-    uploading() {
-        this.$emit('uploading')
+    uploading(item: ExisitFile, percentage: number) {
+        this.$emit('uploading', item.file, item, percentage)
     }
 
     handlePreview(file) {
@@ -720,7 +726,6 @@ export default class Index extends Vue {
     async renameBeforeClosehandler(action, done) {
         if (action === 'confirm') {
             const success = await this.renameConfirmHandler()
-            console.log(success)
 
             if (!success) {
                 done(false)
