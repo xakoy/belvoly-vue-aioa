@@ -9,7 +9,7 @@ const isAppleWebKit = window.navigator.userAgent.indexOf('AppleWebKit') > -1
 
 const axiosInstance = axios.create({})
 
-export interface RequestOption {
+export interface RequestOption extends AxiosRequestConfig {
     url?: string
     method?: AxiosMethod
     headers?: any
