@@ -5,7 +5,7 @@ belvoly vue 移动APP专用组件库
 1. `ChoosePeopleOrOrg` 选人组件
 2. `Upload` 上传组件
 
-###
+### 0.1.48
 1. `Upload` 的 `uploading` 事件增加进度参数
 2. `Upload` 修复simple模式只能上传图片
 3. `Upload` 增加手动触发选择文件`chooseFile`方法
