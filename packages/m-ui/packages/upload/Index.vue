@@ -3,7 +3,7 @@
         <bvan-cell form :title="label" :border="true" v-if="!isReadonly">
             <template #right-icon>
                 <template v-if="!isReadonly && !isDisabled">
-                    <bvan-uploader v-if="!inApp" :before-read="beforeReadHandler" :accept="accept" :after-read="afterReadHandler" :multiple="multiple">
+                    <bvan-uploader ref="vanUploader" v-if="!inApp" :before-read="beforeReadHandler" :accept="accept" :after-read="afterReadHandler" :multiple="multiple">
                         <bvan-icon name="attachment" class-prefix="fc" color="#999" style="line-height: inherit;" />
                     </bvan-uploader>
                     <bvan-icon v-else name="attachment" class-prefix="fc" color="#999" style="line-height: inherit;" @click="appUploadClickHandler" />
@@ -66,7 +66,7 @@
         </bvan-dialog>
     </div>
     <span class="bvan-mui-upload__simple" v-else>
-        <bvan-uploader v-if="!inApp" :before-read="beforeReadHandler" :after-read="afterReadHandler" :multiple="multiple">
+        <bvan-uploader v-if="!inApp" ref="simpleVanUploader" :before-read="beforeReadHandler" :accept="accept" :after-read="afterReadHandler" :multiple="multiple">
             <slot name="simple" />
         </bvan-uploader>
         <span v-else @click="appUploadClickHandler">
@@ -349,7 +349,7 @@ export default class Index extends Vue {
                 file: file
             }
             this.files.push(item)
-            this.add(file)
+            this.add(file, item)
 
             uploadFileFunction(url, this.uploadAction, data => {
                 switch (data.state) {
@@ -372,7 +372,7 @@ export default class Index extends Vue {
                         result = result.data
                         file.response = { data: result }
                         item.status = 'success'
-                        this.handleUploadSuccess(result, file, this.files)
+                        this.handleUploadSuccess(result, file, this.files, item)
                         // uploadSuccess(options, file, result)
                         break
                     case 3: //失败
@@ -457,16 +457,13 @@ export default class Index extends Vue {
 
     async uploadFile(file) {
         const item: ExisitFile = {
-            file: {
-                name: file.name,
-                size: file.size
-            },
+            file: file,
             status: 'uploading'
         }
         this.files.push(item)
         const data = new FormData()
         data.append(`file`, file)
-        this.add(file)
+        this.add(file, item)
         this.uploading(item, 0)
         const { data: result, success } = await request.request(this.uploadAction, {
             headers: {
@@ -486,7 +483,7 @@ export default class Index extends Vue {
             item.file.response = { data: result }
 
             item.status = 'success'
-            this.handleUploadSuccess(result, file, this.files)
+            this.handleUploadSuccess(result, file, this.files, item)
         } else {
             item.status = 'failed'
             this.error(item)
@@ -496,8 +493,8 @@ export default class Index extends Vue {
         this.$emit('error', item.file, item)
     }
 
-    add(file) {
-        this.$emit('add', file)
+    add(file: HtmlFile, item: ExisitFile) {
+        this.$emit('add', file, item)
     }
 
     uploading(item: ExisitFile, percentage: number) {
@@ -645,7 +642,7 @@ export default class Index extends Vue {
         return await Dialog.confirm({ title: `确定移除 ${file.name}？` })
     }
 
-    handleUploadSuccess(responseData: UploadFile, file, fileList) {
+    handleUploadSuccess(responseData: UploadFile, file, fileList, item: ExisitFile) {
         if (responseData) {
             this.uploadFiles.push(responseData)
         }
@@ -663,7 +660,7 @@ export default class Index extends Vue {
             fileList: fileList
         }
 
-        this.$emit('success', uploadInfo, responseData)
+        this.$emit('success', uploadInfo, responseData, item)
         this.change()
         // this.$bus.emit('uploadInfo', uploadInfo)
     }
@@ -732,6 +729,19 @@ export default class Index extends Vue {
             }
         } else {
             this.renameCancelHandler()
+        }
+    }
+
+    chooseFile() {
+        if (this.isReadonly || this.isDisabled) {
+            return
+        }
+
+        if (this.inApp) {
+            this.appUploadClickHandler()
+        } else {
+            const uploder: any = this.simple ? this.$refs.simpleVanUploader : this.$refs.vanUploader
+            uploder.chooseFile()
         }
     }
 }

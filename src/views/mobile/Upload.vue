@@ -10,6 +10,7 @@
             :typeCode="typeCode"
             label="封面"
             tip="封面仅支持20MB以下图片，格式仅支持.jpg ,jpeg .png .bmp"
+            ref="oneUpload"
         />
         <el-input v-model="ss" />
         <upload ref="upload" :action="actionUrl" :limit="4" :fileList="fileList" :typeCode="typeCode" :refTableName="refTableName" :isEditFile="true" @change="changeHandler" />
@@ -19,16 +20,25 @@
             <template v-slot:buttons="{ item }"> {{ item.status }} {{ item.file.name }} </template>
         </upload>
 
-        <bvan-cell-group title="简易模式">
-            <upload simple @success="simpleSuccessHandler" action="http://192.168.101.135:2001/api/bua/avatar/uploadHeadPhoto?userUid=luolong">
-                <template #simple>
-                    上传中
-                </template>
-            </upload>
-        </bvan-cell-group>
+        
         <bvan-button @click="saveHandler" :loading="loading">
             保存
         </bvan-button> -->
+
+        <bvan-cell-group title="简易模式">
+            <upload simple ref="simUpload" @success="simpleSuccessHandler" action="http://192.168.24.111/api/bua/avatar/uploadHeadPhoto?userUid=luolong">
+                <template #simple>
+                    上传
+                </template>
+            </upload>
+        </bvan-cell-group>
+
+        <div>
+            主动选择文件
+            <bvan-button @click="cf">
+                上传
+            </bvan-button>
+        </div>
     </div>
 </template>
 
@@ -180,6 +190,10 @@ export default class UploadIndex extends Vue {
     async simpleSuccessHandler(a, b) {
         console.log(a, b, 'simple success')
         alert('上传成功')
+    }
+
+    cf() {
+        ;(this.$refs.simUpload as any).chooseFile()
     }
 }
 </script>
