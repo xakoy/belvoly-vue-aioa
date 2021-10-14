@@ -472,6 +472,18 @@ export default class Index extends Vue {
             flex: 1;
             font-size: 16px;
             padding-left: 8px;
+
+            &-hasdescription {
+                padding-top: 0 !important;
+            }
+            &-hasdescription &-title {
+                padding-bottom: 6px;
+            }
+            &-hasdescription &-description {
+                display: block;
+                color: #999;
+                font-size: 12px;
+            }
         }
 
         &-nochild {

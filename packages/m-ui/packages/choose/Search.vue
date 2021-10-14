@@ -13,6 +13,7 @@
                     :key="index"
                     :icon="getUserIcon(child)"
                     :label="child.label"
+                    :description="child.data.data.orgName"
                     :cancheck="child.cancheck"
                     v-model="child.check"
                     @change="checkChange($event, child)"
