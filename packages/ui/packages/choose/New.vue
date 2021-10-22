@@ -320,11 +320,6 @@ interface Tab {
 }
 
 const { orgService, userService } = services
-const config = {
-    api: {
-        baseURI: globalConfig.apiHost
-    }
-}
 
 @Component
 export default class New extends Vue {
@@ -401,6 +396,14 @@ export default class New extends Vue {
      * 全选
      */
     checkAll = false
+
+    get config() {
+        return {
+            api: {
+                baseURI: globalConfig.apiHost
+            }
+        }
+    }
 
     get isShowCheckBox() {
         return !this.isOnlyChooseUser
@@ -790,14 +793,14 @@ export default class New extends Vue {
         this.close('ok')
     }
     getUserIcon(user) {
-        return `${config.api.baseURI}/bua/avatar/getHeadPhoto?userUid=` + user.value
+        return `${this.config.api.baseURI}/bua/avatar/getHeadPhoto?userUid=` + user.value
     }
 
     getSelectUserIcon(user: TreeNode) {
         if (user.data && user.data.avatar !== null && user.data.avatar !== undefined) {
             return user.data.avatar || this.defaultAvatar
         }
-        return `${config.api.baseURI}/bua/avatar/getHeadPhoto?userUid=` + user.value
+        return `${this.config.api.baseURI}/bua/avatar/getHeadPhoto?userUid=` + user.value
     }
     // 获取机构头像
     getOrgIcon(name) {
