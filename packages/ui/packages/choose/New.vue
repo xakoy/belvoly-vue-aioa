@@ -149,7 +149,7 @@
                                 <li class="bv-choose-people_select_item" v-for="(item, index) in canSelecteUsers" :key="index" @click="handleSelectUser(item, $event)">
                                     <span :class="{ 'bv-choose-people_select_item_avatar': !item.checked, 'bv-choose-people_select_item_checked': item.checked }">
                                         <span v-show="item.checked">.</span>
-                                        <img v-show="!item.checked" :src="getUserIcon(item)" @error="avatarLoadError(this)" />
+                                        <img v-show="!item.checked" :src="getUserIcon(item)" @error="avatarLoadError($event)" />
                                     </span>
                                     <span class="bv-choose-people_select_item_name">
                                         <b>{{ item.name }}</b>
@@ -175,7 +175,7 @@
                                 <li class="bv-choose-people_select_item" v-for="(item, index) in canSelecteTabDataItems" :key="index" @click="handleSelectUser(item, $event)">
                                     <span :class="{ 'bv-choose-people_select_item_avatar': !item.checked, 'bv-choose-people_select_item_checked': item.checked }">
                                         <span v-show="item.checked">.</span>
-                                        <img v-show="!item.checked" :src="getTabDataItemAvatar(item)" @error="avatarLoadError(this)" />
+                                        <img v-show="!item.checked" :src="getTabDataItemAvatar(item)" @error="avatarLoadError($event)" />
                                     </span>
                                     <span class="bv-choose-people_select_item_name">
                                         <b>{{ item.name }}</b>
@@ -205,7 +205,7 @@
                                                     x
                                                 </span>
                                                 <span class="bv-choose-people_select_item_avatar_name">
-                                                    <img :src="getSelectUserIcon(item)" @error="avatarLoadError(this)" />
+                                                    <img :src="getSelectUserIcon(item)" @error="avatarLoadError($event)" />
                                                 </span>
                                             </span>
                                             <span
@@ -269,7 +269,7 @@
                                                     x
                                                 </span>
                                                 <span class="bv-choose-people_select_item_avatar_name">
-                                                    <img :src="getSelectUserIcon(item)" @error="avatarLoadError(this)" />
+                                                    <img :src="getSelectUserIcon(item)" @error="avatarLoadError($event)" />
                                                 </span>
                                             </span>
                                             <span
@@ -1091,7 +1091,8 @@ export default class New extends Vue {
     }
     //#endregion
 
-    avatarLoadError(el: HTMLImageElement) {
+    avatarLoadError(e: Event) {
+        const el = e.target as HTMLImageElement
         el.src = this.defaultAvatar
     }
 }
