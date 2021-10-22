@@ -1,4 +1,6 @@
 ## 版本记录
+### 
+1. 增加`request`的`RequestOption`参数说明
 ### v 0.1.15
 1. 选人组件调用的接口可以在浏览器中直接打开并返回数据，安全检测提升安全不够，需要修改为受保护的public/private接口[#24](https://github.com/xakoy/belvoly-vue-aioa/issues/24)
 ### v 0.1.13
