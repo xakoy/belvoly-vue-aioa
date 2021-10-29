@@ -50,7 +50,7 @@ export default class AioaDialog extends Vue {
 
     get width() {
         if (this.$attrs.width) {
-            return this.width
+            return this.$attrs.width
         }
         switch (this.size) {
             case 'small':
