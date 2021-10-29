@@ -14,7 +14,7 @@ export const orgObjective: OPickerObjective<{
         rootOrgCode: null,
         cascade: true
     },
-    url: 'http://192.168.101.135:2001/api/bua/opicker/org',
+    url: 'http://192.168.24.111/api/bua/opicker/org',
     chainAjax: function(ajax) {
         if (!ajax.headers) {
             ajax.headers = {}
