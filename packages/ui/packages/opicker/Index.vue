@@ -56,7 +56,7 @@
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { Objective, get as getObjective } from './objective'
-import { utils } from '@belvoly-vue-aioa/m-core'
+import { utils } from '@belvoly-vue-aioa/core'
 import { Dialog as BvDialog } from '../dialog'
 import { Flex as BvFlex } from '../layout'
 import { FlexItem as BvFlexItem } from '../layout'
