@@ -233,20 +233,10 @@ export default class OpickerIndex extends Vue {
     }
 
     treeCurrentCheckChangeHandler(item: Node, checked: boolean) {
-        debugger
         if (checked) {
             if (this.isSingleMode) {
                 const tree = this.getCurrentTree()
                 tree.setCheckedKeys([item.id])
-
-                // this.checkItems.forEach(c => {
-                //     if (c.value !== item.value) {
-                //         const tree: any = this.$refs.tree
-                //         if (c.id) {
-                //             tree.setCheck(c.id, false)
-                //         }
-                //     }
-                // })
                 this.checkItems = [<TreeNode>item]
             } else {
                 this.checkItems.push(<TreeNode>item)
