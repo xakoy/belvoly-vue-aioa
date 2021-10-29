@@ -36,6 +36,10 @@ export default class Index extends Vue {
             path: routeNames.pc.choose
         },
         {
+            name: 'opciker',
+            path: routeNames.pc.opicker
+        },
+        {
             name: 'SubscriptionEvent',
             path: routeNames.pc.subscriptionEvent
         }

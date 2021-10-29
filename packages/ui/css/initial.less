@@ -1,0 +1,33 @@
+.color(@var) when (iscolor(@var)) {
+    color: @var;
+}
+.color(@var) when (iscolor(@var) = false) {
+    @varstatic: ~'@{var}-static';
+    color: @@varstatic;
+    color: @@var;
+}
+
+.bgcolor(@var) when (iscolor(@var)) {
+    background-color: @var;
+}
+.bgcolor(@var) when (iscolor(@var) = false) {
+    @varstatic: ~'@{var}-static';
+    background-color: @@varstatic;
+    background-color: @@var;
+}
+
+@color-danger: #f00606;
+@color-primary: var(--color-primary);
+@color-primary-static: #4a90e2;
+
+
+@color-background: var(--color-background);
+@color-background-static: #f9f9f9;
+@color-foreground: var(--color-foreground);
+@color-foreground-static: #fff;
+:root {
+    --color-primary: @color-primary-static;
+
+    --color-foreground: @color-foreground-static;
+    --color-background: @color-background-static;
+}

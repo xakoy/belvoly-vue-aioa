@@ -8,7 +8,8 @@ export const routeNames = {
         tinymce: 'pc-tinymce',
         choose: 'pc-choose',
         upload: 'pc-upload',
-        subscriptionEvent: 'pc-SubscriptionEvent'
+        subscriptionEvent: 'pc-SubscriptionEvent',
+        opicker: 'pc-opicker'
     },
     mobile: {
         choose: 'm-choose',
@@ -40,6 +41,11 @@ const routes: RouteConfig[] = [
                 path: 'choose',
                 name: routeNames.pc.choose,
                 component: () => import('./views/pc/choose/Index.vue')
+            },
+            {
+                path: 'opicker',
+                name: routeNames.pc.opicker,
+                component: () => import('./views/pc/opicker/Index.vue')
             },
             {
                 path: 'subscription-event',
