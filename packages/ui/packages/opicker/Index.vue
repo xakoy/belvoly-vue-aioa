@@ -12,6 +12,7 @@
                         :check-strictly="true"
                         :props="{ label: 'name', isLeaf: 'leaf' }"
                         :load="loadHandler"
+                        :defaultExpandedKeys="defaultExpandedKeys"
                         @check-change="treeCurrentCheckChangeHandler"
                     />
                 </div>
@@ -132,6 +133,7 @@ export default class OpickerIndex extends Vue {
 
     checkItems: TreeNode[] = []
     selectedareaExpand = false
+    defaultExpandedKeys = []
 
     get isSingleMode() {
         return this.selectionMode === 'single'
@@ -177,6 +179,11 @@ export default class OpickerIndex extends Vue {
     async queryChildren(parentCode: string, resolve) {
         const { data } = await this.queryRemoteData(parentCode)
         if (data) {
+            if (!parentCode) {
+                if (data.length === 1) {
+                    this.defaultExpandedKeys = [data[0].id]
+                }
+            }
             const nodeData = this.convertOPickerNodesToTreeNodeData(data)
             const children = [...nodeData]
             resolve(children)
@@ -398,6 +405,7 @@ export default class OpickerIndex extends Vue {
     }
 
     .el-tree {
+        overflow: hidden;
         .el-checkbox.is-disabled {
             display: none;
         }
