@@ -1,11 +1,6 @@
 <template>
-    <div class="bv-choose-people_wrapper" v-show="visible">
-        <div class="bv-choose-people_mask" @click="handleClickMask"></div>
+    <BvDialog class="bv-choose-people_wrapper" size="large" v-if="visible" :visible="true" :title="title" @close="handleClickClose">
         <div class="bv-choose-people">
-            <div class="bv-choose-people_head">
-                <div>{{ title }}</div>
-                <div class="bv-choose-people_close fc fc-close" @click="handleClickClose"></div>
-            </div>
             <div class="bv-choose-people_view">
                 <div class="bv-choose-people_view__header">
                     <slot name="header"></slot>
@@ -291,12 +286,12 @@
                     <slot name="footer"></slot>
                 </div>
             </div>
-            <div class="bv-choose-people_foot">
-                <el-button type="primary" @click="handleClickConfirm">确定</el-button>
-                <el-button @click="handleClickClose">取消</el-button>
-            </div>
         </div>
-    </div>
+        <template #footer>
+            <el-button type="primary" @click="handleClickConfirm">确定</el-button>
+            <el-button @click="handleClickClose">取消</el-button>
+        </template>
+    </BvDialog>
 </template>
 
 <script lang="ts">
@@ -305,6 +300,7 @@ import { services, globalConfig, utils } from '@belvoly-vue-aioa/core'
 import { ElTree } from 'element-ui/types/tree'
 import { User } from '@belvoly-vue-aioa/core/services/userService'
 import { ChooseItemNode, ChooseNode, Objective, ObjectiveDataType, PeopleDataFilterOfChoosePeopleOrOrg } from './types'
+import { Dialog as BvDialog } from '../dialog'
 
 const { request } = utils
 
@@ -321,7 +317,11 @@ interface Tab {
 
 const { orgService, userService } = services
 
-@Component
+@Component({
+    components: {
+        BvDialog
+    }
+})
 export default class New extends Vue {
     defaultAvatar =
         'data:image/png;base64,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'
@@ -1120,6 +1120,8 @@ interface NameValue {
 </script>
 
 <style lang="less">
+@import '../../css/initial.less';
+
 .bv-choose-people {
     font-size: 14px;
     &_wrapper {
@@ -1140,43 +1142,7 @@ interface NameValue {
     li {
         margin: 0;
     }
-    position: absolute;
-    left: 50%;
-    top: 45%;
-    //width: 660px;
-    // min-width: 700px;
-    width: 900px;
-    // width: 60%;
-    max-width: 90%;
-    transform: translate(-50%, -50%);
-    background-color: #fff;
     overflow: hidden;
-
-    &_mask {
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        left: 0;
-        top: 0;
-        background-color: rgba(0, 0, 0, 0.5);
-    }
-
-    &_head {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 17px 20px;
-        font-size: 16px;
-        background: #f2f2f2;
-        border-bottom: 1px solid #c3c3c3;
-    }
-    &_close {
-        color: #909399;
-        cursor: pointer;
-        &:hover {
-            color: #4090e2;
-        }
-    }
 
     &_body {
         display: flex;
@@ -1247,37 +1213,36 @@ interface NameValue {
             > ul {
                 display: flex;
                 flex-wrap: wrap;
-                // .bv-choose-people_select_item {
-                //     width: 100%;
-                // }
             }
         }
     }
 
     &_canselect {
         width: 35%;
-        border: 0 solid #d8d8d8;
+        border: 0 solid;
+        .border-color(border-color-base);
         padding: 8px;
         overflow: auto;
         border-width: 0 1px;
         box-sizing: border-box;
 
         &_clear {
-            color: #e65454;
+            .color(@color-danger);
             cursor: pointer;
         }
         &_title {
             overflow: hidden;
             padding-bottom: 15px;
             &_left {
-                color: #999;
+                .color(color-text-secondary);
                 float: left;
             }
             &_primary {
-                color: #409eff;
+                .color(color-primary);
             }
             &_right {
-                color: #999;
+                .color(color-text-secondary);
+
                 float: right;
 
                 .el-checkbox {
@@ -1301,7 +1266,6 @@ interface NameValue {
     }
     &_select_item {
         display: flex;
-        // margin-right: 20px;
         margin-bottom: 20px !important;
         width: 50%;
         cursor: pointer;
@@ -1310,7 +1274,7 @@ interface NameValue {
             vertical-align: middle;
             width: 36px;
             height: 36px;
-            background: #409eff;
+            .bgcolor(color-primary);
             color: #fff;
             border-radius: 50%;
             font-size: 12px;
@@ -1352,13 +1316,13 @@ interface NameValue {
                 font-weight: normal;
             }
             b {
-                color: #333;
+                .color(color-text-primary);
                 font-size: 14px;
             }
             i {
                 padding-top: 5px;
                 font-size: 12px;
-                color: #999;
+                .color(color-text-secondary);
             }
 
             &__nodescript {
@@ -1379,13 +1343,6 @@ interface NameValue {
         padding-left: 5px;
         box-sizing: border-box;
         width: 35%;
-    }
-
-    &_foot {
-        text-align: right;
-        padding: 10px 20px;
-        background: #f2f2f2;
-        border-top: 1px solid #c3c3c3;
     }
 }
 

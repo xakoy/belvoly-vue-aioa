@@ -16,6 +16,35 @@
     background-color: @@var;
 }
 
+.border-color(@var) when (iscolor(@var)) {
+    border-color: @var;
+  }
+  .border-color(@var)when (iscolor(@var) = false) {
+    @varstatic: ~'@{var}-static';
+    border-color: @@varstatic;
+    border-color: @@var;
+  }
+  .border-color--left(@var) {
+    @varstatic: ~'@{var}-static';
+    border-left-color: @@varstatic;
+    border-left-color: @@var;
+  }
+  .border-color--right(@var) {
+    @varstatic: ~'@{var}-static';
+    border-right-color: @@varstatic;
+    border-right-color: @@var;
+  }
+  .border-color--top(@var) {
+    @varstatic: ~'@{var}-static';
+    border-top-color: @@varstatic;
+    border-top-color: @@var;
+  }
+  .border-color--bottom(@var) {
+    @varstatic: ~'@{var}-static';
+    border-bottom-color: @@varstatic;
+    border-bottom-color: @@var;
+  }
+
 @color-danger: #f00606;
 @color-primary: var(--color-primary);
 @color-primary-static: #4a90e2;
@@ -25,9 +54,26 @@
 @color-background-static: #f9f9f9;
 @color-foreground: var(--color-foreground);
 @color-foreground-static: #fff;
+
+@color-text-primary: var(--color-text-primary);
+@color-text-primary-static: #333;
+@color-text-regular: var(--color-text-regular);
+@color-text-regular-static: #666;
+@color-text-secondary: var(--color-text-secondary);
+@color-text-secondary-static: #999;
+
+@border-color-base: var(--border-color-base);
+@border-color-base-static: #ccc;
+
 :root {
     --color-primary: @color-primary-static;
 
     --color-foreground: @color-foreground-static;
     --color-background: @color-background-static;
+
+    --color-text-primary: @color-text-primary-static;
+    --color-text-regular: @color-text-regular-static;
+    --color-text-secondary: @color-text-secondary-static;
+
+    --border-color-base: @border-color-base-static;
 }

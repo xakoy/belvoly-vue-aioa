@@ -10,7 +10,7 @@ import { setGloablConfig } from '../packages/core'
 import { setGloablConfig as setMobileGloablConfig } from '../packages/m-core'
 
 setGloablConfig({
-    token: '495bb394-ffe5-44f9-a12b-e2bb1b6e1c93',
+    token: 'f5aac5882e7a4e23910fd8d35943b2e2',
     apiHost: 'http://192.168.24.111/api',
     o365: {
         enabled: true,

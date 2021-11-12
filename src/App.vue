@@ -28,4 +28,15 @@ html {
     padding: 0;
     margin: 0;
 }
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-background: #000 !important;
+        --color-foreground: #222222 !important;
+
+        --color-text-primary: #eaeaea !important;
+
+        --border-color-base: #5e5e5e !important;
+    }
+}
 </style>
