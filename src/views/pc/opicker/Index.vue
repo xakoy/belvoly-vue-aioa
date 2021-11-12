@@ -25,6 +25,7 @@
             :objects="[{ code: 'orguser', config: { rootOrgCode: 'shhr' } }]"
             selectionMode="multiple"
             splitChar=","
+            v-if="joinUserOPickerVisible"
             :visible.sync="joinUserOPickerVisible"
         ></o-picker>
 

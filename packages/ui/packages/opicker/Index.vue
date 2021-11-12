@@ -168,7 +168,10 @@ export default class OpickerIndex extends Vue {
         }
 
         const tree = this.getCurrentTree()
-        tree.setCheckedKeys(this.checkItems.map(org => org.id))
+        tree.setCheckedKeys(
+            this.checkItems.map(item => item.id),
+            true
+        )
     }
 
     async loadSubNode(parentCode, resolve) {
@@ -243,10 +246,12 @@ export default class OpickerIndex extends Vue {
         if (checked) {
             if (this.isSingleMode) {
                 const tree = this.getCurrentTree()
-                tree.setCheckedKeys([item.id])
+                tree.setCheckedKeys([item.id], true)
                 this.checkItems = [<TreeNode>item]
             } else {
-                this.checkItems.push(<TreeNode>item)
+                if (!this.checkItems.some(i => i.value === item.value)) {
+                    this.checkItems.push(<TreeNode>item)
+                }
             }
         } else {
             const index = this.checkItems.findIndex(i => i.value === item.value)
@@ -278,14 +283,19 @@ export default class OpickerIndex extends Vue {
     }
 
     convertOPickerNodeToTreeNode(item: OPickerNode, leaf = false) {
-        const isSelected = this.checkItems.some(c => c.value === item.value)
+        const cancheck = item.cancheck === undefined ? true : item.cancheck
+        const checkedItem = this.checkItems.find(c => c.value === item.value)
+        const isSelected = !!checkedItem && cancheck
+        if (isSelected) {
+            checkedItem.id = item.id
+        }
         return <Node>{
             id: item.id,
             name: item.name,
             value: item.value,
             type: item.nodeType,
             leaf: leaf || item.isParent === false,
-            disabled: !(item.cancheck === undefined ? true : item.cancheck),
+            disabled: !cancheck,
             check: isSelected,
             children: !(item.hasChildNodesData && item.nodes) ? null : item.nodes.map(i => this.convertOPickerNodeToTreeNode(i)),
             data: item.data
@@ -320,7 +330,10 @@ export default class OpickerIndex extends Vue {
             this.checkItems.splice(index, 1)
         }
         const tree = this.getCurrentTree()
-        tree.setCheckedKeys(this.checkItems.map(item => item.id))
+        tree.setCheckedKeys(
+            this.checkItems.map(item => item.id),
+            true
+        )
     }
 
     clear() {
