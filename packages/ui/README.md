@@ -1,3 +1,6 @@
+### 0.1.53
+1.  `ChoosePeopleOrOrg` 调整样式支持深色模式，主题色
+2. `OPicker` 修复打开没有选中默认节点
 ### 0.1.51
 1. 增加`OPicker` 组件
 2. 增加`Dialog` 组件
