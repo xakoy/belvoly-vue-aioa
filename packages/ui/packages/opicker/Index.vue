@@ -386,7 +386,8 @@ export default class OpickerIndex extends Vue {
         padding: 20px;
         width: 50%;
         overflow: auto;
-        border-right: 1px solid #ccc;
+        border-right: 1px solid;
+        .border-color--right(border-color-base);
     }
     &__primary {
         .color(color-primary);
