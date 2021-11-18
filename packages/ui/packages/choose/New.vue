@@ -897,7 +897,9 @@ export default class New extends Vue {
 
     loadTab(tab: Tab) {
         return async (node, resolve) => {
-            if (node.level === 0) {
+            if (node.data && node.data.children) {
+                resolve(node.data.children)
+            } else if (node.level === 0) {
                 const { data } = await this.queryRemoteData(tab, '')
                 if (data) {
                     if (data.length > 0) {

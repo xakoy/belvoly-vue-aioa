@@ -160,7 +160,9 @@ export default class OpickerIndex extends Vue {
     destroyed() {}
 
     async loadHandler(node, resolve) {
-        if (node.level === 0) {
+        if (node.data && node.data.children) {
+            resolve(node.data.children)
+        } else if (node.level === 0) {
             await this.loadSubNode(null, resolve)
         } else {
             const orgCode = node.data.value
