@@ -1157,6 +1157,9 @@ interface NameValue {
             height: 100%;
             display: flex;
             flex-direction: column;
+            .el-tabs__header {
+                margin-bottom: 15px !important;
+            }
             .el-tabs__content {
                 flex: 1;
             }
