@@ -208,7 +208,7 @@ export default class OpickerIndex extends Vue {
     }
 
     async queryRemoteData(code) {
-        const uri = this.currentObjective.getUrl ? this.currentObjective.getUrl(this.currentObjective.config, this.currentObjective.url) : this.currentObjective.url
+        const uri = this.currentObjective.getUrl ? this.currentObjective.getUrl(this.currentObjective.config, this.currentObjective.url, code) : this.currentObjective.url
         const url = new URL(uri)
         if (code) {
             url.searchParams.set('code', code)
