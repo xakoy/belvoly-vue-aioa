@@ -71,7 +71,7 @@ export default class OpickerIndex extends Vue {
     })
     objects: Objective[]
     @Prop() names: string
-    @Prop() codes: string
+    @Prop() values: string
 
     @Prop() value: {
         names: string
