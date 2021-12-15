@@ -29,7 +29,7 @@ export interface Objective<C extends object = {}> {
      * @param {json} config
      * @param {string} url[default=this.url] 要包装的Url默认为当前url属性
      */
-    getUrl?: (config: C, url: string) => string
+    getUrl?: (config: C, url: string, code: string) => string
     /*
      * 是否显示图标
      * @event showIcon
