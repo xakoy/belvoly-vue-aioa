@@ -305,7 +305,7 @@ export default class Index extends Vue {
             BM.appointment.camera.getPicture(data => {
                 if (data.imgURI) {
                     const file: HtmlFile = {
-                        name: getFileName(data.imgURI),
+                        name: data.name || getFileName(data.imgURI),
                         size: data.fileSize || 0
                     }
                     this.clientUploadFile(data.imgURI, file, BM.appointment.camera.uploadPicture)
@@ -318,7 +318,7 @@ export default class Index extends Vue {
                         const item = data[i]
                         if (item.fileURI) {
                             const file: HtmlFile = {
-                                name: getFileName(item.fileURI),
+                                name: item.name || getFileName(item.fileURI),
                                 size: item.fileSize || 0
                             }
                             this.clientUploadFile(item.fileURI, file, BM.appointment.file.uploadFile)
