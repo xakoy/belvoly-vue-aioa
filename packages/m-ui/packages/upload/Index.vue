@@ -64,6 +64,7 @@
                 </bvan-cell-group>
             </div>
         </bvan-dialog>
+        <PreviewFrame :onLineUrl="onLineUrl" :show.sync="onLineVisible" />
     </div>
     <span class="bvan-mui-upload__simple" v-else>
         <bvan-uploader v-if="!inApp" ref="simpleVanUploader" :before-read="beforeReadHandler" :accept="accept" :after-read="afterReadHandler" :multiple="multiple">
@@ -81,6 +82,7 @@ import { Notify, Dialog } from '@belvoly-vue-aioa/bvant'
 import { utils, globalConfig, services, wxwork } from '@belvoly-vue-aioa/m-core'
 import { isInApp } from '../utils/environment'
 import Item from './Item.vue'
+import PreviewFrame from './Frame.vue'
 const { attachmentService } = services
 const { request } = utils
 
@@ -125,7 +127,8 @@ interface ExisitFile {
 
 @Component({
     components: {
-        Item
+        Item,
+        PreviewFrame
     }
 })
 export default class Index extends Vue {
@@ -211,6 +214,9 @@ export default class Index extends Vue {
     uploadFiles: UploadFile[] = []
 
     files: ExisitFile[] = []
+
+    onLineVisible = false
+    onLineUrl = ''
 
     get isO365Enabled() {
         return this.config.o365.enabled
@@ -570,17 +576,21 @@ export default class Index extends Vue {
             url = `${this.config.o365.baseURI}${this.config.o365.blobURI}/${file.id}`
         }
 
-        if (this.inApp) {
-            if (isSupport) {
-                BM.appointment.webview.open(this.getDownloadUrl(url))
-            } else {
-                BM.appointment.file.download(this.getDownloadUrl(url), file.name, '')
-                this.$emit('download', file)
-            }
+        if (isSupport) {
+            this.previewOnlineFile(url)
         } else {
-            window.open(this.getDownloadUrl(url))
+            if (this.inApp) {
+                BM.appointment.file.download(this.getDownloadUrl(url), file.name, '')
+            } else {
+                window.open(this.getDownloadUrl(url))
+            }
             this.$emit('download', file)
         }
+    }
+
+    previewOnlineFile(url: string) {
+        this.onLineUrl = url
+        this.onLineVisible = true
     }
     checkO365PreviewSupproted(extension: string) {
         const ext = extension.toLowerCase()
