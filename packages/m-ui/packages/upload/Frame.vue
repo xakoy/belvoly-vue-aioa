@@ -3,7 +3,8 @@
         <bvan-nav-bar title="预览" :class="$style.navBar" />
         <section :class="$style.main">
             <p v-show="empty" :class="$style.empty">{{ empty }}</p>
-            <iframe ref="iframe" :src="onLineUrl" frameborder="0" :class="$style.iframe" allowfullscreen @load="iframeLoad"></iframe>
+            <div ref="iframe" :class="$style.iframeContainer"></div>
+            <!-- <iframe  :src="onLineUrl" frameborder="0" :class="$style.iframe" allowfullscreen @load="iframeLoad"></iframe> -->
         </section>
         <div :class="$style.popupButtons">
             <bvan-button square @click="onCancel">关闭</bvan-button>
@@ -11,7 +12,7 @@
     </bvan-popup>
 </template>
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator'
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 @Component({
     components: {}
 })
@@ -19,10 +20,35 @@ export default class AnnexView extends Vue {
     @Prop({ default: false }) show: boolean
     @Prop({ default: '' }) onLineUrl: string
     empty = '附件正在打开...'
+
     onCancel() {
         // 修复出现iframe后，导致政务微信的接口失效，主动改变url地址，hack下政务微信的接口响应。
-        window.location.hash = new Date().getTime().toString()
+        // window.location.hash = new Date().getTime().toString()
+        const aurl = new URL(window.location.href)
+        aurl.hash = new Date().getTime().toString()
+        window.location.replace(aurl.toString())
         this.$emit('update:show', false)
+    }
+
+    @Watch('show')
+    watchShow() {
+        this.loadFrame()
+    }
+
+    mounted() {
+        this.loadFrame()
+    }
+
+    loadFrame() {
+        debugger
+        if (!this.show) {
+            return
+        }
+        this.$nextTick(() => {
+            const $iframe: HTMLElement = this.$refs.iframe as any
+            $iframe.innerHTML = `<iframe src="${this.onLineUrl}" frameborder="0" class="${(this as any).$style.iframe}" allowfullscreen></iframe>`
+            $iframe.querySelector('iframe').onload = this.iframeLoad
+        })
     }
 
     iframeLoad() {
@@ -61,6 +87,13 @@ export default class AnnexView extends Vue {
 }
 .navBar::after {
     border-bottom-width: 0;
+}
+
+.iframeContainer {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
 .iframe {
