@@ -5,6 +5,8 @@ belvoly vue 移动APP专用组件库
 1. `ChoosePeopleOrOrg` 选人组件
 2. `Upload` 上传组件
 
+### 0.1.53
+1. 修复`upload` 组件在在线预览下，没有取消按钮 #8337
 ### 0.1.51
 1. 修复`upload` 组件 andoird 10上传文件乱码，导致无法下载
 
