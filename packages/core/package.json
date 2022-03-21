@@ -18,7 +18,7 @@
     "rollup-plugin-vue": "^5.1.6"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.2",
     "element-ui": "^2.13.0"
   },
   "gitHead": "184e9da0833a8bf8e96b0cdb1c833f862d3ba81a"

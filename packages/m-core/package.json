@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@belvoly-vue-aioa/bvant": "^0.1.1",
-    "axios": "^0.19.2"
+    "axios": "^0.21.2"
   },
   "gitHead": "04b4117e630191537b1c509f4f18d10b61e05795"
 }
