@@ -19,7 +19,7 @@
   "devDependencies": {
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-typescript2": "^0.27.0",
-    "rollup-plugin-vue": "^5.1.6"
+    "rollup-plugin-vue": "^6.0.0"
   },
   "gitHead": "e61586d3b0429ec1085d8687b7ae58579248d15f"
 }
